@@ -1,2 +1,2 @@
-# UI5 Class Parser
-This is a beta version of UI5 Class parser. Please don't use it yet :)
+# UI5 Class Linter
+This is a beta version of UI5 Class linter. Please don't use it yet :)
