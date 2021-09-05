@@ -3,7 +3,7 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, UI5Ignoreable } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError, CustomDiagnosticType, Severity } from "../../../Linter";
+import { JSLinters, IError, CustomDiagnosticType } from "../../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongFieldMethodLinter extends JSLinter {
 	protected className = JSLinters.WrongFieldMethodLinter;
@@ -111,7 +111,8 @@ export class WrongFieldMethodLinter extends JSLinter {
 										className: UIClass.className,
 										type: CustomDiagnosticType.NonExistentMethod,
 										methodName: nextNodeName,
-										sourceClassName: className
+										sourceClassName: className,
+										severity: new PackageConfigHandler().getSeverity(this.className)
 									});
 									break;
 								}
@@ -144,7 +145,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 											methodName: nextNodeName,
 											className: UIClass.className,
 											sourceClassName: className,
-											severity: Severity.Error
+											severity: new PackageConfigHandler().getSeverity(this.className)
 										});
 										break;
 									}

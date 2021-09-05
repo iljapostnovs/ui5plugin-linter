@@ -35,7 +35,8 @@ export class WrongFilePathLinter extends JSLinter {
 											className: UIClass.className,
 											source: "Wrong File Path Linter",
 											message: `Class "${sClassName}" doesn't exist`,
-											range: range
+											range: range,
+											severity: new PackageConfigHandler().getSeverity(this.className)
 										});
 									}
 								}

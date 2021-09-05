@@ -12,6 +12,6 @@ export class PositionAdapter {
 	}
 
 	static acornPositionToVSCodePosition(position: IAcornPosition): IPosition {
-		return { column: position.column, line: position.line - 1 };
+		return { column: position.column, line: position.line };
 	}
 }
