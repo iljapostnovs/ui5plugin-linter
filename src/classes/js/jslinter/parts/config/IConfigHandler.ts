@@ -1,3 +1,5 @@
+import { JSLinters, Severity, XMLLinters } from "../../../../Linter";
+
 export interface JSLinterException {
 	className: string;
 	memberName: string;
@@ -6,4 +8,5 @@ export interface JSLinterException {
 
 export interface IConfigHandler {
 	getJSLinterExceptions(): JSLinterException[];
+	getSeverity(linter: JSLinters | XMLLinters): Severity;
 }

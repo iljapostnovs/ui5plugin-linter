@@ -1,13 +1,18 @@
 import { UI5Parser } from "ui5plugin-parser";
 import { IConfigHandler, JSLinterException } from "./IConfigHandler";
 import { join } from "path";
-import { JSLinters } from "../../../../Linter";
+import { JSLinters, Severity, XMLLinters } from "../../../../Linter";
 const packagePath = join(process.cwd(), "/package.json");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nodePackage = require(packagePath);
 
 export class PackageConfigHandler implements IConfigHandler {
-	private _cache: { [key: string]: boolean } = {}
+	private _cache: { [key: string]: boolean } = {};
+
+	getSeverity(linter: JSLinters | XMLLinters) {
+		return nodePackage?.ui5?.ui5linter?.severity?.[linter] ?? Severity.Error;
+	}
+
 	getJSLinterExceptions(): JSLinterException[] {
 		const defaultExceptions: JSLinterException[] = [
 			{
@@ -82,12 +87,12 @@ export class PackageConfigHandler implements IConfigHandler {
 			}
 		];
 
-		const userExceptions: JSLinterException[] = nodePackage?.ui5?.ui5parser?.JSLinterExceptions || [];
+		const userExceptions: JSLinterException[] = nodePackage?.ui5?.ui5linter?.JSLinterExceptions || [];
 		return defaultExceptions.concat(userExceptions);
 	}
 
 	getLinterUsage(linter: JSLinters) {
-		return nodePackage?.ui5?.ui5parser?.[`use${linter}`] ?? true;
+		return nodePackage?.ui5?.ui5linter?.[`use${linter}`] ?? true;
 	}
 
 	checkIfMemberIsException(className = "", memberName = "") {

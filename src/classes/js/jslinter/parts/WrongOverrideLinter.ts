@@ -3,7 +3,7 @@ import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plu
 import { AbstractUIClass, IUIField, IUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
 import { PackageConfigHandler } from "./config/PackageConfigHandler";
-import { JSLinters, IError, Severity } from "../../../Linter";
+import { JSLinters, IError } from "../../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongOverrideLinter extends JSLinter {
 	protected className = JSLinters.WrongOverrideLinter;
@@ -46,7 +46,7 @@ export class WrongOverrideLinter extends JSLinter {
 				acornNode: UIMember.acornNode,
 				methodName: UIMember.name,
 				sourceClassName: UIClass.className,
-				severity: Severity.Error
+				severity: new PackageConfigHandler().getSeverity(this.className)
 			};
 		}
 

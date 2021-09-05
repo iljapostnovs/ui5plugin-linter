@@ -25,7 +25,8 @@ export class WrongClassNameLinter extends JSLinter {
 								acornNode: UIClass.acornReturnedClassExtendBody.arguments[0],
 								code: "UI5Plugin",
 								message: `Invalid class name. Expected: "${className}", actual: "${classNameFromFile}"`,
-								range: range
+								range: range,
+								severity: new PackageConfigHandler().getSeverity(this.className)
 							});
 						}
 					}

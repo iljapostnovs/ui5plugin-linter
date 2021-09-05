@@ -4,7 +4,7 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError, Severity } from "../../../Linter";
+import { JSLinters, IError } from "../../../Linter";
 export class PublicMemberLinter extends JSLinter {
 	protected className = JSLinters.PublicMemberLinter;
 	_getErrors(document: TextDocument): IError[] {
@@ -31,17 +31,8 @@ export class PublicMemberLinter extends JSLinter {
 									code: "UI5Plugin",
 									className: UIClass.className,
 									message: `Method "${method.name}" is possibly private, no references found in other classes`,
-									range: {
-										start: {
-											line: method.memberPropertyNode.loc.start.line,
-											column: method.memberPropertyNode.loc.start.column - 1
-										},
-										end: {
-											line: method.memberPropertyNode.loc.end.line,
-											column: method.memberPropertyNode.loc.end.column - 1
-										}
-									},
-									severity: Severity.Information
+									range: RangeAdapter.acornLocationToVSCodeRange(method.memberPropertyNode.loc),
+									severity: new PackageConfigHandler().getSeverity(this.className)
 								});
 							}
 						}
@@ -60,7 +51,7 @@ export class PublicMemberLinter extends JSLinter {
 									className: UIClass.className,
 									message: `Field "${field.name}" is possibly private, no references found in other classes`,
 									range: range,
-									severity: Severity.Information
+									severity: new PackageConfigHandler().getSeverity(this.className)
 								});
 							}
 						}

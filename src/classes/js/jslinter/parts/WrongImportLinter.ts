@@ -26,7 +26,8 @@ export class WrongImportLinter extends JSLinter {
 									className: UIClass.className,
 									source: "Import path Linter",
 									message: `Class "${UIDefine.classNameDotNotation}" doesn't exist`,
-									range: range
+									range: range,
+									severity: new PackageConfigHandler().getSeverity(this.className)
 								});
 							}
 						}

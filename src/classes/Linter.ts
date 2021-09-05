@@ -3,17 +3,21 @@ import { TextDocument } from "ui5plugin-parser";
 export abstract class Linter {
 	abstract getLintingErrors(document: TextDocument): Promise<IError[]>;
 }
+
+export enum XMLLinters {
+
+}
 export enum JSLinters {
-	AbstractClassLinter,
-	InterfaceLinter,
-	PublicMemberLinter,
-	UnusedMemberLinter,
-	WrongClassNameLinter,
-	WrongFieldMethodLinter,
-	WrongFilePathLinter,
-	WrongImportLinter,
-	WrongOverrideLinter,
-	WrongParametersLinter
+	AbstractClassLinter = "AbstractClassLinter",
+	InterfaceLinter = "InterfaceLinter",
+	PublicMemberLinter = "PublicMemberLinter",
+	UnusedMemberLinter = "UnusedMemberLinter",
+	WrongClassNameLinter = "WrongClassNameLinter",
+	WrongFieldMethodLinter = "WrongFieldMethodLinter",
+	WrongFilePathLinter = "WrongFilePathLinter",
+	WrongImportLinter = "WrongImportLinter",
+	WrongOverrideLinter = "WrongOverrideLinter",
+	WrongParametersLinter = "WrongParametersLinter"
 }
 export enum CustomDiagnosticType {
 	NonExistentMethod = 1,
@@ -21,10 +25,10 @@ export enum CustomDiagnosticType {
 }
 
 export enum Severity {
-	Warning = 1,
-	Error = 2,
-	Information = 3,
-	Hint = 4
+	Warning = "Warning",
+	Error = "Error",
+	Information = "Information",
+	Hint = "Hint"
 }
 export enum DiagnosticTag {
 	Unnecessary = 1,
@@ -52,7 +56,7 @@ export interface IError {
 	source: string;
 	isController?: boolean;
 	tags?: DiagnosticTag[];
-	severity?: Severity;
+	severity: Severity;
 	range: IRange;
 	className: string;
 }

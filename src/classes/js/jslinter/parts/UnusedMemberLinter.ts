@@ -4,7 +4,7 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError, DiagnosticTag, Severity } from "../../../Linter";
+import { JSLinters, IError, DiagnosticTag } from "../../../Linter";
 
 export class UnusedMemberLinter extends JSLinter {
 	protected className = JSLinters.UnusedMemberLinter;
@@ -34,7 +34,7 @@ export class UnusedMemberLinter extends JSLinter {
 								message: `No references found for "${methodOrField.name}" class member`,
 								range: range,
 								tags: [DiagnosticTag.Unnecessary],
-								severity: Severity.Hint
+								severity: new PackageConfigHandler().getSeverity(this.className)
 							});
 						}
 					});
