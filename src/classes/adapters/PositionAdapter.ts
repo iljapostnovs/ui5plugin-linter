@@ -1,5 +1,5 @@
 import LineColumn = require("line-column");
-import { IPosition } from "../../js/jslinter/parts/abstraction/JSLinter";
+import { IPosition } from "../Linter";
 export interface IAcornPosition {
 	line: number,
 	column: number
