@@ -1,6 +1,6 @@
 {
 	"name": "ui5plugin-linter",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "UI5 Class parser",
 	"main": "dist/index.js",
 	"scripts": {
@@ -28,7 +28,7 @@
 		"url": "https://github.com/iljapostnovs/ui5plugin-linter/issues"
 	},
 	"bin": {
-		"ui5linter": "./dist/index.js"
+		"ui5linter": "./bin/ui5linter.js"
 	},
 	"homepage": "https://github.com/iljapostnovs/ui5plugin-linter#readme",
 	"devDependencies": {
