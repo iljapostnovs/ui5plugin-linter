@@ -12,7 +12,7 @@ import { AbstractClassLinter } from "./parts/AbstractClassLinter";
 import { InterfaceLinter } from "./parts/InterfaceLinter";
 import { TextDocument } from "ui5plugin-parser";
 
-export class JSLinter {
+export class JSLinterFactory {
 	static timePerchar = 0;
 	static async getLintingErrors(document: TextDocument) {
 		const linters: JSLinter[] = [

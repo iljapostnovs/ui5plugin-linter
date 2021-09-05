@@ -5,7 +5,7 @@ import { Severity } from "./classes/js/jslinter/parts/abstraction/JSLinter";
 (async function() {
 	const parser = UI5Parser.getInstance();
 	await parser.initialize();
-	const JSLinter = (await import("./classes/js/jslinter/JSLinter")).JSLinter;
+	const JSLinter = (await import("./classes/js/jslinter/JSLinterFactory")).JSLinterFactory;
 
 	const customClasses = parser.classFactory.getAllCustomUIClasses();
 	const errorPromises = customClasses.map(customClass => {
