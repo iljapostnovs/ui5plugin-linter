@@ -1,0 +1,6 @@
+/out
+*.vsix
+/node_modules
+/dist
+.vscode-test
+*.cpuprofile

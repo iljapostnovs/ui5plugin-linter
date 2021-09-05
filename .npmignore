@@ -1,0 +1,7 @@
+src
+webpack.config.js
+tsconfig.json
+tsconfig-prod.json
+.eslintrc
+/node_modules
+/test

@@ -1,0 +1,45 @@
+{
+	"name": "ui5plugin-linter",
+	"version": "0.0.1",
+	"description": "UI5 Class parser",
+	"main": "dist/index.js",
+	"scripts": {
+		"test": "test",
+		"compile": "tsc",
+		"compile-prod": "rd /s /q \"dist\" && tsc --project tsconfig-prod.json",
+		"watch": "npm run compile",
+		"lint": "tslint -p ./"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/iljapostnovs/ui5plugin-linter.git"
+	},
+	"keywords": [
+		"ui5",
+		"fiori",
+		"sap"
+	],
+	"author": "Ilja Postnovs",
+	"license": "Apache-2.0",
+	"contributors": [
+		"Ilja Postnovs <ilja.postnovs@gmail.com>"
+	],
+	"bugs": {
+		"url": "https://github.com/iljapostnovs/ui5plugin-linter/issues"
+	},
+	"homepage": "https://github.com/iljapostnovs/ui5plugin-linter#readme",
+	"devDependencies": {
+		"@types/axios": "^0.14.0",
+		"@types/glob": "^7.1.4",
+		"@types/line-column": "^1.0.0",
+		"@types/node": "^16.7.10",
+		"@typescript-eslint/eslint-plugin": "^4.30.0",
+		"@typescript-eslint/parser": "^4.30.0",
+		"eslint": "^7.32.0",
+		"ts-loader": "^9.2.5",
+		"typescript": "^4.4.2"
+	},
+	"dependencies": {
+		"ui5plugin-parser": "^0.1.2"
+	}
+}

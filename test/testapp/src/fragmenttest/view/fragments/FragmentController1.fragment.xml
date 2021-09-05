@@ -1,0 +1,22 @@
+<c:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:c="sap.ui.core"
+>
+
+	<!-- @ui5ignore -->
+	<Button
+		id="idButtonFragmentController1"
+		text="{
+			formatter: '.formatter.formatValueFragmentController1'
+		}"
+		press="eventHandler4asd"
+		textDirection="a{
+			formatter: '.formatter.formatGlobal'
+		}"
+	>
+		<test>
+		</test>
+	</Button>
+	<!-- @ui5ignore -->
+	<Test/><Test></Test randomAttribute="123"><Button press="wrongEventHandler" text=""/>
+</c:FragmentDefinition>
