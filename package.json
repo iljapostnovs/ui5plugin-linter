@@ -1,6 +1,6 @@
 {
 	"name": "ui5plugin-linter",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "UI5 Class parser",
 	"main": "dist/index.js",
 	"scripts": {
