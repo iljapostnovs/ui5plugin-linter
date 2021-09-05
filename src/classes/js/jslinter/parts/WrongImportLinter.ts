@@ -1,7 +1,8 @@
-import { IError, JSLinters, JSLinter } from "./abstraction/JSLinter";
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../../adapters/vscode/RangeAdapter";
+import { RangeAdapter } from "../../../adapters/RangeAdapter";
+import { IError, JSLinters } from "../../../Linter";
+import { JSLinter } from "./abstraction/JSLinter";
 import { PackageConfigHandler } from "./config/PackageConfigHandler";
 export class WrongImportLinter extends JSLinter {
 	protected className = JSLinters.WrongImportLinter;

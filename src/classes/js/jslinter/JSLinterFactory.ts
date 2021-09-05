@@ -1,5 +1,4 @@
 import { JSLinter } from "./parts/abstraction/JSLinter";
-import { IError } from "./parts/abstraction/JSLinter";
 import { WrongFieldMethodLinter } from "./parts/WrongFieldMethodLinter";
 import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
 import { WrongImportLinter } from "./parts/WrongImportLinter";
@@ -11,10 +10,11 @@ import { WrongOverrideLinter } from "./parts/WrongOverrideLinter";
 import { AbstractClassLinter } from "./parts/AbstractClassLinter";
 import { InterfaceLinter } from "./parts/InterfaceLinter";
 import { TextDocument } from "ui5plugin-parser";
+import { IError, Linter } from "../../Linter";
 
-export class JSLinterFactory {
-	static timePerchar = 0;
-	static async getLintingErrors(document: TextDocument) {
+export class JSLinterFactory extends Linter {
+	timePerchar = 0;
+	async getLintingErrors(document: TextDocument): Promise<IError[]> {
 		const linters: JSLinter[] = [
 			new WrongFieldMethodLinter(),
 			new WrongClassNameLinter(),
@@ -35,7 +35,6 @@ export class JSLinterFactory {
 			console.error(error);
 		}
 
-		// copy(JSON.stringify(errors.map(error => ({text: error.message}))))
 		return errors;
 	}
 }

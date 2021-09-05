@@ -1,9 +1,10 @@
-import { CustomDiagnosticType, IError, JSLinters, JSLinter, Severity } from "./abstraction/JSLinter";
 import { PackageConfigHandler } from "./config/PackageConfigHandler";
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, UI5Ignoreable } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
-import { RangeAdapter } from "../../../adapters/vscode/RangeAdapter";
+import { RangeAdapter } from "../../../adapters/RangeAdapter";
+import { JSLinters, IError, CustomDiagnosticType, Severity } from "../../../Linter";
+import { JSLinter } from "./abstraction/JSLinter";
 export class WrongFieldMethodLinter extends JSLinter {
 	protected className = JSLinters.WrongFieldMethodLinter;
 	public static timePerChar = 0;
