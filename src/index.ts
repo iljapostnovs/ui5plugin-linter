@@ -1,6 +1,6 @@
 import { UI5Parser, TextDocument } from "ui5plugin-parser";
 import * as chalk from "chalk";
-import { Severity } from "./classes/js/jslinter/parts/abstraction/Linter";
+import { Severity } from "./classes/js/jslinter/parts/abstraction/JSLinter";
 
 (async function() {
 	const parser = UI5Parser.getInstance();

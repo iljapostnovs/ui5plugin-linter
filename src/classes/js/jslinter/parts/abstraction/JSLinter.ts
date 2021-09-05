@@ -53,7 +53,7 @@ export interface IError {
 	range: IRange;
 	className: string;
 }
-export abstract class Linter {
+export abstract class JSLinter {
 	protected abstract className: JSLinters;
 	timePerChar = 0;
 	protected abstract _getErrors(document: TextDocument): IError[];

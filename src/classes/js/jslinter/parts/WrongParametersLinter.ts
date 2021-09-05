@@ -1,11 +1,11 @@
-import { IError, JSLinters, Linter } from "./abstraction/Linter";
+import { IError, JSLinters, JSLinter } from "./abstraction/JSLinter";
 import { PackageConfigHandler } from "./config/PackageConfigHandler";
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { SAPNodeDAO } from "ui5plugin-parser/dist/classes/librarydata/SAPNodeDAO";
 import { CustomUIClass, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/vscode/RangeAdapter";
-export class WrongParametersLinter extends Linter {
+export class WrongParametersLinter extends JSLinter {
 	protected className = JSLinters.WrongParametersLinter;
 	public static timePerChar = 0;
 	private static readonly _sapNodeDAO = new SAPNodeDAO();

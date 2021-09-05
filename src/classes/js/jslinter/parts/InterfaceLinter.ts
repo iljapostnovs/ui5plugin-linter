@@ -1,9 +1,9 @@
 
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
-import { IError, JSLinters, Linter, Severity } from "./abstraction/Linter";
+import { IError, JSLinters, JSLinter, Severity } from "./abstraction/JSLinter";
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-export class InterfaceLinter extends Linter {
+export class InterfaceLinter extends JSLinter {
 	protected className = JSLinters.InterfaceLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];

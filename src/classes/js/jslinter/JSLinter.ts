@@ -1,5 +1,5 @@
-import { Linter } from "./parts/abstraction/Linter";
-import { IError } from "./parts/abstraction/Linter";
+import { JSLinter } from "./parts/abstraction/JSLinter";
+import { IError } from "./parts/abstraction/JSLinter";
 import { WrongFieldMethodLinter } from "./parts/WrongFieldMethodLinter";
 import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
 import { WrongImportLinter } from "./parts/WrongImportLinter";
@@ -15,7 +15,7 @@ import { TextDocument } from "ui5plugin-parser";
 export class JSLinter {
 	static timePerchar = 0;
 	static async getLintingErrors(document: TextDocument) {
-		const linters: Linter[] = [
+		const linters: JSLinter[] = [
 			new WrongFieldMethodLinter(),
 			new WrongClassNameLinter(),
 			new WrongImportLinter(),

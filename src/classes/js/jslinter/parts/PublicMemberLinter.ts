@@ -1,10 +1,10 @@
-import { IError, Linter, JSLinters, Severity } from "./abstraction/Linter";
+import { IError, JSLinter, JSLinters, Severity } from "./abstraction/JSLinter";
 import { PackageConfigHandler } from "./config/PackageConfigHandler";
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/vscode/RangeAdapter";
-export class PublicMemberLinter extends Linter {
+export class PublicMemberLinter extends JSLinter {
 	protected className = JSLinters.PublicMemberLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];

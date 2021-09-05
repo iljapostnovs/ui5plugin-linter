@@ -1,7 +1,7 @@
 import { UI5Parser } from "ui5plugin-parser";
 import { IConfigHandler, JSLinterException } from "./IConfigHandler";
 import { join } from "path";
-import { JSLinters } from "../abstraction/Linter";
+import { JSLinters } from "../abstraction/JSLinter";
 const packagePath = join(process.cwd(), "/package.json");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nodePackage = require(packagePath);
