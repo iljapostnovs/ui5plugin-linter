@@ -46,7 +46,7 @@ export class WrongParametersLinter extends JSLinter {
 														acornNode: call,
 														className: UIClass.className,
 														code: "UI5Plugin",
-														source: "Parameter Linter",
+														source: this.className,
 														message: `Method "${methodName}" has ${methodParams.length} (${mandatoryMethodParams.length} mandatory) param(s), but you provided ${params.length}`,
 														range: range,
 														severity: new PackageConfigHandler().getSeverity(this.className)
@@ -76,7 +76,7 @@ export class WrongParametersLinter extends JSLinter {
 																	acornNode: param,
 																	code: "UI5Plugin",
 																	className: UIClass.className,
-																	source: "Parameter Linter",
+																	source: this.className,
 																	message: `"${paramFromMethod.name}" param is of type "${paramFromMethod.type}", but provided "${classNameOfTheParam}"`,
 																	range: range,
 																	severity: new PackageConfigHandler().getSeverity(this.className)

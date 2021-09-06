@@ -31,7 +31,7 @@ export class AbstractClassLinter extends JSLinter {
 				});
 				undefinedMembers.forEach(member => {
 					errors.push({
-						source: "Abstract class linter",
+						source: this.className,
 						acornNode: null,
 						className: UIClass.className,
 						code: "UI5Plugin",

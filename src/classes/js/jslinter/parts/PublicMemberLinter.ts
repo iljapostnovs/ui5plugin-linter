@@ -26,7 +26,7 @@ export class PublicMemberLinter extends JSLinter {
 							const methodIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, method.name, method);
 							if (!methodIsUsed && method.position) {
 								errors.push({
-									source: "Public member linter",
+									source: this.className,
 									acornNode: method.acornNode,
 									code: "UI5Plugin",
 									className: UIClass.className,
@@ -45,7 +45,7 @@ export class PublicMemberLinter extends JSLinter {
 							if (!fieldIsUsed && field.memberPropertyNode) {
 								const range = RangeAdapter.acornLocationToVSCodeRange(field.memberPropertyNode.loc);
 								errors.push({
-									source: "Public member linter",
+									source: this.className,
 									acornNode: field.acornNode,
 									code: "UI5Plugin",
 									className: UIClass.className,

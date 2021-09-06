@@ -29,7 +29,7 @@ export class InterfaceLinter extends JSLinter {
 			});
 			undefinedMembers.forEach(member => {
 				errors.push({
-					source: "Interface linter",
+					source: this.className,
 					acornNode: null,
 					className: UIClass.className,
 					code: "UI5Plugin",

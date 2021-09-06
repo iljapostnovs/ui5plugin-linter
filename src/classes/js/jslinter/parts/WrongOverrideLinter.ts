@@ -40,7 +40,7 @@ export class WrongOverrideLinter extends JSLinter {
 			error = {
 				message: `You can't override "${UIMember.name}" because it is a private member of class "${parentMember.owner}"`,
 				code: "UI5Plugin",
-				source: "Wrong Override Linter",
+				source: this.className,
 				range: range,
 				className: UIClass.className,
 				acornNode: UIMember.acornNode,

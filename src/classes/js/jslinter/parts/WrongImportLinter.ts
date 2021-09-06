@@ -24,7 +24,7 @@ export class WrongImportLinter extends JSLinter {
 									acornNode: UIDefine.acornNode,
 									code: "UI5Plugin",
 									className: UIClass.className,
-									source: "Import path Linter",
+									source: this.className,
 									message: `Class "${UIDefine.classNameDotNotation}" doesn't exist`,
 									range: range,
 									severity: new PackageConfigHandler().getSeverity(this.className)

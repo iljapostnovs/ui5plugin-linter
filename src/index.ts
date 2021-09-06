@@ -28,7 +28,7 @@ import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parse
 			const fsPath = UIClass.classFSPath;
 			const filePosition = `${fsPath}:${hint.range.start.line}:${hint.range.start.column + 1}`;
 			const errorText = hint.message;
-			console.log(`${chalk.grey.underline.bold(filePosition)} ${chalk.grey.bold(errorText)}`);
+			console.log(`${chalk.grey.underline.bold(filePosition)} ${chalk.grey.bold(errorText)} (${hint.source})`);
 		});
 		console.log(chalk.bold.underline.grey(`\nHints: ${hints.length}\n`));
 	}
@@ -39,7 +39,7 @@ import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parse
 			const fsPath = UIClass.classFSPath;
 			const filePosition = `${fsPath}:${information.range.start.line}:${information.range.start.column + 1}`;
 			const errorText = information.message;
-			console.log(`${chalk.blue.underline.bold(filePosition)} ${chalk.blue.bold(errorText)}`);
+			console.log(`${chalk.blue.underline.bold(filePosition)} ${chalk.blue.bold(errorText)} (${information.source})`);
 		});
 		console.log(chalk.bold.underline.blue(`\nInformation: ${informationMessages.length}\n`));
 	}
@@ -50,7 +50,7 @@ import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parse
 			const fsPath = UIClass.classFSPath;
 			const filePosition = `${fsPath}:${warning.range.start.line}:${warning.range.start.column + 1}`;
 			const errorText = warning.message;
-			console.warn(`${chalk.rgb(255, 136, 0).underline.bold(filePosition)} ${chalk.rgb(255, 136, 0).bold(errorText)}`);
+			console.warn(`${chalk.rgb(255, 136, 0).underline.bold(filePosition)} ${chalk.rgb(255, 136, 0).bold(errorText)} (${warning.source})`);
 		});
 		console.log(chalk.bold.underline.rgb(255, 136, 0)(`\nWarnings: ${warnings.length}\n`));
 	}
@@ -61,7 +61,7 @@ import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parse
 			const fsPath = UIClass.classFSPath;
 			const filePosition = `${fsPath}:${error.range.start.line}:${error.range.start.column + 1}`;
 			const errorText = error.message;
-			console.error(`${chalk.redBright.underline.bold(filePosition)} ${chalk.redBright.bold(errorText)}`);
+			console.error(`${chalk.redBright.underline.bold(filePosition)} ${chalk.redBright.bold(errorText)} (${error.source})`);
 		});
 		console.log(chalk.bold.underline.redBright(`\nErrors: ${errors.length}\n`));
 	}

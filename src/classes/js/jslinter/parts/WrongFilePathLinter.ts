@@ -33,7 +33,7 @@ export class WrongFilePathLinter extends JSLinter {
 											acornNode: UIClass.acornClassBody,
 											code: "UI5Plugin",
 											className: UIClass.className,
-											source: "Wrong File Path Linter",
+											source: this.className,
 											message: `Class "${sClassName}" doesn't exist`,
 											range: range,
 											severity: new PackageConfigHandler().getSeverity(this.className)

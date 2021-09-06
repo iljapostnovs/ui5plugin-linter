@@ -105,7 +105,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 									errors.push({
 										message: `"${nextNodeName}" does not exist in "${className}"`,
 										code: "UI5Plugin",
-										source: "Field/Method Linter",
+										source: this.className,
 										range: range,
 										acornNode: nextNode,
 										className: UIClass.className,
@@ -139,7 +139,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 										errors.push({
 											message: sErrorMessage,
 											code: "UI5Plugin",
-											source: "Field/Method Linter",
+											source: this.className,
 											range: range,
 											acornNode: nextNode,
 											methodName: nextNodeName,

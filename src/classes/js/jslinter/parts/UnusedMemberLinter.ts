@@ -27,7 +27,7 @@ export class UnusedMemberLinter extends JSLinter {
 						if (!methodIsUsed && methodOrField.memberPropertyNode) {
 							const range = RangeAdapter.acornLocationToVSCodeRange(methodOrField.memberPropertyNode.loc);
 							errors.push({
-								source: "Unused method Linter",
+								source: this.className,
 								acornNode: methodOrField.acornNode,
 								code: "UI5Plugin",
 								className: UIClass.className,

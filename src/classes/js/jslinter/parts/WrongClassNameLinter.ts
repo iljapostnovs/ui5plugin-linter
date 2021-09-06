@@ -20,7 +20,7 @@ export class WrongClassNameLinter extends JSLinter {
 						if (classNameFromFile && className !== classNameFromFile) {
 							const range = RangeAdapter.acornLocationToVSCodeRange(UIClass.acornReturnedClassExtendBody?.arguments[0].loc);
 							errors.push({
-								source: "Class Name Linter",
+								source: this.className,
 								className: UIClass.className,
 								acornNode: UIClass.acornReturnedClassExtendBody.arguments[0],
 								code: "UI5Plugin",
