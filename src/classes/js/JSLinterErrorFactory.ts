@@ -28,7 +28,7 @@ export class JSLinterErrorFactory extends Linter {
 			new InterfaceLinter(this._parser, this._configHandler)
 		];
 
-		const errors = (linters.map(linter => linter.getLintingErrors(document))).flat();
+		const errors = linters.flatMap(linter => linter.getLintingErrors(document));
 
 		return errors;
 	}
