@@ -1,7 +1,16 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { ILinterConfigHandler } from "..";
+import { PackageConfigHandler } from "./js/jslinter/parts/config/PackageConfigHandler";
 
 export abstract class Linter {
-	abstract getLintingErrors(document: TextDocument): Promise<IError[]>;
+	protected readonly _parser: UI5Parser;
+	protected _configHandler: ILinterConfigHandler;
+	constructor(parser: UI5Parser, configHandler?: ILinterConfigHandler) {
+		this._parser = parser;
+		this._configHandler = configHandler || new PackageConfigHandler(parser);
+	}
+
+	abstract getLintingErrors(document: TextDocument): IError[];
 }
 
 export enum XMLLinters {

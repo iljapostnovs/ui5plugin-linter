@@ -1,8 +1,7 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
 import * as fs from "fs";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
 import { JSLinters, IError } from "../../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 
@@ -11,12 +10,12 @@ export class WrongFilePathLinter extends JSLinter {
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
-		if (new PackageConfigHandler().getLinterUsage(this.className)) {
-			const className = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
+		if (this._configHandler.getLinterUsage(this.className)) {
+			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
-				const UIClass = UI5Parser.getInstance().classFactory.getUIClass(className);
+				const UIClass = this._parser.classFactory.getUIClass(className);
 				if (UIClass instanceof CustomUIClass && UIClass.classText) {
-					const manifest = UI5Parser.getInstance().fileReader.getManifestForClass(UIClass.className);
+					const manifest = this._parser.fileReader.getManifestForClass(UIClass.className);
 					if (manifest) {
 						const rClassNamesRegex = new RegExp(`${manifest.componentName.replace(/\./, "\\.")}\\..*?(?="|'|}|]|>|\\|)`, "g");
 						if (rClassNamesRegex) {
@@ -36,7 +35,7 @@ export class WrongFilePathLinter extends JSLinter {
 											source: this.className,
 											message: `Class "${sClassName}" doesn't exist`,
 											range: range,
-											severity: new PackageConfigHandler().getSeverity(this.className)
+											severity: this._configHandler.getSeverity(this.className)
 										});
 									}
 								}
@@ -53,21 +52,21 @@ export class WrongFilePathLinter extends JSLinter {
 
 	private _validateClassName(className: string) {
 		let isPathValid = false;
-		const UIClass = UI5Parser.getInstance().classFactory.getUIClass(className);
+		const UIClass = this._parser.classFactory.getUIClass(className);
 		if (UIClass && UIClass instanceof CustomUIClass) {
 			isPathValid = UIClass.classExists;
 		}
 
 		if (!isPathValid) {
-			const sFileFSPath = UI5Parser.getInstance().fileReader.convertClassNameToFSPath(className, false, false, true);
-			const aAllViews = UI5Parser.getInstance().fileReader.getAllViews();
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className, false, false, true);
+			const aAllViews = this._parser.fileReader.getAllViews();
 			const oView = aAllViews.find(oView => oView.fsPath === sFileFSPath);
 			isPathValid = !!oView;
 		}
 
 		if (!isPathValid) {
-			const sFileFSPath = UI5Parser.getInstance().fileReader.convertClassNameToFSPath(className, false, true, false);
-			const aAllFragments = UI5Parser.getInstance().fileReader.getAllFragments();
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className, false, true, false);
+			const aAllFragments = this._parser.fileReader.getAllFragments();
 			const oFragment = aAllFragments.find(oFragment => oFragment.fsPath === sFileFSPath);
 			isPathValid = !!oFragment;
 		}
@@ -76,7 +75,7 @@ export class WrongFilePathLinter extends JSLinter {
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = UI5Parser.getInstance().fileReader.convertClassNameToFSPath(className)?.replace(".js", ".properties");
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", ".properties");
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}
@@ -86,7 +85,7 @@ export class WrongFilePathLinter extends JSLinter {
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = UI5Parser.getInstance().fileReader.convertClassNameToFSPath(className)?.replace(".js", "");
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "");
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}

@@ -1,10 +1,9 @@
 
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { JSLinters, IError } from "../../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
 export class InterfaceLinter extends JSLinter {
 	protected className = JSLinters.InterfaceLinter;
 	_getErrors(document: TextDocument): IError[] {
@@ -13,8 +12,8 @@ export class InterfaceLinter extends JSLinter {
 		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.interfaces && UIClass.interfaces.length > 0) {
 			const interfaceMembers: ICustomMember[] = UIClass.interfaces.flatMap(theInterface => [
-				...UI5Parser.getInstance().classFactory.getClassMethods(theInterface, false),
-				...UI5Parser.getInstance().classFactory.getClassFields(theInterface, false)
+				...this._parser.classFactory.getClassMethods(theInterface, false),
+				...this._parser.classFactory.getClassFields(theInterface, false)
 			]);
 			const undefinedMembers: ICustomMember[] = [];
 			const members = [
@@ -38,7 +37,7 @@ export class InterfaceLinter extends JSLinter {
 						start: { line: 0, column: 0 },
 						end: { line: 0, column: 0 }
 					},
-					severity: new PackageConfigHandler().getSeverity(this.className)
+					severity: this._configHandler.getSeverity(this.className)
 				});
 			});
 

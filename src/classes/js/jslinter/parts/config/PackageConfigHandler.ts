@@ -1,12 +1,16 @@
 import { UI5Parser } from "ui5plugin-parser";
-import { IConfigHandler, JSLinterException } from "./IConfigHandler";
+import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, Severity, XMLLinters } from "../../../../Linter";
 const packagePath = join(process.cwd(), "/package.json");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const nodePackage = require(packagePath);
+const nodePackage: IUI5PackageConfigEntry = require(packagePath);
 
-export class PackageConfigHandler implements IConfigHandler {
+export class PackageConfigHandler implements ILinterConfigHandler {
+	protected readonly _parser: UI5Parser;
+	constructor(parser: UI5Parser) {
+		this._parser = parser;
+	}
 	private _cache: { [key: string]: boolean } = {};
 
 	getSeverity(linter: JSLinters | XMLLinters) {
@@ -91,8 +95,8 @@ export class PackageConfigHandler implements IConfigHandler {
 		return defaultExceptions.concat(userExceptions);
 	}
 
-	getLinterUsage(linter: JSLinters) {
-		return nodePackage?.ui5?.ui5linter?.[`use${linter}`] ?? true;
+	getLinterUsage(linter: JSLinters | XMLLinters) {
+		return nodePackage?.ui5?.ui5linter?.usage?.[linter] ?? true;
 	}
 
 	checkIfMemberIsException(className = "", memberName = "") {
@@ -106,7 +110,7 @@ export class PackageConfigHandler implements IConfigHandler {
 					(classException.memberName === memberName || classException.memberName === "*");
 
 				if (!isException && classException.applyToChildren && (classException.memberName === memberName || classException.memberName === "*")) {
-					isException = UI5Parser.getInstance().classFactory.isClassAChildOfClassB(className, classException.className);
+					isException = this._parser.classFactory.isClassAChildOfClassB(className, classException.className);
 				}
 
 				if (!isException) {

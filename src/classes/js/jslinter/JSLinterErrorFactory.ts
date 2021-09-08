@@ -12,28 +12,23 @@ import { InterfaceLinter } from "./parts/InterfaceLinter";
 import { TextDocument } from "ui5plugin-parser";
 import { IError, Linter } from "../../Linter";
 
-export class JSLinterFactory extends Linter {
+export class JSLinterErrorFactory extends Linter {
 	timePerchar = 0;
-	async getLintingErrors(document: TextDocument): Promise<IError[]> {
+	getLintingErrors(document: TextDocument): IError[] {
 		const linters: JSLinter[] = [
-			new WrongFieldMethodLinter(),
-			new WrongClassNameLinter(),
-			new WrongImportLinter(),
-			new WrongParametersLinter(),
-			new UnusedMemberLinter(),
-			new WrongFilePathLinter(),
-			new PublicMemberLinter(),
-			new WrongOverrideLinter(),
-			new AbstractClassLinter(),
-			new InterfaceLinter()
+			new WrongFieldMethodLinter(this._parser, this._configHandler),
+			new WrongClassNameLinter(this._parser, this._configHandler),
+			new WrongImportLinter(this._parser, this._configHandler),
+			new WrongParametersLinter(this._parser, this._configHandler),
+			new UnusedMemberLinter(this._parser, this._configHandler),
+			new WrongFilePathLinter(this._parser, this._configHandler),
+			new PublicMemberLinter(this._parser, this._configHandler),
+			new WrongOverrideLinter(this._parser, this._configHandler),
+			new AbstractClassLinter(this._parser, this._configHandler),
+			new InterfaceLinter(this._parser, this._configHandler)
 		];
 
-		let errors: IError[] = [];
-		try {
-			errors = (linters.map(linter => linter.getErrors(document))).flat();
-		} catch (error) {
-			console.error(error);
-		}
+		const errors = (linters.map(linter => linter.getLintingErrors(document))).flat();
 
 		return errors;
 	}

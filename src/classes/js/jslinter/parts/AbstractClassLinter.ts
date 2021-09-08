@@ -1,9 +1,8 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { JSLinters, IError } from "../../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
 export class AbstractClassLinter extends JSLinter {
 	protected className = JSLinters.AbstractClassLinter;
 	_getErrors(document: TextDocument): IError[] {
@@ -11,7 +10,7 @@ export class AbstractClassLinter extends JSLinter {
 
 		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.parentClassNameDotNotation) {
-			const parent = UI5Parser.getInstance().classFactory.getParent(UIClass);
+			const parent = this._parser.classFactory.getParent(UIClass);
 			if (parent?.abstract) {
 				const undefinedMembers: ICustomMember[] = [];
 				const members = [
@@ -40,7 +39,7 @@ export class AbstractClassLinter extends JSLinter {
 							start: { line: 0, column: 0 },
 							end: { line: 0, column: 0 }
 						},
-						severity: new PackageConfigHandler().getSeverity(this.className)
+						severity: this._configHandler.getSeverity(this.className)
 					});
 				});
 			}

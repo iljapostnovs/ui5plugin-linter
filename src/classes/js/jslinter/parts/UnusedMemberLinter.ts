@@ -1,6 +1,5 @@
 import { JSLinter } from "./abstraction/JSLinter";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
@@ -12,12 +11,12 @@ export class UnusedMemberLinter extends JSLinter {
 		const errors: IError[] = [];
 
 		// console.time("Unused Member Linter");
-		if (new PackageConfigHandler().getLinterUsage(this.className)) {
-			const className = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
+		if (this._configHandler.getLinterUsage(this.className)) {
+			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
-				const UIClass = UI5Parser.getInstance().classFactory.getUIClass(className);
+				const UIClass = this._parser.classFactory.getUIClass(className);
 				if (UIClass instanceof CustomUIClass) {
-					const customUIClasses = UI5Parser.getInstance().classFactory.getAllCustomUIClasses();
+					const customUIClasses = this._parser.classFactory.getAllCustomUIClasses();
 					const methodsAndFields: (ICustomClassUIField | ICustomClassUIMethod)[] = [
 						...UIClass.methods,
 						...UIClass.fields
@@ -34,7 +33,7 @@ export class UnusedMemberLinter extends JSLinter {
 								message: `No references found for "${methodOrField.name}" class member`,
 								range: range,
 								tags: [DiagnosticTag.Unnecessary],
-								severity: new PackageConfigHandler().getSeverity(this.className)
+								severity: this._configHandler.getSeverity(this.className)
 							});
 						}
 					});
@@ -53,7 +52,7 @@ export class UnusedMemberLinter extends JSLinter {
 			memberIsUsed = true;
 		} else {
 			const isException = this._checkIfMethodIsException(UIClass.className, member.name);
-			const isMemberOverriden = UI5Parser.getInstance().classFactory.isMethodOverriden(UIClass.className, member.name);
+			const isMemberOverriden = this._parser.classFactory.isMethodOverriden(UIClass.className, member.name);
 
 			if (member.mentionedInTheXMLDocument || isMemberOverriden) {
 				memberIsUsed = true;
@@ -63,7 +62,7 @@ export class UnusedMemberLinter extends JSLinter {
 				customUIClasses.find(customUIClass => {
 					return !!customUIClass.methods.find(methodFromClass => {
 						if (methodFromClass.acornNode) {
-							const allContent = UI5Parser.getInstance().syntaxAnalyser.expandAllContent(methodFromClass.acornNode);
+							const allContent = this._parser.syntaxAnalyser.expandAllContent(methodFromClass.acornNode);
 							const memberExpressions = allContent.filter((node: any) => node.type === "MemberExpression");
 							const assignmentExpression = allContent.filter((node: any) => node.type === "AssignmentExpression");
 							memberExpressions.find((memberExpression: any) => {
@@ -71,14 +70,14 @@ export class UnusedMemberLinter extends JSLinter {
 								const currentMethodIsCalled = propertyName === member.name;
 								if (currentMethodIsCalled) {
 									const position = memberExpression.callee?.property?.start || memberExpression?.property?.start;
-									const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(UI5Parser.getInstance().syntaxAnalyser);
+									const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(this._parser.syntaxAnalyser);
 									const classNameOfTheCallee = strategy.acornGetClassName(customUIClass.className, position, true);
 									if (
 										classNameOfTheCallee &&
 										(
 											classNameOfTheCallee === classOfTheMethod ||
-											UI5Parser.getInstance().classFactory.isClassAChildOfClassB(classOfTheMethod, classNameOfTheCallee) ||
-											UI5Parser.getInstance().classFactory.isClassAChildOfClassB(classNameOfTheCallee, classOfTheMethod)
+											this._parser.classFactory.isClassAChildOfClassB(classOfTheMethod, classNameOfTheCallee) ||
+											this._parser.classFactory.isClassAChildOfClassB(classNameOfTheCallee, classOfTheMethod)
 										) &&
 										!assignmentExpression.find((expression: any) => expression.left === memberExpression)
 
@@ -104,7 +103,7 @@ export class UnusedMemberLinter extends JSLinter {
 	}
 
 	private _checkIfMethodIsException(className: string, methodName: string) {
-		return new PackageConfigHandler().checkIfMemberIsException(className, methodName) ||
+		return this._configHandler.checkIfMemberIsException(className, methodName) ||
 			this._checkIfThisIsStandardMethodFromPropertyEventAggregationAssociation(className, methodName);
 	}
 
@@ -117,18 +116,18 @@ export class UnusedMemberLinter extends JSLinter {
 				const memberNameCapital = methodName.replace(standartMethodStartsWith, "");
 				if (memberNameCapital) {
 					const memberName = `${memberNameCapital[0].toLowerCase()}${memberNameCapital.substring(1, memberNameCapital.length)}`
-					const events = UI5Parser.getInstance().classFactory.getClassEvents(className);
+					const events = this._parser.classFactory.getClassEvents(className);
 					isStandartMethod = !!events.find(event => event.name === memberName);
 					if (!isStandartMethod) {
-						const properties = UI5Parser.getInstance().classFactory.getClassProperties(className);
+						const properties = this._parser.classFactory.getClassProperties(className);
 						isStandartMethod = !!properties.find(property => property.name === memberName);
 					}
 					if (!isStandartMethod) {
-						const aggregations = UI5Parser.getInstance().classFactory.getClassAggregations(className);
+						const aggregations = this._parser.classFactory.getClassAggregations(className);
 						isStandartMethod = !!aggregations.find(aggregation => aggregation.name === memberName);
 					}
 					if (!isStandartMethod) {
-						const associations = UI5Parser.getInstance().classFactory.getClassAssociations(className);
+						const associations = this._parser.classFactory.getClassAssociations(className);
 						isStandartMethod = !!associations.find(association => association.name === memberName);
 					}
 				}

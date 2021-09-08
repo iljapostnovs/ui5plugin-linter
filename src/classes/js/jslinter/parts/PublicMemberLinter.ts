@@ -1,6 +1,5 @@
 import { JSLinter } from "./abstraction/JSLinter";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
@@ -10,53 +9,51 @@ export class PublicMemberLinter extends JSLinter {
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
-		if (new PackageConfigHandler().getLinterUsage(this.className)) {
-			const className = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
-			if (className) {
-				const UIClass = UI5Parser.getInstance().classFactory.getUIClass(className);
-				if (UIClass instanceof CustomUIClass) {
-					const allUIClassesMap = UI5Parser.getInstance().classFactory.getAllExistentUIClasses();
-					const allUIClasses = Object.keys(allUIClassesMap).map(key => allUIClassesMap[key]);
-					const customUIClasses = allUIClasses.filter(UIClass => UIClass instanceof CustomUIClass) as CustomUIClass[];
-					const publicMethods = UIClass.methods.filter(method => method.visibility === "public");
-					const publicFields = UIClass.fields.filter(field => field.visibility === "public");
-					publicMethods.forEach(method => {
-						const isException = this._checkIfMemberIsException(UIClass.className, method.name);
-						if (!isException) {
-							const methodIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, method.name, method);
-							if (!methodIsUsed && method.position) {
-								errors.push({
-									source: this.className,
-									acornNode: method.acornNode,
-									code: "UI5Plugin",
-									className: UIClass.className,
-									message: `Method "${method.name}" is possibly private, no references found in other classes`,
-									range: RangeAdapter.acornLocationToVSCodeRange(method.memberPropertyNode.loc),
-									severity: new PackageConfigHandler().getSeverity(this.className)
-								});
-							}
+		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
+		if (className) {
+			const UIClass = this._parser.classFactory.getUIClass(className);
+			if (UIClass instanceof CustomUIClass) {
+				const allUIClassesMap = this._parser.classFactory.getAllExistentUIClasses();
+				const allUIClasses = Object.keys(allUIClassesMap).map(key => allUIClassesMap[key]);
+				const customUIClasses = allUIClasses.filter(UIClass => UIClass instanceof CustomUIClass) as CustomUIClass[];
+				const publicMethods = UIClass.methods.filter(method => method.visibility === "public");
+				const publicFields = UIClass.fields.filter(field => field.visibility === "public");
+				publicMethods.forEach(method => {
+					const isException = this._checkIfMemberIsException(UIClass.className, method.name);
+					if (!isException) {
+						const methodIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, method.name, method);
+						if (!methodIsUsed && method.position) {
+							errors.push({
+								source: this.className,
+								acornNode: method.acornNode,
+								code: "UI5Plugin",
+								className: UIClass.className,
+								message: `Method "${method.name}" is possibly private, no references found in other classes`,
+								range: RangeAdapter.acornLocationToVSCodeRange(method.memberPropertyNode.loc),
+								severity: this._configHandler.getSeverity(this.className)
+							});
 						}
-					});
+					}
+				});
 
-					publicFields.forEach(field => {
-						const isException = this._checkIfMemberIsException(UIClass.className, field.name);
-						if (!isException) {
-							const fieldIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, field.name, field);
-							if (!fieldIsUsed && field.memberPropertyNode) {
-								const range = RangeAdapter.acornLocationToVSCodeRange(field.memberPropertyNode.loc);
-								errors.push({
-									source: this.className,
-									acornNode: field.acornNode,
-									code: "UI5Plugin",
-									className: UIClass.className,
-									message: `Field "${field.name}" is possibly private, no references found in other classes`,
-									range: range,
-									severity: new PackageConfigHandler().getSeverity(this.className)
-								});
-							}
+				publicFields.forEach(field => {
+					const isException = this._checkIfMemberIsException(UIClass.className, field.name);
+					if (!isException) {
+						const fieldIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, field.name, field);
+						if (!fieldIsUsed && field.memberPropertyNode) {
+							const range = RangeAdapter.acornLocationToVSCodeRange(field.memberPropertyNode.loc);
+							errors.push({
+								source: this.className,
+								acornNode: field.acornNode,
+								code: "UI5Plugin",
+								className: UIClass.className,
+								message: `Field "${field.name}" is possibly private, no references found in other classes`,
+								range: range,
+								severity: this._configHandler.getSeverity(this.className)
+							});
 						}
-					});
-				}
+					}
+				});
 			}
 		}
 
@@ -69,7 +66,7 @@ export class PublicMemberLinter extends JSLinter {
 		if (fieldOrMethod.ui5ignored) {
 			isMethodUsedElsewhere = true;
 		} else {
-			const isMethodOverriden = UI5Parser.getInstance().classFactory.isMethodOverriden(UIClass.className, memberName);
+			const isMethodOverriden = this._parser.classFactory.isMethodOverriden(UIClass.className, memberName);
 			if (!isMethodOverriden) {
 				const isMethodUsedInOtherClasses = fieldOrMethod.mentionedInTheXMLDocument || this._isMemberUsedInOtherClasses(customUIClasses, UIClass, memberName);
 				if (isMethodUsedInOtherClasses) {
@@ -84,12 +81,12 @@ export class PublicMemberLinter extends JSLinter {
 	}
 
 	private _isMemberUsedInOtherClasses(customUIClasses: CustomUIClass[], UIClass: CustomUIClass, memberName: string) {
-		const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(UI5Parser.getInstance().syntaxAnalyser);
+		const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(this._parser.syntaxAnalyser);
 		const isMemberUsedInOtherClasses = !!customUIClasses.find(customUIClass => {
 			return customUIClass.className !== UIClass.className && !!customUIClass.methods.find(customMethod => {
 				let isMemberUsedInOtherClasses = false;
 				if (customMethod.acornNode) {
-					const content = UI5Parser.getInstance().syntaxAnalyser.expandAllContent(customMethod.acornNode);
+					const content = this._parser.syntaxAnalyser.expandAllContent(customMethod.acornNode);
 					const memberExpressions = content.filter((node: any) => {
 						return node.type === "MemberExpression" && node.property?.name === memberName;
 					});
@@ -99,8 +96,8 @@ export class PublicMemberLinter extends JSLinter {
 							const calleeClassName = strategy.acornGetClassName(customUIClass.className, memberExpression.end, true);
 
 							return calleeClassName && (
-								UI5Parser.getInstance().classFactory.isClassAChildOfClassB(calleeClassName, UIClass.className) ||
-								UI5Parser.getInstance().classFactory.isClassAChildOfClassB(UIClass.className, calleeClassName)
+								this._parser.classFactory.isClassAChildOfClassB(calleeClassName, UIClass.className) ||
+								this._parser.classFactory.isClassAChildOfClassB(UIClass.className, calleeClassName)
 							);
 						});
 					}
@@ -113,7 +110,7 @@ export class PublicMemberLinter extends JSLinter {
 	}
 
 	private _checkIfMemberIsException(className: string, memberName: string) {
-		return new PackageConfigHandler().checkIfMemberIsException(className, memberName) ||
+		return this._configHandler.checkIfMemberIsException(className, memberName) ||
 			this._checkIfThisIsStandardMethodFromPropertyEventAggregationAssociation(className, memberName);
 	}
 
@@ -126,18 +123,18 @@ export class PublicMemberLinter extends JSLinter {
 				const memberNameCapital = methodName.replace(standartMethodStartsWith, "");
 				if (memberNameCapital) {
 					const memberName = `${memberNameCapital[0].toLowerCase()}${memberNameCapital.substring(1, memberNameCapital.length)}`
-					const events = UI5Parser.getInstance().classFactory.getClassEvents(className);
+					const events = this._parser.classFactory.getClassEvents(className);
 					isStandartMethod = !!events.find(event => event.name === memberName);
 					if (!isStandartMethod) {
-						const properties = UI5Parser.getInstance().classFactory.getClassProperties(className);
+						const properties = this._parser.classFactory.getClassProperties(className);
 						isStandartMethod = !!properties.find(property => property.name === memberName);
 					}
 					if (!isStandartMethod) {
-						const aggregations = UI5Parser.getInstance().classFactory.getClassAggregations(className);
+						const aggregations = this._parser.classFactory.getClassAggregations(className);
 						isStandartMethod = !!aggregations.find(aggregation => aggregation.name === memberName);
 					}
 					if (!isStandartMethod) {
-						const associations = UI5Parser.getInstance().classFactory.getClassAssociations(className);
+						const associations = this._parser.classFactory.getClassAssociations(className);
 						isStandartMethod = !!associations.find(association => association.name === memberName);
 					}
 				}

@@ -1,5 +1,4 @@
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { SAPNodeDAO } from "ui5plugin-parser/dist/classes/librarydata/SAPNodeDAO";
 import { CustomUIClass, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
@@ -15,27 +14,27 @@ export class WrongParametersLinter extends JSLinter {
 
 		// console.time("WrongParameterLinter");
 		const start = new Date().getTime();
-		if (new PackageConfigHandler().getLinterUsage(this.className)) {
-			const className = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
+		if (this._configHandler.getLinterUsage(this.className)) {
+			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
-				const UIClass = UI5Parser.getInstance().classFactory.getUIClass(className);
+				const UIClass = this._parser.classFactory.getUIClass(className);
 				if (UIClass instanceof CustomUIClass && UIClass.acornClassBody) {
 					UIClass.acornClassBody.properties.forEach((node: any) => {
-						const content = UI5Parser.getInstance().syntaxAnalyser.expandAllContent(node.value);
+						const content = this._parser.syntaxAnalyser.expandAllContent(node.value);
 						const calls = content.filter(node => node.type === "CallExpression");
 						calls.forEach(call => {
 							const params = call.arguments;
 							const methodName = call.callee?.property?.name;
 							const endPosition = call.callee?.property?.end;
 							if (methodName && endPosition) {
-								const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(UI5Parser.getInstance().syntaxAnalyser);
+								const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(this._parser.syntaxAnalyser);
 								const classNameOfTheMethodCallee = strategy.acornGetClassName(className, endPosition);
 								if (classNameOfTheMethodCallee) {
 									const fieldsAndMethods = strategy.destructueFieldsAndMethodsAccordingToMapParams(classNameOfTheMethodCallee);
 									if (fieldsAndMethods) {
 										const method = fieldsAndMethods.methods.find(method => method.name === methodName);
 										if (method && !(<ICustomClassUIMethod>method).ui5ignored) {
-											const isException = new PackageConfigHandler().checkIfMemberIsException(fieldsAndMethods.className, method.name);
+											const isException = this._configHandler.checkIfMemberIsException(fieldsAndMethods.className, method.name);
 											if (!isException) {
 
 												const methodParams = method.params;
@@ -49,14 +48,14 @@ export class WrongParametersLinter extends JSLinter {
 														source: this.className,
 														message: `Method "${methodName}" has ${methodParams.length} (${mandatoryMethodParams.length} mandatory) param(s), but you provided ${params.length}`,
 														range: range,
-														severity: new PackageConfigHandler().getSeverity(this.className)
+														severity: this._configHandler.getSeverity(this.className)
 													});
 												}
 
 												params.forEach((param: any, i: number) => {
 													const paramFromMethod = method.params[i];
 													if (paramFromMethod && (paramFromMethod.type !== "any" && paramFromMethod.type !== "void" && paramFromMethod.type)) {
-														const classNameOfTheParam = UI5Parser.getInstance().syntaxAnalyser.getClassNameFromSingleAcornNode(param, UIClass);
+														const classNameOfTheParam = this._parser.syntaxAnalyser.getClassNameFromSingleAcornNode(param, UIClass);
 
 														if (classNameOfTheParam && classNameOfTheParam !== paramFromMethod.type) {
 															const { expectedClass, actualClass } = this._swapClassNames(paramFromMethod.type, classNameOfTheParam);
@@ -79,7 +78,7 @@ export class WrongParametersLinter extends JSLinter {
 																	source: this.className,
 																	message: `"${paramFromMethod.name}" param is of type "${paramFromMethod.type}", but provided "${classNameOfTheParam}"`,
 																	range: range,
-																	severity: new PackageConfigHandler().getSeverity(this.className)
+																	severity: this._configHandler.getSeverity(this.className)
 																});
 															}
 														}
@@ -120,16 +119,16 @@ export class WrongParametersLinter extends JSLinter {
 			classesDiffers = false;
 		} else if (expectedClass.toLowerCase() === actualClass.toLowerCase()) {
 			classesDiffers = false;
-		} else if (expectedClass.toLowerCase() === "object" && UI5Parser.getInstance().classFactory.isClassAChildOfClassB(actualClass, "sap.ui.base.Object")) {
+		} else if (expectedClass.toLowerCase() === "object" && this._parser.classFactory.isClassAChildOfClassB(actualClass, "sap.ui.base.Object")) {
 			classesDiffers = false;
-		} else if (actualClass.toLowerCase() === "object" && UI5Parser.getInstance().classFactory.isClassAChildOfClassB(expectedClass, "sap.ui.base.Object")) {
+		} else if (actualClass.toLowerCase() === "object" && this._parser.classFactory.isClassAChildOfClassB(expectedClass, "sap.ui.base.Object")) {
 			classesDiffers = false;
 		} else if (this._checkIfClassesAreEqual(expectedClass, actualClass, "string", "sap.ui.core.csssize")) {
 			classesDiffers = false;
 		} else if (WrongParametersLinter._sapNodeDAO.findNode(expectedClass)?.getKind() === "enum" && actualClass === "string") {
 			classesDiffers = false;
 		} else {
-			classesDiffers = !UI5Parser.getInstance().classFactory.isClassAChildOfClassB(actualClass, expectedClass);
+			classesDiffers = !this._parser.classFactory.isClassAChildOfClassB(actualClass, expectedClass);
 		}
 
 		return classesDiffers;
@@ -140,8 +139,8 @@ export class WrongParametersLinter extends JSLinter {
 		actualClass = this._swapClassName(actualClass);
 
 		if (expectedClass.startsWith("Promise<") && actualClass.startsWith("Promise<")) {
-			expectedClass = UI5Parser.getInstance().syntaxAnalyser.getResultOfPromise(expectedClass);
-			actualClass = UI5Parser.getInstance().syntaxAnalyser.getResultOfPromise(actualClass);
+			expectedClass = this._parser.syntaxAnalyser.getResultOfPromise(expectedClass);
+			actualClass = this._parser.syntaxAnalyser.getResultOfPromise(actualClass);
 		}
 
 		if (expectedClass.endsWith("[]") && actualClass.endsWith("[]")) {
