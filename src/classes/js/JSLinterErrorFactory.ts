@@ -10,7 +10,7 @@ import { WrongOverrideLinter } from "./parts/WrongOverrideLinter";
 import { AbstractClassLinter } from "./parts/AbstractClassLinter";
 import { InterfaceLinter } from "./parts/InterfaceLinter";
 import { TextDocument } from "ui5plugin-parser";
-import { IError, Linter } from "../../Linter";
+import { IError, Linter } from "../Linter";
 
 export class JSLinterErrorFactory extends Linter {
 	timePerchar = 0;

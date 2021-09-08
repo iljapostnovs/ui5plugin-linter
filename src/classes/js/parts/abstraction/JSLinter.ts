@@ -1,5 +1,5 @@
 import { TextDocument } from "ui5plugin-parser";
-import { JSLinters, IError, Linter } from "../../../../Linter";
+import { JSLinters, IError, Linter } from "../../../Linter";
 
 export abstract class JSLinter extends Linter {
 	protected abstract className: JSLinters;

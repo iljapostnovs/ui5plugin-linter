@@ -1,8 +1,8 @@
 import { JSLinter } from "./abstraction/JSLinter";
 import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../../Linter";
+import { RangeAdapter } from "../../adapters/RangeAdapter";
+import { JSLinters, IError } from "../../Linter";
 
 export class WrongClassNameLinter extends JSLinter {
 	protected className = JSLinters.WrongClassNameLinter;

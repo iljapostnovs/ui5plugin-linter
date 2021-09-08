@@ -1,4 +1,4 @@
-import { JSLinters, Severity, XMLLinters } from "../../../../Linter";
+import { JSLinters, Severity, XMLLinters } from "../../../Linter";
 
 export interface JSLinterException {
 	className: string;

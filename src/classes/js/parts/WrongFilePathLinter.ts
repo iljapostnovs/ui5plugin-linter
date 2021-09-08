@@ -1,8 +1,8 @@
 import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../../adapters/RangeAdapter";
+import { RangeAdapter } from "../../adapters/RangeAdapter";
 import * as fs from "fs";
-import { JSLinters, IError } from "../../../Linter";
+import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 
 export class WrongFilePathLinter extends JSLinter {

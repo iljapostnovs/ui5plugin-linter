@@ -2,8 +2,8 @@ import { JSLinter } from "./abstraction/JSLinter";
 import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
-import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../../Linter";
+import { RangeAdapter } from "../../adapters/RangeAdapter";
+import { JSLinters, IError } from "../../Linter";
 export class PublicMemberLinter extends JSLinter {
 	protected className = JSLinters.PublicMemberLinter;
 	_getErrors(document: TextDocument): IError[] {

@@ -7,7 +7,7 @@ const Severity = require("../dist/classes/Linter").Severity;
 (async function() {
 	const parser = UI5Parser.getInstance();
 	await parser.initialize();
-	const JSLinterErrorFactory = require("../dist/classes/js/jslinter/JSLinterErrorFactory").JSLinterErrorFactory;
+	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
 	const JSLinter = new JSLinterErrorFactory(parser);
 
 	const customClasses = parser.classFactory.getAllCustomUIClasses();

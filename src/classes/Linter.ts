@@ -1,6 +1,6 @@
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { ILinterConfigHandler } from "..";
-import { PackageConfigHandler } from "./js/jslinter/parts/config/PackageConfigHandler";
+import { PackageConfigHandler } from "./js/parts/config/PackageConfigHandler";
 
 export abstract class Linter {
 	protected readonly _parser: UI5Parser;
