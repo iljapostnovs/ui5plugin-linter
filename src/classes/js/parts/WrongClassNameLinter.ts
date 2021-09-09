@@ -17,7 +17,7 @@ export class WrongClassNameLinter extends JSLinter {
 					if (UIClass.acornReturnedClassExtendBody) {
 						const classNameFromFile = UIClass.acornReturnedClassExtendBody && UIClass.acornReturnedClassExtendBody.arguments && UIClass.acornReturnedClassExtendBody.arguments[0]?.value;
 						if (classNameFromFile && className !== classNameFromFile) {
-							const range = RangeAdapter.acornLocationToVSCodeRange(UIClass.acornReturnedClassExtendBody?.arguments[0].loc);
+							const range = RangeAdapter.acornLocationToRange(UIClass.acornReturnedClassExtendBody?.arguments[0].loc);
 							errors.push({
 								source: this.className,
 								className: UIClass.className,

@@ -35,7 +35,7 @@ export class WrongOverrideLinter extends JSLinter {
 		let error: IError | undefined;
 		const parentMember = this._getMemberFromParent(UIClass, UIMember);
 		if (parentMember && parentMember.visibility === "private" && UIMember.memberPropertyNode) {
-			const range = RangeAdapter.acornLocationToVSCodeRange(UIMember.memberPropertyNode.loc);
+			const range = RangeAdapter.acornLocationToRange(UIMember.memberPropertyNode.loc);
 			error = {
 				message: `You can't override "${UIMember.name}" because it is a private member of class "${parentMember.owner}"`,
 				code: "UI5Plugin",

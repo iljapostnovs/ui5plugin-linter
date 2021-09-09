@@ -24,7 +24,7 @@ export class UnusedMemberLinter extends JSLinter {
 					methodsAndFields.forEach((methodOrField: any) => {
 						const methodIsUsed = this._checkIfMemberIsUsed(customUIClasses, UIClass, methodOrField);
 						if (!methodIsUsed && methodOrField.memberPropertyNode) {
-							const range = RangeAdapter.acornLocationToVSCodeRange(methodOrField.memberPropertyNode.loc);
+							const range = RangeAdapter.acornLocationToRange(methodOrField.memberPropertyNode.loc);
 							errors.push({
 								source: this.className,
 								acornNode: methodOrField.acornNode,

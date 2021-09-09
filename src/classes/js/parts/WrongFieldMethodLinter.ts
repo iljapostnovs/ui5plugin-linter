@@ -99,7 +99,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 								}
 								const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
 								if (!isMethodException) {
-									const range = RangeAdapter.acornLocationToVSCodeRange(nextNode.property.loc);
+									const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
 									errorNodes.push(nextNode);
 									errors.push({
 										message: `"${nextNodeName}" does not exist in "${className}"`,
@@ -134,7 +134,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 									}
 
 									if (sErrorMessage) {
-										const range = RangeAdapter.acornLocationToVSCodeRange(nextNode.property.loc);
+										const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
 										errorNodes.push(nextNode);
 										errors.push({
 											message: sErrorMessage,

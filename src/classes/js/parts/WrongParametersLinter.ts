@@ -40,7 +40,7 @@ export class WrongParametersLinter extends JSLinter {
 												const methodParams = method.params;
 												const mandatoryMethodParams = methodParams.filter(param => !param.isOptional && param.type !== "boolean");
 												if (params.length < mandatoryMethodParams.length || params.length > methodParams.length) {
-													const range = RangeAdapter.acornLocationToVSCodeRange(call.callee.property.loc);
+													const range = RangeAdapter.acornLocationToRange(call.callee.property.loc);
 													errors.push({
 														acornNode: call,
 														className: UIClass.className,
@@ -71,7 +71,7 @@ export class WrongParametersLinter extends JSLinter {
 																});
 															}
 															if (typeMismatch) {
-																const range = RangeAdapter.acornLocationToVSCodeRange(param.loc);
+																const range = RangeAdapter.acornLocationToRange(param.loc);
 																errors.push({
 																	acornNode: param,
 																	code: "UI5Plugin",

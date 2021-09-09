@@ -29,7 +29,7 @@ export class PublicMemberLinter extends JSLinter {
 								code: "UI5Plugin",
 								className: UIClass.className,
 								message: `Method "${method.name}" is possibly private, no references found in other classes`,
-								range: RangeAdapter.acornLocationToVSCodeRange(method.memberPropertyNode.loc),
+								range: RangeAdapter.acornLocationToRange(method.memberPropertyNode.loc),
 								severity: this._configHandler.getSeverity(this.className),
 								fsPath: document.fileName
 							});
@@ -42,7 +42,7 @@ export class PublicMemberLinter extends JSLinter {
 					if (!isException) {
 						const fieldIsUsed = this._checkIfMemberIsUsedElsewhere(customUIClasses, UIClass, field.name, field);
 						if (!fieldIsUsed && field.memberPropertyNode) {
-							const range = RangeAdapter.acornLocationToVSCodeRange(field.memberPropertyNode.loc);
+							const range = RangeAdapter.acornLocationToRange(field.memberPropertyNode.loc);
 							errors.push({
 								source: this.className,
 								acornNode: field.acornNode,

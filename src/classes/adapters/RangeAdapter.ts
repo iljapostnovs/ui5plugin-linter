@@ -19,13 +19,13 @@ export class RangeAdapter {
 		}
 	}
 
-	static acornPositionsToVSCodeRange(positionBegin: IAcornPosition, positionEnd: IAcornPosition) {
+	static acornPositionsToRange(positionBegin: IAcornPosition, positionEnd: IAcornPosition) {
 		return { start: positionBegin, end: positionEnd };
 	}
 
-	static acornLocationToVSCodeRange(location: IAcornLocation) {
-		const vscodePositionBegin = PositionAdapter.acornPositionToVSCodePosition(location.start);
-		const vscodePositionEnd = PositionAdapter.acornPositionToVSCodePosition(location.end);
+	static acornLocationToRange(location: IAcornLocation) {
+		const vscodePositionBegin = PositionAdapter.acornPositionToPosition(location.start);
+		const vscodePositionEnd = PositionAdapter.acornPositionToPosition(location.end);
 		return { start: vscodePositionBegin, end: vscodePositionEnd };
 	}
 }
