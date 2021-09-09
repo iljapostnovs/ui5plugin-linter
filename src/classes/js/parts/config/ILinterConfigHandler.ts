@@ -1,4 +1,4 @@
-import { JSLinters, Severity, XMLLinters } from "../../../Linter";
+import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../../../Linter";
 
 export interface JSLinterException {
 	className: string;
@@ -8,17 +8,17 @@ export interface JSLinterException {
 
 export interface ILinterConfigHandler {
 	getJSLinterExceptions(): JSLinterException[];
-	getSeverity(linter: JSLinters | XMLLinters): Severity;
+	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters): Severity;
 	checkIfMemberIsException(className: string, memberName: string): boolean;
-	getLinterUsage(linter: JSLinters | XMLLinters): boolean;
+	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters): boolean;
 }
 
 interface IUI5LinterEntryFields {
 	severity?: {
-		[key in JSLinters | XMLLinters]: Severity
+		[key in JSLinters | XMLLinters | PropertiesLinters]: Severity
 	},
 	usage?: {
-		[key in JSLinters | XMLLinters]: boolean
+		[key in JSLinters | XMLLinters | PropertiesLinters]: boolean
 	},
 	JSLinterExceptions?: JSLinterException[],
 }

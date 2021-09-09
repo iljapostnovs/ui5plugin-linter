@@ -13,6 +13,9 @@ export abstract class Linter {
 	abstract getLintingErrors(document: TextDocument): IError[];
 }
 
+export enum PropertiesLinters {
+	UnusedTranslationsLinter = "UnusedTranslationsLinter"
+}
 export enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
 	TagLinter = "TagLinter",

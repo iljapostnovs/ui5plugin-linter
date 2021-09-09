@@ -9,12 +9,19 @@ const Severity = require("../dist/classes/Linter").Severity;
 	await parser.initialize();
 	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
 	const XMLLinterErrorFactory = require("../dist/classes/xml/XMLLinterErrorFactory").XMLLinterErrorFactory;
+	const PropertiesLinterErrorFactory = require("../dist/classes/properties/PropertiesLinterErrorFactory").PropertiesLinterErrorFactory;
 	const JSLinter = new JSLinterErrorFactory(parser);
 	const XMLLinter = new XMLLinterErrorFactory(parser);
+	const propertiesLinter = new PropertiesLinterErrorFactory(parser);
 	const XMLFiles = [
 		...parser.fileReader.getAllViews(),
 		...parser.fileReader.getAllFragments()
 	];
+	const propertiesFiles = parser.fileReader.getResourceModelFiles();
+	const propertiesTextDocuments = propertiesFiles.map(propertyFile => {
+		const manifest = parser.fileReader.getManifestForClass(propertyFile.componentName + ".");
+		return new TextDocument(propertyFile.content, parser.fileReader.getResourceModelUriForManifest(manifest));
+	});
 
 	const customClasses = parser.classFactory.getAllCustomUIClasses();
 	const lintingErrors = customClasses.flatMap(customClass => {
@@ -23,6 +30,8 @@ const Severity = require("../dist/classes/Linter").Severity;
 	}).concat(XMLFiles.flatMap(XMLFile => {
 		const textDocument = new TextDocument(XMLFile.content || "", XMLFile.fsPath || "");
 		return XMLLinter.getLintingErrors(textDocument);
+	})).concat(propertiesTextDocuments.flatMap(textDocument => {
+		return propertiesLinter.getLintingErrors(textDocument);
 	}));
 	lintingErrors.forEach(lintingError => lintingError.severity = lintingError.severity ?? Severity.Warning);
 
