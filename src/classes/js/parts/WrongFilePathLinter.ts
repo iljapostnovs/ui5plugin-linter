@@ -26,7 +26,7 @@ export class WrongFilePathLinter extends JSLinter {
 								if (!isClassNameValid) {
 									const positionBegin = result.index;
 									const positionEnd = positionBegin + sClassName.length;
-									const range = RangeAdapter.offsetsToVSCodeRange(UIClass.classText, positionBegin, positionEnd);
+									const range = RangeAdapter.offsetsRange(UIClass.classText, positionBegin, positionEnd);
 									if (range) {
 										errors.push({
 											acornNode: UIClass.acornClassBody,
@@ -35,7 +35,8 @@ export class WrongFilePathLinter extends JSLinter {
 											source: this.className,
 											message: `Class "${sClassName}" doesn't exist`,
 											range: range,
-											severity: this._configHandler.getSeverity(this.className)
+											severity: this._configHandler.getSeverity(this.className),
+											fsPath: document.fileName
 										});
 									}
 								}

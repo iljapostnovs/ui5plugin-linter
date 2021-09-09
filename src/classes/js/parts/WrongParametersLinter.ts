@@ -48,7 +48,8 @@ export class WrongParametersLinter extends JSLinter {
 														source: this.className,
 														message: `Method "${methodName}" has ${methodParams.length} (${mandatoryMethodParams.length} mandatory) param(s), but you provided ${params.length}`,
 														range: range,
-														severity: this._configHandler.getSeverity(this.className)
+														severity: this._configHandler.getSeverity(this.className),
+														fsPath: document.fileName
 													});
 												}
 
@@ -78,7 +79,8 @@ export class WrongParametersLinter extends JSLinter {
 																	source: this.className,
 																	message: `"${paramFromMethod.name}" param is of type "${paramFromMethod.type}", but provided "${classNameOfTheParam}"`,
 																	range: range,
-																	severity: this._configHandler.getSeverity(this.className)
+																	severity: this._configHandler.getSeverity(this.className),
+																	fsPath: document.fileName
 																});
 															}
 														}

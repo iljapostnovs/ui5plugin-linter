@@ -30,7 +30,8 @@ export class PublicMemberLinter extends JSLinter {
 								className: UIClass.className,
 								message: `Method "${method.name}" is possibly private, no references found in other classes`,
 								range: RangeAdapter.acornLocationToVSCodeRange(method.memberPropertyNode.loc),
-								severity: this._configHandler.getSeverity(this.className)
+								severity: this._configHandler.getSeverity(this.className),
+								fsPath: document.fileName
 							});
 						}
 					}
@@ -49,7 +50,8 @@ export class PublicMemberLinter extends JSLinter {
 								className: UIClass.className,
 								message: `Field "${field.name}" is possibly private, no references found in other classes`,
 								range: range,
-								severity: this._configHandler.getSeverity(this.className)
+								severity: this._configHandler.getSeverity(this.className),
+								fsPath: document.fileName
 							});
 						}
 					}

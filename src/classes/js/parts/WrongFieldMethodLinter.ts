@@ -111,7 +111,8 @@ export class WrongFieldMethodLinter extends JSLinter {
 										type: CustomDiagnosticType.NonExistentMethod,
 										methodName: nextNodeName,
 										sourceClassName: className,
-										severity: this._configHandler.getSeverity(this.className)
+										severity: this._configHandler.getSeverity(this.className),
+										fsPath: document.fileName
 									});
 									break;
 								}
@@ -144,7 +145,8 @@ export class WrongFieldMethodLinter extends JSLinter {
 											methodName: nextNodeName,
 											className: UIClass.className,
 											sourceClassName: className,
-											severity: this._configHandler.getSeverity(this.className)
+											severity: this._configHandler.getSeverity(this.className),
+											fsPath: document.fileName
 										});
 										break;
 									}

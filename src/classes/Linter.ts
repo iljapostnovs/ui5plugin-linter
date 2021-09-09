@@ -14,7 +14,10 @@ export abstract class Linter {
 }
 
 export enum XMLLinters {
-
+	TagAttributeLinter = "TagAttributeLinter",
+	TagLinter = "TagLinter",
+	UnusedNamespaceLinter = "UnusedNamespaceLinter",
+	WrongFilePathLinter = "WrongFilePathLinter"
 }
 export enum JSLinters {
 	AbstractClassLinter = "AbstractClassLinter",
@@ -57,7 +60,7 @@ export interface IRange {
 export interface IError {
 	code: string;
 	message: string;
-	acornNode: any;
+	acornNode?: any;
 	type?: CustomDiagnosticType;
 	fieldName?: string;
 	methodName?: string;
@@ -68,4 +71,5 @@ export interface IError {
 	severity: Severity;
 	range: IRange;
 	className: string;
+	fsPath: string;
 }

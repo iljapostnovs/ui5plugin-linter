@@ -33,7 +33,8 @@ export class UnusedMemberLinter extends JSLinter {
 								message: `No references found for "${methodOrField.name}" class member`,
 								range: range,
 								tags: [DiagnosticTag.Unnecessary],
-								severity: this._configHandler.getSeverity(this.className)
+								severity: this._configHandler.getSeverity(this.className),
+								fsPath: document.fileName
 							});
 						}
 					});

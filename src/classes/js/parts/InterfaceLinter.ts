@@ -37,7 +37,8 @@ export class InterfaceLinter extends JSLinter {
 						start: { line: 0, column: 0 },
 						end: { line: 0, column: 0 }
 					},
-					severity: this._configHandler.getSeverity(this.className)
+					severity: this._configHandler.getSeverity(this.className),
+					fsPath: document.fileName
 				});
 			});
 

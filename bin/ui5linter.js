@@ -8,15 +8,23 @@ const Severity = require("../dist/classes/Linter").Severity;
 	const parser = UI5Parser.getInstance();
 	await parser.initialize();
 	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
+	const XMLLinterErrorFactory = require("../dist/classes/xml/XMLLinterErrorFactory").XMLLinterErrorFactory;
 	const JSLinter = new JSLinterErrorFactory(parser);
+	const XMLLinter = new XMLLinterErrorFactory(parser);
+	const XMLFiles = [
+		...parser.fileReader.getAllViews(),
+		...parser.fileReader.getAllFragments()
+	];
 
 	const customClasses = parser.classFactory.getAllCustomUIClasses();
 	const lintingErrors = customClasses.flatMap(customClass => {
 		const textDocument = new TextDocument(customClass.classText, customClass.classFSPath || "");
 		return JSLinter.getLintingErrors(textDocument);
-	});
+	}).concat(XMLFiles.flatMap(XMLFile => {
+		const textDocument = new TextDocument(XMLFile.content || "", XMLFile.fsPath || "");
+		return XMLLinter.getLintingErrors(textDocument);
+	}));
 	lintingErrors.forEach(lintingError => lintingError.severity = lintingError.severity ?? Severity.Warning);
-
 
 	const errors = lintingErrors.filter(error => error.severity === Severity.Error);
 	const warnings = lintingErrors.filter(error => error.severity === Severity.Warning);
@@ -25,9 +33,7 @@ const Severity = require("../dist/classes/Linter").Severity;
 
 	if (hints.length > 0) {
 		hints.forEach(hint => {
-			const UIClass = parser.classFactory.getUIClass(hint.className);
-			const fsPath = UIClass.classFSPath;
-			const filePosition = `${fsPath}:${hint.range.start.line}:${hint.range.start.column + 1}`;
+			const filePosition = `${hint.fsPath}:${hint.range.start.line}:${hint.range.start.column + 1}`;
 			const errorText = hint.message;
 			console.log(`${chalk.grey.underline.bold(filePosition)} ${chalk.grey.bold(errorText)} (${hint.source})`);
 		});
@@ -38,7 +44,7 @@ const Severity = require("../dist/classes/Linter").Severity;
 		informationMessages.forEach(information => {
 			const UIClass = parser.classFactory.getUIClass(information.className);
 			const fsPath = UIClass.classFSPath;
-			const filePosition = `${fsPath}:${information.range.start.line}:${information.range.start.column + 1}`;
+			const filePosition = `${information.fsPath}:${information.range.start.line}:${information.range.start.column + 1}`;
 			const errorText = information.message;
 			console.log(`${chalk.blue.underline.bold(filePosition)} ${chalk.blue.bold(errorText)} (${information.source})`);
 		});
@@ -49,7 +55,7 @@ const Severity = require("../dist/classes/Linter").Severity;
 		warnings.forEach(warning => {
 			const UIClass = parser.classFactory.getUIClass(warning.className);
 			const fsPath = UIClass.classFSPath;
-			const filePosition = `${fsPath}:${warning.range.start.line}:${warning.range.start.column + 1}`;
+			const filePosition = `${warning.fsPath}:${warning.range.start.line}:${warning.range.start.column + 1}`;
 			const errorText = warning.message;
 			console.warn(`${chalk.rgb(255, 136, 0).underline.bold(filePosition)} ${chalk.rgb(255, 136, 0).bold(errorText)} (${warning.source})`);
 		});
@@ -60,7 +66,7 @@ const Severity = require("../dist/classes/Linter").Severity;
 		errors.forEach(error => {
 			const UIClass = parser.classFactory.getUIClass(error.className);
 			const fsPath = UIClass.classFSPath;
-			const filePosition = `${fsPath}:${error.range.start.line}:${error.range.start.column + 1}`;
+			const filePosition = `${error.fsPath}:${error.range.start.line}:${error.range.start.column + 1}`;
 			const errorText = error.message;
 			console.error(`${chalk.redBright.underline.bold(filePosition)} ${chalk.redBright.bold(errorText)} (${error.source})`);
 		});

@@ -17,7 +17,7 @@ export class WrongImportLinter extends JSLinter {
 						const UIDefineClass = this._parser.classFactory.getUIClass(UIDefine.classNameDotNotation);
 						if (!UIDefineClass.classExists) {
 							//TODO: check location generation
-							const range = RangeAdapter.offsetsToVSCodeRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
+							const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
 							if (range) {
 								errors.push({
 									acornNode: UIDefine.acornNode,
@@ -26,7 +26,8 @@ export class WrongImportLinter extends JSLinter {
 									source: this.className,
 									message: `Class "${UIDefine.classNameDotNotation}" doesn't exist`,
 									range: range,
-									severity: this._configHandler.getSeverity(this.className)
+									severity: this._configHandler.getSeverity(this.className),
+									fsPath: document.fileName
 								});
 							}
 						}

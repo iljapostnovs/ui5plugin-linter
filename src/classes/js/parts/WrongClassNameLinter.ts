@@ -25,7 +25,8 @@ export class WrongClassNameLinter extends JSLinter {
 								code: "UI5Plugin",
 								message: `Invalid class name. Expected: "${className}", actual: "${classNameFromFile}"`,
 								range: range,
-								severity: this._configHandler.getSeverity(this.className)
+								severity: this._configHandler.getSeverity(this.className),
+								fsPath: document.fileName
 							});
 						}
 					}

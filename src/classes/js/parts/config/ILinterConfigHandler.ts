@@ -10,7 +10,7 @@ export interface ILinterConfigHandler {
 	getJSLinterExceptions(): JSLinterException[];
 	getSeverity(linter: JSLinters | XMLLinters): Severity;
 	checkIfMemberIsException(className: string, memberName: string): boolean;
-	getLinterUsage(linter: JSLinters): boolean;
+	getLinterUsage(linter: JSLinters | XMLLinters): boolean;
 }
 
 interface IUI5LinterEntryFields {

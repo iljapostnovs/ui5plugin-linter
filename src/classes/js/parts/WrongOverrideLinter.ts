@@ -45,7 +45,8 @@ export class WrongOverrideLinter extends JSLinter {
 				acornNode: UIMember.acornNode,
 				methodName: UIMember.name,
 				sourceClassName: UIClass.className,
-				severity: this._configHandler.getSeverity(this.className)
+				severity: this._configHandler.getSeverity(this.className),
+				fsPath: UIClass.classFSPath || ""
 			};
 		}
 
