@@ -43,6 +43,6 @@
 	"dependencies": {
 		"chalk": "^4.1.2",
 		"line-column": "^1.0.2",
-		"ui5plugin-parser": "^0.1.5"
+		"ui5plugin-parser": "^0.1.6"
 	}
 }

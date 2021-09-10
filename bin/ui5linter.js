@@ -52,7 +52,6 @@ const Severity = require("../dist/classes/Linter").Severity;
 	if (informationMessages.length > 0) {
 		informationMessages.forEach(information => {
 			const UIClass = parser.classFactory.getUIClass(information.className);
-			const fsPath = UIClass.classFSPath;
 			const filePosition = `${information.fsPath}:${information.range.start.line}:${information.range.start.column + 1}`;
 			const errorText = information.message;
 			console.log(`${chalk.blue.underline.bold(filePosition)} ${chalk.blue.bold(errorText)} (${information.source})`);
@@ -63,7 +62,6 @@ const Severity = require("../dist/classes/Linter").Severity;
 	if (warnings.length > 0) {
 		warnings.forEach(warning => {
 			const UIClass = parser.classFactory.getUIClass(warning.className);
-			const fsPath = UIClass.classFSPath;
 			const filePosition = `${warning.fsPath}:${warning.range.start.line}:${warning.range.start.column + 1}`;
 			const errorText = warning.message;
 			console.warn(`${chalk.rgb(255, 136, 0).underline.bold(filePosition)} ${chalk.rgb(255, 136, 0).bold(errorText)} (${warning.source})`);
@@ -74,7 +72,6 @@ const Severity = require("../dist/classes/Linter").Severity;
 	if (errors.length > 0) {
 		errors.forEach(error => {
 			const UIClass = parser.classFactory.getUIClass(error.className);
-			const fsPath = UIClass.classFSPath;
 			const filePosition = `${error.fsPath}:${error.range.start.line}:${error.range.start.column + 1}`;
 			const errorText = error.message;
 			console.error(`${chalk.redBright.underline.bold(filePosition)} ${chalk.redBright.bold(errorText)} (${error.source})`);
