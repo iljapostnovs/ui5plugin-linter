@@ -1,11 +1,26 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { ILinterConfigHandler } from "..";
+import { PackageConfigHandler } from "./js/parts/config/PackageConfigHandler";
 
 export abstract class Linter {
-	abstract getLintingErrors(document: TextDocument): Promise<IError[]>;
+	protected readonly _parser: UI5Parser;
+	protected _configHandler: ILinterConfigHandler;
+	constructor(parser: UI5Parser, configHandler?: ILinterConfigHandler) {
+		this._parser = parser;
+		this._configHandler = configHandler || new PackageConfigHandler(parser);
+	}
+
+	abstract getLintingErrors(document: TextDocument): IError[];
 }
 
+export enum PropertiesLinters {
+	UnusedTranslationsLinter = "UnusedTranslationsLinter"
+}
 export enum XMLLinters {
-
+	TagAttributeLinter = "TagAttributeLinter",
+	TagLinter = "TagLinter",
+	UnusedNamespaceLinter = "UnusedNamespaceLinter",
+	WrongFilePathLinter = "WrongFilePathLinter"
 }
 export enum JSLinters {
 	AbstractClassLinter = "AbstractClassLinter",
@@ -48,7 +63,7 @@ export interface IRange {
 export interface IError {
 	code: string;
 	message: string;
-	acornNode: any;
+	acornNode?: any;
 	type?: CustomDiagnosticType;
 	fieldName?: string;
 	methodName?: string;
@@ -59,4 +74,5 @@ export interface IError {
 	severity: Severity;
 	range: IRange;
 	className: string;
+	fsPath: string;
 }

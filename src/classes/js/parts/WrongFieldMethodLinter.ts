@@ -1,9 +1,8 @@
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, UI5Ignoreable } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
-import { RangeAdapter } from "../../../adapters/RangeAdapter";
-import { JSLinters, IError, CustomDiagnosticType } from "../../../Linter";
+import { RangeAdapter } from "../../adapters/RangeAdapter";
+import { JSLinters, IError, CustomDiagnosticType } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongFieldMethodLinter extends JSLinter {
 	protected className = JSLinters.WrongFieldMethodLinter;
@@ -11,7 +10,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 	_getErrors(document: TextDocument): IError[] {
 		let errors: IError[] = [];
 
-		if (new PackageConfigHandler().getLinterUsage(this.className)) {
+		if (this._configHandler.getLinterUsage(this.className)) {
 			// console.time("WrongFieldMethodLinter");
 			const start = new Date().getTime();
 			errors = this._getLintingErrors(document);
@@ -25,9 +24,9 @@ export class WrongFieldMethodLinter extends JSLinter {
 	private _getLintingErrors(document: TextDocument): IError[] {
 		let errors: IError[] = [];
 
-		const currentClassName = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
+		const currentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (currentClassName) {
-			const UIClass = <CustomUIClass>UI5Parser.getInstance().classFactory.getUIClass(currentClassName);
+			const UIClass = <CustomUIClass>this._parser.classFactory.getUIClass(currentClassName);
 			const acornMethods = UIClass.acornMethodsAndFields.filter(fieldOrMethod => fieldOrMethod.value.type === "FunctionExpression").map((node: any) => node.value.body);
 
 			acornMethods.forEach((method: any) => {
@@ -52,7 +51,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 		const currentClassName = UIClass.className;
 
 		if (node.type === "MemberExpression") {
-			const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(UI5Parser.getInstance().syntaxAnalyser);
+			const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(this._parser.syntaxAnalyser);
 			const nodeStack = strategy.getStackOfNodesForPosition(currentClassName, node.end);
 			if (nodeStack.length > 0) {
 				const nodes = [];
@@ -64,7 +63,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 						nextNode = nodeStack.shift();
 						nodes.push(nextNode);
 					}
-					let className = UI5Parser.getInstance().syntaxAnalyser.findClassNameForStack(nodes.concat([]), currentClassName, currentClassName, true);
+					let className = this._parser.syntaxAnalyser.findClassNameForStack(nodes.concat([]), currentClassName, currentClassName, true);
 					const isException = this._checkIfClassNameIsException(className);
 					if (!className || isException || nextNode?.type === "Identifier" && nextNode?.name === "sap") {
 						droppedNodes.push(...nodeStack);
@@ -79,7 +78,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 					const nextNodeName = nextNode.property?.name;
 					const nodeText = UIClass.classText.substring(nextNode.start, nextNode.end);
 					if (!nodeText.endsWith("]") && !errorNodes.includes(nextNode)) {
-						const isMethodException = new PackageConfigHandler().checkIfMemberIsException(className, nextNodeName);
+						const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
 
 						if (nextNodeName && !isMethodException) {
 							const fieldsAndMethods = classNames.map(className => strategy.destructueFieldsAndMethodsAccordingToMapParams(className));
@@ -98,21 +97,22 @@ export class WrongFieldMethodLinter extends JSLinter {
 								if (className.includes("__map__")) {
 									className = "map";
 								}
-								const isMethodException = new PackageConfigHandler().checkIfMemberIsException(className, nextNodeName);
+								const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
 								if (!isMethodException) {
-									const range = RangeAdapter.acornLocationToVSCodeRange(nextNode.property.loc);
+									const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
 									errorNodes.push(nextNode);
 									errors.push({
 										message: `"${nextNodeName}" does not exist in "${className}"`,
 										code: "UI5Plugin",
-										source: "Field/Method Linter",
+										source: this.className,
 										range: range,
 										acornNode: nextNode,
 										className: UIClass.className,
 										type: CustomDiagnosticType.NonExistentMethod,
 										methodName: nextNodeName,
 										sourceClassName: className,
-										severity: new PackageConfigHandler().getSeverity(this.className)
+										severity: this._configHandler.getSeverity(this.className),
+										fsPath: document.fileName
 									});
 									break;
 								}
@@ -122,30 +122,31 @@ export class WrongFieldMethodLinter extends JSLinter {
 								if (!isIgnored) {
 									let sErrorMessage = "";
 									if (member?.visibility === "protected") {
-										const currentDocumentClassName = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
-										if (currentDocumentClassName && !UI5Parser.getInstance().classFactory.isClassAChildOfClassB(currentDocumentClassName, singleFieldsAndMethods.className)) {
+										const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
+										if (currentDocumentClassName && !this._parser.classFactory.isClassAChildOfClassB(currentDocumentClassName, singleFieldsAndMethods.className)) {
 											sErrorMessage = `"${nextNodeName}" is a protected member of class "${member.owner}"`;
 										}
 									} else if (member?.visibility === "private") {
-										const currentDocumentClassName = UI5Parser.getInstance().fileReader.getClassNameFromPath(document.fileName);
+										const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
 										if (currentDocumentClassName && member.owner !== currentDocumentClassName) {
 											sErrorMessage = `"${nextNodeName}" is a private member of class "${member.owner}"`;
 										}
 									}
 
 									if (sErrorMessage) {
-										const range = RangeAdapter.acornLocationToVSCodeRange(nextNode.property.loc);
+										const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
 										errorNodes.push(nextNode);
 										errors.push({
 											message: sErrorMessage,
 											code: "UI5Plugin",
-											source: "Field/Method Linter",
+											source: this.className,
 											range: range,
 											acornNode: nextNode,
 											methodName: nextNodeName,
 											className: UIClass.className,
 											sourceClassName: className,
-											severity: new PackageConfigHandler().getSeverity(this.className)
+											severity: this._configHandler.getSeverity(this.className),
+											fsPath: document.fileName
 										});
 										break;
 									}
@@ -163,7 +164,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 			}
 		}
 
-		const innerNodes = UI5Parser.getInstance().syntaxAnalyser.getContent(node);
+		const innerNodes = this._parser.syntaxAnalyser.getContent(node);
 		if (innerNodes) {
 			innerNodes.forEach((node: any) => this._getErrorsForExpression(node, UIClass, document, errors, droppedNodes, errorNodes));
 		}

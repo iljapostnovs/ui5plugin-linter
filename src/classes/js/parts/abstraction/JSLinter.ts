@@ -1,19 +1,23 @@
 import { TextDocument } from "ui5plugin-parser";
-import { JSLinters, IError } from "../../../../Linter";
+import { JSLinters, IError, Linter } from "../../../Linter";
 
-export abstract class JSLinter {
+export abstract class JSLinter extends Linter {
 	protected abstract className: JSLinters;
 	timePerChar = 0;
 	protected abstract _getErrors(document: TextDocument): IError[];
-	getErrors(document: TextDocument): IError[] {
+	getLintingErrors(document: TextDocument): IError[] {
+		const errors: IError[] = [];
 		const timeStart = new Date().getTime();
-		const errors = this._getErrors(document);
-		if (errors instanceof Promise) {
-			errors.then(() => {
+
+		if (this._configHandler.getLinterUsage(this.className)) {
+			errors.push(...this._getErrors(document));
+			if (errors instanceof Promise) {
+				errors.then(() => {
+					this._logTime(timeStart, document);
+				});
+			} else {
 				this._logTime(timeStart, document);
-			});
-		} else {
-			this._logTime(timeStart, document);
+			}
 		}
 
 		return errors;
