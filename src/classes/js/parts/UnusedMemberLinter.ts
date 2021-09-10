@@ -11,34 +11,33 @@ export class UnusedMemberLinter extends JSLinter {
 		const errors: IError[] = [];
 
 		// console.time("Unused Member Linter");
-		if (this._configHandler.getLinterUsage(this.className)) {
-			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
-			if (className) {
-				const UIClass = this._parser.classFactory.getUIClass(className);
-				if (UIClass instanceof CustomUIClass) {
-					const customUIClasses = this._parser.classFactory.getAllCustomUIClasses();
-					const methodsAndFields: (ICustomClassUIField | ICustomClassUIMethod)[] = [
-						...UIClass.methods,
-						...UIClass.fields
-					];
-					methodsAndFields.forEach((methodOrField: any) => {
-						const methodIsUsed = this._checkIfMemberIsUsed(customUIClasses, UIClass, methodOrField);
-						if (!methodIsUsed && methodOrField.memberPropertyNode) {
-							const range = RangeAdapter.acornLocationToRange(methodOrField.memberPropertyNode.loc);
-							errors.push({
-								source: this.className,
-								acornNode: methodOrField.acornNode,
-								code: "UI5Plugin",
-								className: UIClass.className,
-								message: `No references found for "${methodOrField.name}" class member`,
-								range: range,
-								tags: [DiagnosticTag.Unnecessary],
-								severity: this._configHandler.getSeverity(this.className),
-								fsPath: document.fileName
-							});
-						}
-					});
-				}
+		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
+		if (className) {
+			const UIClass = this._parser.classFactory.getUIClass(className);
+			if (UIClass instanceof CustomUIClass) {
+				const customUIClasses = this._parser.classFactory.getAllCustomUIClasses();
+				const methodsAndFields: (ICustomClassUIField | ICustomClassUIMethod)[] = [
+					...UIClass.methods,
+					...UIClass.fields
+				];
+				methodsAndFields.forEach((methodOrField: any) => {
+					const methodIsUsed = this._checkIfMemberIsUsed(customUIClasses, UIClass, methodOrField);
+					if (!methodIsUsed && methodOrField.memberPropertyNode) {
+						const range = RangeAdapter.acornLocationToRange(methodOrField.memberPropertyNode.loc);
+						errors.push({
+							source: this.className,
+							acornNode: methodOrField.acornNode,
+							code: "UI5Plugin",
+							className: UIClass.className,
+							message: `No references found for "${methodOrField.name}" class member`,
+							range: range,
+							tags: [DiagnosticTag.Unnecessary],
+							severity: this._configHandler.getSeverity(this.className),
+							fsPath: document.fileName
+						});
+					}
+				});
+
 			}
 		}
 		// console.timeEnd("Unused Method Linter");
