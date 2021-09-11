@@ -1,4 +1,4 @@
-import { UI5Parser } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, Severity, XMLLinters } from "../../../Linter";
@@ -11,6 +11,23 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 	constructor(parser: UI5Parser) {
 		this._parser = parser;
 	}
+
+	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
+		let shouldBeSkipped = false;
+		const componentsToIgnore = nodePackage.ui5?.ui5linter?.componentsToIgnore;
+		if (componentsToIgnore) {
+			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
+			if (className) {
+				const manifest = this._parser.fileReader.getManifestForClass(className);
+				if (manifest?.componentName) {
+					shouldBeSkipped = componentsToIgnore.includes(manifest.componentName);
+				}
+			}
+		}
+
+		return shouldBeSkipped;
+	}
+
 	private _cache: { [key: string]: boolean } = {};
 
 	getSeverity(linter: JSLinters | XMLLinters) {

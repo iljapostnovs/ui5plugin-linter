@@ -10,5 +10,24 @@
 			backgroundDesign="Solid"
 		>
 		</List>
+		<DateTimeInput
+			dateValue=""
+			displayFormat=""
+			editable="true"
+			enabled="true"
+			name=""
+			placeholder=""
+			showValueStateMessage="true"
+			textAlign="Initial"
+			textDirection="Inherit"
+			type="Date"
+			value=""
+			valueFormat=""
+			valueState="None"
+			valueStateText=""
+			width="100%"
+		>
+			
+		</DateTimeInput>
 	</Page>
 </c:FragmentDefinition>

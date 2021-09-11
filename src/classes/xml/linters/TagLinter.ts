@@ -4,7 +4,7 @@ import { IXMLFile } from "ui5plugin-parser/dist/classes/utils/FileReader";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { ITag } from "ui5plugin-parser/dist/classes/utils/XMLParser";
 import { RangeAdapter } from "../../..";
-import { XMLLinters } from "../../Linter";
+import { DiagnosticTag, XMLLinters } from "../../Linter";
 import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
 
 export class TagLinter extends XMLLinter {
@@ -64,6 +64,20 @@ export class TagLinter extends XMLLinter {
 							range: range,
 							className: documentClassName,
 							fsPath: XMLFile.fsPath
+						});
+					}
+				} else if (UIClass.classExists && UIClass.deprecated && !this._isClassException(tagClass)) {
+					const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd);
+					if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
+						errors.push({
+							code: "UI5plugin",
+							message: `"${tagClass}" class is deprecated`,
+							source: this.className,
+							severity: this._configHandler.getSeverity(this.className),
+							range: range,
+							className: documentClassName,
+							fsPath: XMLFile.fsPath,
+							tags: [DiagnosticTag.Deprecated]
 						});
 					}
 				}

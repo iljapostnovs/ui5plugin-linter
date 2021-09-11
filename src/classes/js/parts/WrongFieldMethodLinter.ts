@@ -8,18 +8,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 	protected className = JSLinters.WrongFieldMethodLinter;
 	public static timePerChar = 0;
 	_getErrors(document: TextDocument): IError[] {
-		let errors: IError[] = [];
-
-		if (this._configHandler.getLinterUsage(this.className)) {
-			// console.time("WrongFieldMethodLinter");
-			const start = new Date().getTime();
-			errors = this._getLintingErrors(document);
-			const end = new Date().getTime();
-			WrongFieldMethodLinter.timePerChar = (end - start) / document.getText().length;
-			// console.timeEnd("WrongFieldMethodLinter");
-		}
-
-		return errors;
+		return this._getLintingErrors(document);
 	}
 	private _getLintingErrors(document: TextDocument): IError[] {
 		let errors: IError[] = [];

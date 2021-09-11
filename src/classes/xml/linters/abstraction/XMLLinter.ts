@@ -12,7 +12,7 @@ export abstract class XMLLinter extends Linter {
 		const errors: IError[] = [];
 		const timeStart = new Date().getTime();
 
-		if (this._configHandler.getLinterUsage(this.className)) {
+		if (this._configHandler.getLinterUsage(this.className) && !this._configHandler.getIfLintingShouldBeSkipped(document)) {
 			errors.push(...this._getErrors(document));
 			if (errors instanceof Promise) {
 				errors.then(() => {

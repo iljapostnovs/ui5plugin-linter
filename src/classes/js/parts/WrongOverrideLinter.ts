@@ -9,22 +9,20 @@ export class WrongOverrideLinter extends JSLinter {
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
-		if (this._configHandler.getLinterUsage(this.className)) {
-			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
-			if (className) {
-				const UIClass = this._parser.classFactory.getUIClass(className);
-				if (UIClass instanceof CustomUIClass) {
-					const fieldsAndMethods = [
-						...UIClass.fields,
-						...UIClass.methods
-					];
-					fieldsAndMethods.forEach(fieldOrMethod => {
-						const error = this._getIfMemberIsWronglyOverriden(UIClass, fieldOrMethod);
-						if (error) {
-							errors.push(error);
-						}
-					});
-				}
+		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
+		if (className) {
+			const UIClass = this._parser.classFactory.getUIClass(className);
+			if (UIClass instanceof CustomUIClass) {
+				const fieldsAndMethods = [
+					...UIClass.fields,
+					...UIClass.methods
+				];
+				fieldsAndMethods.forEach(fieldOrMethod => {
+					const error = this._getIfMemberIsWronglyOverriden(UIClass, fieldOrMethod);
+					if (error) {
+						errors.push(error);
+					}
+				});
 			}
 		}
 

@@ -1,3 +1,4 @@
+import { TextDocument } from "ui5plugin-parser";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../../../Linter";
 
 export interface JSLinterException {
@@ -11,6 +12,7 @@ export interface ILinterConfigHandler {
 	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters): Severity;
 	checkIfMemberIsException(className: string, memberName: string): boolean;
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters): boolean;
+	getIfLintingShouldBeSkipped(document: TextDocument): boolean;
 }
 
 interface IUI5LinterEntryFields {
@@ -21,6 +23,7 @@ interface IUI5LinterEntryFields {
 		[key in JSLinters | XMLLinters | PropertiesLinters]: boolean
 	},
 	JSLinterExceptions?: JSLinterException[],
+	componentsToIgnore?: string[];
 }
 
 export interface IUI5LinterEntry {
