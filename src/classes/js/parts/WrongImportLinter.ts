@@ -13,8 +13,8 @@ export class WrongImportLinter extends JSLinter {
 			const UIClass = this._parser.classFactory.getUIClass(className);
 			if (UIClass instanceof CustomUIClass && UIClass.UIDefine) {
 				UIClass.UIDefine.forEach(UIDefine => {
-					const UIDefineClass = this._parser.classFactory.getUIClass(UIDefine.classNameDotNotation);
-					if (!UIDefineClass.classExists) {
+					const importedClass = this._parser.classFactory.getUIClass(UIDefine.classNameDotNotation);
+					if (!importedClass.classExists) {
 						//TODO: check location generation
 						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
 						if (range) {
@@ -29,7 +29,7 @@ export class WrongImportLinter extends JSLinter {
 								fsPath: document.fileName
 							});
 						}
-					} else if (UIDefineClass.deprecated) {
+					} else if (importedClass.deprecated) {
 						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
 						if (range) {
 							errors.push({

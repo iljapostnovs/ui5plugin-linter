@@ -24,7 +24,6 @@ export class WrongOverrideLinter extends JSLinter {
 					}
 				});
 			}
-
 		}
 
 		return errors;
