@@ -69,7 +69,6 @@ export interface IError {
 	methodName?: string;
 	sourceClassName?: string;
 	source: string;
-	isController?: boolean;
 	tags?: DiagnosticTag[];
 	severity: Severity;
 	range: IRange;
