@@ -15,7 +15,7 @@ export interface ILinterConfigHandler {
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean;
 }
 
-interface IUI5LinterEntryFields {
+export interface IUI5LinterEntryFields {
 	severity?: {
 		[key in JSLinters | XMLLinters | PropertiesLinters]: Severity
 	},
