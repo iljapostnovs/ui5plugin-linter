@@ -1,7 +1,7 @@
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
-import { JSLinters, Severity, XMLLinters } from "../../../Linter";
+import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../../../Linter";
 export class PackageConfigHandler implements ILinterConfigHandler {
 	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: UI5Parser;
@@ -32,7 +32,7 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 
 	private _cache: { [key: string]: boolean } = {};
 
-	getSeverity(linter: JSLinters | XMLLinters) {
+	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters) {
 		return this._package?.ui5?.ui5linter?.severity?.[linter] ?? Severity.Error;
 	}
 
@@ -114,7 +114,7 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 		return defaultExceptions.concat(userExceptions);
 	}
 
-	getLinterUsage(linter: JSLinters | XMLLinters) {
+	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters) {
 		return this._package?.ui5?.ui5linter?.usage?.[linter] ?? true;
 	}
 
