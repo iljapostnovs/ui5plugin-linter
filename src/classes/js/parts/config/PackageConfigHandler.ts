@@ -2,24 +2,21 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, Severity, XMLLinters } from "../../../Linter";
-const packagePath = join(process.cwd(), "/package.json");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-let nodePackage: IUI5PackageConfigEntry = {};
-try {
-	nodePackage = require(packagePath);
-} catch (error) {
-	nodePackage = {};
-}
-
 export class PackageConfigHandler implements ILinterConfigHandler {
+	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: UI5Parser;
-	constructor(parser: UI5Parser) {
+	constructor(parser: UI5Parser, packagePath = join(process.cwd(), "/package.json")) {
 		this._parser = parser;
+		try {
+			this._package = require(packagePath);
+		} catch (error) {
+			this._package = {};
+		}
 	}
 
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
-		const componentsToIgnore = nodePackage.ui5?.ui5linter?.componentsToIgnore;
+		const componentsToIgnore = this._package.ui5?.ui5linter?.componentsToIgnore;
 		if (componentsToIgnore) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
@@ -36,7 +33,7 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 	private _cache: { [key: string]: boolean } = {};
 
 	getSeverity(linter: JSLinters | XMLLinters) {
-		return nodePackage?.ui5?.ui5linter?.severity?.[linter] ?? Severity.Error;
+		return this._package?.ui5?.ui5linter?.severity?.[linter] ?? Severity.Error;
 	}
 
 	getJSLinterExceptions(): JSLinterException[] {
@@ -113,12 +110,12 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 			}
 		];
 
-		const userExceptions: JSLinterException[] = nodePackage?.ui5?.ui5linter?.JSLinterExceptions || [];
+		const userExceptions: JSLinterException[] = this._package?.ui5?.ui5linter?.JSLinterExceptions || [];
 		return defaultExceptions.concat(userExceptions);
 	}
 
 	getLinterUsage(linter: JSLinters | XMLLinters) {
-		return nodePackage?.ui5?.ui5linter?.usage?.[linter] ?? true;
+		return this._package?.ui5?.ui5linter?.usage?.[linter] ?? true;
 	}
 
 	checkIfMemberIsException(className = "", memberName = "") {
