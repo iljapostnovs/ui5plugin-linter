@@ -1,5 +1,5 @@
 import { TextDocument } from "ui5plugin-parser";
-import { IError, Linter } from "../Linter";
+import { Linter } from "../Linter";
 import { XMLLinter } from "./linters/abstraction/XMLLinter";
 import { TagAttributeLinter } from "./linters/TagAttributeLinter";
 import { TagLinter } from "./linters/TagLinter";
@@ -8,7 +8,7 @@ import { WrongFilePathLinter } from "./linters/WrongFilePathLinter";
 
 export class XMLLinterErrorFactory extends Linter {
 	timePerchar = 0;
-	getLintingErrors(document: TextDocument): IError[] {
+	getLintingErrors(document: TextDocument) {
 		const linters: XMLLinter[] = [
 			new TagAttributeLinter(this._parser, this._configHandler),
 			new TagLinter(this._parser, this._configHandler),
