@@ -1,9 +1,9 @@
 import { JSLinter } from "./abstraction/JSLinter";
 import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError, DiagnosticTag } from "../../Linter";
+import { ReferenceFinder } from "./util/ReferenceFinder";
 
 export class UnusedMemberLinter extends JSLinter {
 	protected className = JSLinters.UnusedMemberLinter;
@@ -15,13 +15,12 @@ export class UnusedMemberLinter extends JSLinter {
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
 			if (UIClass instanceof CustomUIClass) {
-				const customUIClasses = this._parser.classFactory.getAllCustomUIClasses();
 				const methodsAndFields: (ICustomClassUIField | ICustomClassUIMethod)[] = [
 					...UIClass.methods,
 					...UIClass.fields
 				];
 				methodsAndFields.forEach((methodOrField: any) => {
-					const methodIsUsed = this._checkIfMemberIsUsed(customUIClasses, UIClass, methodOrField);
+					const methodIsUsed = this._checkIfMemberIsUsed(UIClass, methodOrField);
 					if (!methodIsUsed && methodOrField.memberPropertyNode) {
 						const range = RangeAdapter.acornLocationToRange(methodOrField.memberPropertyNode.loc);
 						errors.push({
@@ -45,59 +44,18 @@ export class UnusedMemberLinter extends JSLinter {
 		return errors;
 	}
 
-	private _checkIfMemberIsUsed(customUIClasses: CustomUIClass[], UIClass: CustomUIClass, member: ICustomClassUIMethod | ICustomClassUIField) {
-		let memberIsUsed = false;
+	private _checkIfMemberIsUsed(UIClass: CustomUIClass, member: ICustomClassUIMethod | ICustomClassUIField) {
+		let memberIsUsed =
+			member.ui5ignored ||
+			member.mentionedInTheXMLDocument ||
+			this._parser.classFactory.isMethodOverriden(UIClass.className, member.name) ||
+			this._checkIfMethodIsException(UIClass.className, member.name);
 
-		if (member.ui5ignored) {
-			memberIsUsed = true;
-		} else {
-			const isException = this._checkIfMethodIsException(UIClass.className, member.name);
-			const isMemberOverriden = this._parser.classFactory.isMethodOverriden(UIClass.className, member.name);
-
-			if (member.mentionedInTheXMLDocument || isMemberOverriden) {
-				memberIsUsed = true;
-			} else if (!isException) {
-				const classOfTheMethod = UIClass.className;
-
-				customUIClasses.find(customUIClass => {
-					return !!customUIClass.methods.find(methodFromClass => {
-						if (methodFromClass.acornNode) {
-							const allContent = this._parser.syntaxAnalyser.expandAllContent(methodFromClass.acornNode);
-							const memberExpressions = allContent.filter((node: any) => node.type === "MemberExpression");
-							const assignmentExpression = allContent.filter((node: any) => node.type === "AssignmentExpression");
-							memberExpressions.find((memberExpression: any) => {
-								const propertyName = memberExpression.callee?.property?.name || memberExpression?.property?.name;
-								const currentMethodIsCalled = propertyName === member.name;
-								if (currentMethodIsCalled) {
-									const position = memberExpression.callee?.property?.start || memberExpression?.property?.start;
-									const strategy = new FieldsAndMethodForPositionBeforeCurrentStrategy(this._parser.syntaxAnalyser);
-									const classNameOfTheCallee = strategy.acornGetClassName(customUIClass.className, position, true);
-									if (
-										classNameOfTheCallee &&
-										(
-											classNameOfTheCallee === classOfTheMethod ||
-											this._parser.classFactory.isClassAChildOfClassB(classOfTheMethod, classNameOfTheCallee) ||
-											this._parser.classFactory.isClassAChildOfClassB(classNameOfTheCallee, classOfTheMethod)
-										) &&
-										!assignmentExpression.find((expression: any) => expression.left === memberExpression)
-
-									) {
-										memberIsUsed = true;
-									}
-								}
-
-								return memberIsUsed;
-							});
-						}
-
-						return memberIsUsed;
-					});
-				});
-			} else {
-				memberIsUsed = true;
-			}
+		if (!memberIsUsed) {
+			const referenceCodeLens = new ReferenceFinder(this._parser);
+			const references = referenceCodeLens.getReferenceLocations(member);
+			memberIsUsed = references.length > 0;
 		}
-
 
 		return memberIsUsed;
 	}
