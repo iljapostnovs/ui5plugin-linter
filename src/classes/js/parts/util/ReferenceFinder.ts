@@ -51,8 +51,8 @@ export class ReferenceFinder {
 			tagsAndAttributes.forEach(tagAndAttribute => {
 				tagAndAttribute.attributes.forEach(attribute => {
 					const positionBegin = tagAndAttribute.tag.positionBegin + tagAndAttribute.tag.text.indexOf(attribute) + attribute.indexOf(member.name);
-					const positionEnd = positionBegin + member.name.length - 1;
-					const range = RangeAdapter.offsetsRange(XMLDoc.content, positionBegin, positionEnd - 1);
+					const positionEnd = positionBegin + member.name.length;
+					const range = RangeAdapter.offsetsRange(XMLDoc.content, positionBegin, positionEnd);
 					if (range) {
 						currentLocations.push({ filePath: XMLDoc.fsPath, range: range });
 					}
@@ -93,7 +93,7 @@ export class ReferenceFinder {
 						)
 					)
 				) {
-					const range = RangeAdapter.offsetsRange(UIClass.classText, result.index, result.index + member.name.length - 1);
+					const range = RangeAdapter.offsetsRange(UIClass.classText, result.index, result.index + member.name.length);
 					if (range) {
 						currentLocations.push({ filePath: UIClass.classFSPath || "", range: range });
 					}
