@@ -111,7 +111,7 @@ export class TagAttributeLinter extends XMLLinter {
 	private _validateAttributeValue(className: string, attribute: string, document: TextDocument) {
 		let isValueValid = true;
 		let message;
-		const	severity = this._configHandler.getSeverity(this.className);
+		const severity = this._configHandler.getSeverity(this.className);
 		const { attributeName, attributeValue } = XMLParser.getAttributeNameAndValue(attribute);
 		const UIClass = this._parser.classFactory.getUIClass(className);
 		const property = UIClass.properties.find(property => property.name === attributeName);

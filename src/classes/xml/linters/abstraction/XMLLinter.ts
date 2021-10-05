@@ -8,7 +8,7 @@ export abstract class XMLLinter extends Linter {
 	protected abstract className: XMLLinters;
 	timePerChar = 0;
 	protected abstract _getErrors(document: TextDocument): IError[];
-	getLintingErrors(document: TextDocument): IError[] {
+	getLintingErrors(document: TextDocument): IXMLError[] {
 		const errors: IError[] = [];
 		const timeStart = new Date().getTime();
 
