@@ -19,6 +19,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		const componentsToInclude = this._package.ui5?.ui5linter?.componentsToInclude;
 		const componentsToExclude = this._package.ui5?.ui5linter?.componentsToExclude;
 		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassExceptions;
+		const xmlClassesToExclude = this._package.ui5?.ui5linter?.xmlClassExceptions;
 		if (jsClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
@@ -33,6 +34,9 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 				}
 				if (!shouldBeSkipped && jsClassesToExclude && document.fileName.endsWith(".js")) {
 					shouldBeSkipped = jsClassesToExclude.includes(className);
+				}
+				if (!shouldBeSkipped && xmlClassesToExclude && document.fileName.endsWith(".xml")) {
+					shouldBeSkipped = xmlClassesToExclude.includes(className);
 				}
 			}
 		}

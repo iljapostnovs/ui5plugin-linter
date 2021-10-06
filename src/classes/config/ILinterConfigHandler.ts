@@ -24,6 +24,7 @@ export interface IUI5LinterEntryFields {
 	},
 	jsLinterExceptions?: JSLinterException[]
 	jsClassExceptions?: string[]
+	xmlClassExceptions?: string[]
 	componentsToInclude?: string[]
 	componentsToExclude?: string[]
 }
