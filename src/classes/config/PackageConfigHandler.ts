@@ -1,7 +1,7 @@
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
-import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../../../Linter";
+import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 export class PackageConfigHandler implements ILinterConfigHandler {
 	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: UI5Parser;
@@ -33,7 +33,27 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 	private _cache: { [key: string]: boolean } = {};
 
 	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters) {
-		return this._package?.ui5?.ui5linter?.severity?.[linter] ?? Severity.Error;
+		return this._package?.ui5?.ui5linter?.severity?.[linter] ?? this._getDefaultSeverityFor(linter);
+	}
+	private _getDefaultSeverityFor(linter: JSLinters | XMLLinters | PropertiesLinters): Severity {
+		const defaultSeverity: { [key in JSLinters | XMLLinters | PropertiesLinters]: Severity } = {
+			WrongParametersLinter: Severity.Error,
+			WrongOverrideLinter: Severity.Error,
+			WrongImportLinter: Severity.Warning,
+			WrongFilePathLinter: Severity.Warning,
+			WrongFieldMethodLinter: Severity.Warning,
+			WrongClassNameLinter: Severity.Warning,
+			UnusedTranslationsLinter: Severity.Information,
+			UnusedNamespaceLinter: Severity.Error,
+			UnusedMemberLinter: Severity.Information,
+			TagLinter: Severity.Error,
+			TagAttributeLinter: Severity.Error,
+			PublicMemberLinter: Severity.Information,
+			InterfaceLinter: Severity.Error,
+			AbstractClassLinter: Severity.Error
+		};
+
+		return defaultSeverity[linter];
 	}
 
 	getJSLinterExceptions(): JSLinterException[] {
