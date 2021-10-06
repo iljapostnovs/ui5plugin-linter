@@ -6,13 +6,13 @@ import { JSLinterErrorFactory } from "./classes/js/JSLinterErrorFactory";
 import { XMLLinterErrorFactory } from "./classes/xml/XMLLinterErrorFactory";
 import { PropertiesLinterErrorFactory } from "./classes/properties/PropertiesLinterErrorFactory";
 import { ILinterConfigHandler } from "./classes/config/ILinterConfigHandler";
-import { PackageConfigHandler } from "./classes/config/PackageConfigHandler";
+import { PackageLinterConfigHandler } from "./classes/config/PackageLinterConfigHandler";
 
 export {
 	Severity,
 	Linter,
 	JSLinter,
-	PackageConfigHandler,
+	PackageLinterConfigHandler as PackageConfigHandler,
 	ILinterConfigHandler,
 	PositionAdapter,
 	RangeAdapter,

@@ -2,7 +2,7 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
-export class PackageConfigHandler implements ILinterConfigHandler {
+export class PackageLinterConfigHandler implements ILinterConfigHandler {
 	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: UI5Parser;
 	constructor(parser: UI5Parser, packagePath = join(process.cwd(), "/package.json")) {
@@ -16,14 +16,20 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
-		const componentsToIgnore = this._package.ui5?.ui5linter?.componentsToIgnore;
+		const componentsToInclude = this._package.ui5?.ui5linter?.componentsToInclude;
+		const componentsToExclude = this._package.ui5?.ui5linter?.componentsToExclude;
 		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassExceptions;
-		if (componentsToIgnore || jsClassesToExclude) {
+		if (jsClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
 				const manifest = this._parser.fileReader.getManifestForClass(className);
-				if (manifest?.componentName && componentsToIgnore) {
-					shouldBeSkipped = componentsToIgnore.includes(manifest.componentName);
+
+				if (manifest?.componentName) {
+					if (componentsToInclude) {
+						shouldBeSkipped = !componentsToInclude.includes(manifest.componentName);
+					} else if (componentsToExclude) {
+						shouldBeSkipped = componentsToExclude.includes(manifest.componentName);
+					}
 				}
 				if (!shouldBeSkipped && jsClassesToExclude && document.fileName.endsWith(".js")) {
 					shouldBeSkipped = jsClassesToExclude.includes(className);
