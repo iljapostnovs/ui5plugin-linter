@@ -1,5 +1,5 @@
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import { IUI5PackageConfigEntry, ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
+import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 export class PackageLinterConfigHandler implements ILinterConfigHandler {
@@ -201,4 +201,26 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 
 		return isDomEventHandler;
 	}
+}
+
+export interface IUI5LinterEntryFields {
+	severity?: {
+		[key in JSLinters | XMLLinters | PropertiesLinters]: Severity
+	},
+	usage?: {
+		[key in JSLinters | XMLLinters | PropertiesLinters]: boolean
+	},
+	jsLinterExceptions?: JSLinterException[]
+	jsClassExceptions?: string[]
+	xmlClassExceptions?: string[]
+	componentsToInclude?: string[]
+	componentsToExclude?: string[]
+}
+
+export interface IUI5LinterEntry {
+	ui5linter?: IUI5LinterEntryFields
+}
+
+export interface IUI5PackageConfigEntry {
+	ui5?: IUI5LinterEntry
 }
