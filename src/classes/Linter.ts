@@ -1,13 +1,13 @@
 import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { ILinterConfigHandler } from "..";
-import { PackageConfigHandler } from "./config/PackageConfigHandler";
+import { PackageLinterConfigHandler } from "./config/PackageLinterConfigHandler";
 
 export abstract class Linter {
 	protected readonly _parser: UI5Parser;
 	protected _configHandler: ILinterConfigHandler;
 	constructor(parser: UI5Parser, configHandler?: ILinterConfigHandler) {
 		this._parser = parser;
-		this._configHandler = configHandler || new PackageConfigHandler(parser);
+		this._configHandler = configHandler || new PackageLinterConfigHandler(parser);
 	}
 
 	abstract getLintingErrors(document: TextDocument): IError[];
