@@ -17,7 +17,7 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
 		const componentsToIgnore = this._package.ui5?.ui5linter?.componentsToIgnore;
-		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassesToExclude;
+		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassExceptions;
 		if (componentsToIgnore || jsClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
@@ -134,7 +134,7 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 			}
 		];
 
-		const userExceptions: JSLinterException[] = this._package?.ui5?.ui5linter?.JSLinterExceptions || [];
+		const userExceptions: JSLinterException[] = this._package?.ui5?.ui5linter?.jsLinterExceptions || [];
 		return defaultExceptions.concat(userExceptions);
 	}
 
