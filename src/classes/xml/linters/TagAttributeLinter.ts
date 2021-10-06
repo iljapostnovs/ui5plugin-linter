@@ -51,7 +51,7 @@ export class TagAttributeLinter extends XMLLinter {
 											code: "UI5plugin",
 											message: attributeValidation.message || "Invalid attribute",
 											source: this.className,
-											severity: this._configHandler.getSeverity(this.className),
+											severity: attributeValidation.severity,
 											attribute: tagAttribute,
 											range: range,
 											className: documentClassName || "",
