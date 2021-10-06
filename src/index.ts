@@ -12,7 +12,7 @@ export {
 	Severity,
 	Linter,
 	JSLinter,
-	PackageLinterConfigHandler as PackageConfigHandler,
+	PackageLinterConfigHandler,
 	ILinterConfigHandler,
 	PositionAdapter,
 	RangeAdapter,

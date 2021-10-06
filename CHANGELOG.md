@@ -1,2 +1,2 @@
-## 0.0.1 (19-07-2021)
-* Initial version
+## 0.5.0 (07-10-2021)
+* Initial release

@@ -14,25 +14,3 @@ export interface ILinterConfigHandler {
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters): boolean
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean
 }
-
-export interface IUI5LinterEntryFields {
-	severity?: {
-		[key in JSLinters | XMLLinters | PropertiesLinters]: Severity
-	},
-	usage?: {
-		[key in JSLinters | XMLLinters | PropertiesLinters]: boolean
-	},
-	jsLinterExceptions?: JSLinterException[]
-	jsClassExceptions?: string[]
-	xmlClassExceptions?: string[]
-	componentsToInclude?: string[]
-	componentsToExclude?: string[]
-}
-
-export interface IUI5LinterEntry {
-	ui5linter?: IUI5LinterEntryFields
-}
-
-export interface IUI5PackageConfigEntry {
-	ui5?: IUI5LinterEntry
-}
