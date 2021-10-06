@@ -8,7 +8,7 @@ Run ```npm install ui5plugin-linter -g``` in your command line and ```ui5linter`
 ---
 ## Config
 ### Linter config
-UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.
+UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.</br>
 Default config is as follows:
 ```json
 {
@@ -112,8 +112,8 @@ It is possible to override properties in your ```package.json```. See [Configura
 > In case of ```jsLinterExceptions``` the exceptions which will be found in ```package.json``` of CWD will be added to the default exceptions, in the rest of the cases properties will be overwritten
 
 ### Parser config
-It is possible to add config for [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) in the same ```package.json``` which will be used by the parser of the linter.
-> Check [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) -> ```Config default values``` as a reference for parser properties
+It is possible to add config for [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) as well.
+> Check [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) -> ```Config default values``` as a reference for parser properties</br>
 > See [Configuration example](#configuration-example)
 ---
 ## Configuration example
