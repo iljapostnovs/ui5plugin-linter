@@ -3,7 +3,14 @@ Command Line Linter for UI5 based projects.
 
 ---
 ## How to use
-Run ```npm install ui5plugin-linter -g``` in your command line and ```ui5linter``` in corresponding working directory of the project which needs to be linted
+Execute in command line:
+```bash
+npm install ui5plugin-linter -g
+```
+After installing the package globally the linter will be available:
+```bash
+ui5linter
+```
 
 ---
 ## Config
