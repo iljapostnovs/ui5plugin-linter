@@ -111,7 +111,7 @@ export class TagAttributeLinter extends XMLLinter {
 	private _validateAttributeValue(className: string, attribute: string, document: TextDocument) {
 		let isValueValid = true;
 		let message;
-		const severity = this._configHandler.getSeverity(this.className);
+		let severity = this._configHandler.getSeverity(this.className);
 		const { attributeName, attributeValue } = XMLParser.getAttributeNameAndValue(attribute);
 		const UIClass = this._parser.classFactory.getUIClass(className);
 		const property = UIClass.properties.find(property => property.name === attributeName);
@@ -150,6 +150,7 @@ export class TagAttributeLinter extends XMLLinter {
 
 		if (isValueValid && property?.defaultValue && attributeValue === property.defaultValue) {
 			isValueValid = false;
+			severity = Severity.Information;
 			message = `Value "${attributeValue}" is unnecessary, it is the sames as default value of "${property.name}" property`;
 		}
 
