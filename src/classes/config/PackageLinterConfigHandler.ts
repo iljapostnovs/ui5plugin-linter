@@ -19,20 +19,32 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		const componentsToInclude = this._package.ui5?.ui5linter?.componentsToInclude;
 		const componentsToExclude = this._package.ui5?.ui5linter?.componentsToExclude;
 		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassExceptions;
-		if (jsClassesToExclude) {
+		const xmlClassesToExclude = this._package.ui5?.ui5linter?.xmlClassExceptions;
+		if (
+			componentsToInclude ||
+			componentsToExclude ||
+			jsClassesToExclude ||
+			xmlClassesToExclude
+		) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
-				const manifest = this._parser.fileReader.getManifestForClass(className);
+				if (componentsToInclude || componentsToExclude) {
+					const manifest = this._parser.fileReader.getManifestForClass(className);
 
-				if (manifest?.componentName) {
-					if (componentsToInclude) {
-						shouldBeSkipped = !componentsToInclude.includes(manifest.componentName);
-					} else if (componentsToExclude) {
-						shouldBeSkipped = componentsToExclude.includes(manifest.componentName);
+					if (manifest?.componentName) {
+						if (componentsToInclude) {
+							shouldBeSkipped = !componentsToInclude.includes(manifest.componentName);
+						} else if (componentsToExclude) {
+							shouldBeSkipped = componentsToExclude.includes(manifest.componentName);
+						}
 					}
 				}
+
 				if (!shouldBeSkipped && jsClassesToExclude && document.fileName.endsWith(".js")) {
 					shouldBeSkipped = jsClassesToExclude.includes(className);
+				}
+				if (!shouldBeSkipped && xmlClassesToExclude && document.fileName.endsWith(".xml")) {
+					shouldBeSkipped = xmlClassesToExclude.includes(className);
 				}
 			}
 		}
