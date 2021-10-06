@@ -17,12 +17,16 @@ export class PackageConfigHandler implements ILinterConfigHandler {
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
 		const componentsToIgnore = this._package.ui5?.ui5linter?.componentsToIgnore;
-		if (componentsToIgnore) {
+		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassesToExclude;
+		if (componentsToIgnore || jsClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
 				const manifest = this._parser.fileReader.getManifestForClass(className);
-				if (manifest?.componentName) {
+				if (manifest?.componentName && componentsToIgnore) {
 					shouldBeSkipped = componentsToIgnore.includes(manifest.componentName);
+				}
+				if (!shouldBeSkipped && jsClassesToExclude && document.fileName.endsWith(".js")) {
+					shouldBeSkipped = jsClassesToExclude.includes(className);
 				}
 			}
 		}
