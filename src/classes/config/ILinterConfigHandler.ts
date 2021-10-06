@@ -1,5 +1,5 @@
 import { TextDocument } from "ui5plugin-parser";
-import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../../../Linter";
+import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 
 export interface JSLinterException {
 	className: string;
