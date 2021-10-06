@@ -8,7 +8,7 @@ Run ```npm install ui5plugin-linter -g``` in your command line and ```ui5linter`
 ---
 ## Config
 ### Linter config
-UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.
+UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.  
 Default config is as follows:
 ```json
 {
@@ -108,12 +108,13 @@ Default config is as follows:
   }
 }
 ```
-It is possible to override properties in your ```package.json```. Check [Configuration example](#configuration-example)
+It is possible to override properties in your ```package.json```. See [Configuration example](#configuration-example)
 > In case of ```jsLinterExceptions``` the exceptions which will be found in ```package.json``` of CWD will be added to the default exceptions, in the rest of the cases properties will be overwritten
 
 ### Parser config
 It is possible to add config for [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) in the same ```package.json``` which will be used by the parser of the linter.
-> Check [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) -> ```Config default values``` as a reference for parser properties and see [Configuration example](#configuration-example)
+> Check [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) -> ```Config default values``` as a reference for parser properties
+> See [Configuration example](#configuration-example)
 ---
 ## package.json interface
 The technical interface of possible entries:
@@ -171,7 +172,7 @@ enum Severity {
 
 ---
 ## Configuration example
-```json
+```jsonc
 {
   "ui5": {
     "ui5parser": {
@@ -196,12 +197,21 @@ enum Severity {
       },
       "jsLinterExceptions": [{
         "className": "com.test.MyCustomClass",
-        "memberName": "myCustomMethod", //method or field name
-        "applyToChildren": true //all classes which extends com.test.MyCustomClass will inherit this exception as well
+		/*method or field name*/
+        "memberName": "myCustomMethod",
+		/*all classes which extends com.test.MyCustomClass will
+		inherit this exception as well*/
+        "applyToChildren": true
       }],
-      "jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"], //classes to exclude from linting
-      "xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"], //views and fragments to exclude from linting
-      "componentsToInclude": ["com.test"], //it makes sense to use only componentsToInclude or componentsToExclude, but not at once. "componentsToExclude" comes in handy when you want to exclude e.g. libraries. "componentsToInclude" comes handy when you have many different components which project depends on, but it is necessary to lint only one
+	  /*classes to exclude from linting*/
+      "jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"],
+	  /*views and fragments to exclude from linting*/
+      "xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"],
+      "componentsToInclude": ["com.test"],
+	  /*it makes sense to use only componentsToInclude or componentsToExclude, but not at once.
+	  "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
+	  "componentsToInclude" comes handy when you have many different components which project depends
+	  on, but it is necessary to lint only one*/
       "componentsToExclude": ["com.custom.library"]
     }
   }
