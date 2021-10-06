@@ -8,7 +8,7 @@ Run ```npm install ui5plugin-linter -g``` in your command line and ```ui5linter`
 ---
 ## Config
 ### Linter config
-UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.  
+UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.
 Default config is as follows:
 ```json
 {
@@ -197,21 +197,21 @@ enum Severity {
       },
       "jsLinterExceptions": [{
         "className": "com.test.MyCustomClass",
-		/*method or field name*/
+        /*method or field name*/
         "memberName": "myCustomMethod",
-		/*all classes which extends com.test.MyCustomClass will
-		inherit this exception as well*/
+        /*all classes which extends com.test.MyCustomClass will
+        inherit this exception as well*/
         "applyToChildren": true
       }],
-	  /*classes to exclude from linting*/
+      /*classes to exclude from linting*/
       "jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"],
-	  /*views and fragments to exclude from linting*/
+      /*views and fragments to exclude from linting*/
       "xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"],
       "componentsToInclude": ["com.test"],
-	  /*it makes sense to use only componentsToInclude or componentsToExclude, but not at once.
-	  "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
-	  "componentsToInclude" comes handy when you have many different components which project depends
-	  on, but it is necessary to lint only one*/
+      /*it makes sense to use only componentsToInclude or componentsToExclude, but not at once.
+      "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
+      "componentsToInclude" comes handy when you have many different components which project depends
+      on, but it is necessary to lint only one*/
       "componentsToExclude": ["com.custom.library"]
     }
   }
