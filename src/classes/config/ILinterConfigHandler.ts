@@ -22,9 +22,9 @@ export interface IUI5LinterEntryFields {
 	usage?: {
 		[key in JSLinters | XMLLinters | PropertiesLinters]: boolean
 	},
-	JSLinterExceptions?: JSLinterException[],
+	jsLinterExceptions?: JSLinterException[],
 	componentsToIgnore?: string[];
-	jsClassesToExclude?: string[];
+	jsClassExceptions?: string[];
 }
 
 export interface IUI5LinterEntry {
