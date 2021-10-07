@@ -44,7 +44,7 @@ export class TagAttributeLinter extends XMLLinter {
 								if (!attributeValidation.valid) {
 									const indexOfTagBegining = tag.text.indexOf(tagAttribute);
 									const positionBegin = tag.positionBegin + indexOfTagBegining;
-									const positionEnd = positionBegin + tagAttribute.length - 1;
+									const positionEnd = positionBegin + tagAttribute.length;
 									const range = RangeAdapter.offsetsRange(documentText, positionBegin, positionEnd);
 									if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
 										errors.push({
