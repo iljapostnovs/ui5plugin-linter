@@ -19,9 +19,6 @@ export class TagLinter extends XMLLinter {
 			});
 		}
 
-		// console.time("Tag linter");
-		// console.timeEnd("Tag linter");
-
 		return errors;
 	}
 
@@ -31,7 +28,7 @@ export class TagLinter extends XMLLinter {
 		const tagClass = XMLParser.getFullClassNameFromTag(tag, XMLFile);
 		const documentClassName = this._parser.fileReader.getClassNameFromPath(XMLFile.fsPath) || "";
 		if (!tagClass) {
-			const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd);
+			const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
 
 			if (range) {
 				const prefix = XMLParser.getTagPrefix(tag.text);
@@ -52,74 +49,90 @@ export class TagLinter extends XMLLinter {
 			const isAggregation = tagName && tagName[0] ? tagName[0].toLowerCase() === tagName[0] : false;
 
 			if (!isAggregation) {
-				const UIClass = this._parser.classFactory.getUIClass(tagClass);
-				if (!UIClass.classExists && !this._isClassException(tagClass)) {
-					const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd);
-					if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
-						errors.push({
-							code: "UI5plugin",
-							message: `"${tagClass}" class doesn't exist`,
-							source: this.className,
-							severity: this._configHandler.getSeverity(this.className),
-							range: range,
-							className: documentClassName,
-							fsPath: XMLFile.fsPath
-						});
-					}
-				} else if (UIClass.classExists && UIClass.deprecated && !this._isClassException(tagClass)) {
-					const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd);
-					if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
-						errors.push({
-							code: "UI5plugin",
-							message: `"${tagClass}" class is deprecated`,
-							source: this.className,
-							severity: this._configHandler.getSeverity(this.className),
-							range: range,
-							className: documentClassName,
-							fsPath: XMLFile.fsPath,
-							tags: [DiagnosticTag.Deprecated]
-						});
-					}
-				}
+				this._lintClass(tagClass, documentText, tag, XMLFile, errors, documentClassName);
 			} else {
-				let position = tag.positionBegin;
-				if (tag.text.startsWith("</")) {
-					position = tag.positionEnd;
-				}
-				const parentTag = XMLParser.getParentTagAtPosition(XMLFile, position - 1);
-				if (parentTag.text && tagName) {
-					const parentTagPrefix = XMLParser.getTagPrefix(parentTag.text);
-					const tagClass = XMLParser.getFullClassNameFromTag(parentTag, XMLFile);
-					if (tagClass) {
-						let errorText: string | undefined;
-						const parentTagPrefixLibrary = XMLParser.getLibraryPathFromTagPrefix(XMLFile, parentTagPrefix, parentTag.positionBegin);
-						const aggregation = this._findAggregation(tagClass, tagName);
-						if (!aggregation) {
-							errorText = `"${tagName}" aggregation doesn't exist in "${tagClass}"`;
-						} else if (parentTagPrefixLibrary !== tagPrefixLibrary) {
-							errorText = `Library "${parentTagPrefixLibrary}" of class "${tagClass}" doesn't match with aggregation tag library "${tagPrefixLibrary}"`;
-						}
-
-						if (errorText) {
-							const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd);
-							if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
-								errors.push({
-									code: "UI5plugin",
-									message: errorText,
-									source: this.className,
-									range: range,
-									severity: this._configHandler.getSeverity(this.className),
-									className: documentClassName,
-									fsPath: XMLFile.fsPath
-								});
-							}
-						}
-					}
-				}
+				this._lintAggregation(tag, XMLFile, tagName, tagPrefixLibrary, documentText, errors, documentClassName);
 			}
 		}
 
 		return errors;
+	}
+
+	private _lintAggregation(tag: ITag, XMLFile: IXMLFile, tagName: string | undefined, tagPrefixLibrary: string, documentText: string, errors: IXMLError[], documentClassName: string) {
+		let position = tag.positionBegin;
+		if (tag.text.startsWith("</")) {
+			position = tag.positionEnd;
+		}
+		const parentTag = XMLParser.getParentTagAtPosition(XMLFile, position - 1);
+		if (parentTag.text && tagName) {
+			const parentTagPrefix = XMLParser.getTagPrefix(parentTag.text);
+			const tagClass = XMLParser.getFullClassNameFromTag(parentTag, XMLFile);
+			if (tagClass) {
+				let errorText: string | undefined;
+				const parentTagPrefixLibrary = XMLParser.getLibraryPathFromTagPrefix(XMLFile, parentTagPrefix, parentTag.positionBegin);
+				const aggregation = this._findAggregation(tagClass, tagName);
+				if (!aggregation) {
+					errorText = `"${tagName}" aggregation doesn't exist in "${tagClass}"`;
+				} else if (parentTagPrefixLibrary !== tagPrefixLibrary) {
+					errorText = `Library "${parentTagPrefixLibrary}" of class "${tagClass}" doesn't match with aggregation tag library "${tagPrefixLibrary}"`;
+				}
+
+				if (errorText) {
+					const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
+					if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
+						errors.push({
+							code: "UI5plugin",
+							message: errorText,
+							source: this.className,
+							range: range,
+							severity: this._configHandler.getSeverity(this.className),
+							className: documentClassName,
+							fsPath: XMLFile.fsPath
+						});
+					}
+				}
+			}
+		}
+	}
+
+	private _lintClass(tagClass: string, documentText: string, tag: ITag, XMLFile: IXMLFile, errors: IXMLError[], documentClassName: string) {
+		const UIClass = this._parser.classFactory.getUIClass(tagClass);
+		if (!UIClass.classExists && !this._isClassException(tagClass)) {
+			this._lintIfClassExists(documentText, tag, XMLFile, errors, tagClass, documentClassName);
+		} else if (UIClass.classExists && UIClass.deprecated && !this._isClassException(tagClass)) {
+			this._lintIfClassIsDeprecated(documentText, tag, XMLFile, errors, tagClass, documentClassName);
+		}
+	}
+
+	private _lintIfClassIsDeprecated(documentText: string, tag: ITag, XMLFile: IXMLFile, errors: IXMLError[], tagClass: string, documentClassName: string) {
+		const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
+		if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
+			errors.push({
+				code: "UI5plugin",
+				message: `"${tagClass}" class is deprecated`,
+				source: this.className,
+				severity: this._configHandler.getSeverity(this.className),
+				range: range,
+				className: documentClassName,
+				fsPath: XMLFile.fsPath,
+				tags: [DiagnosticTag.Deprecated]
+			});
+		}
+	}
+
+	private _lintIfClassExists(documentText: string, tag: ITag, XMLFile: IXMLFile, errors: IXMLError[], tagClass: string, documentClassName: string) {
+		const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
+		if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
+			errors.push({
+				code: "UI5plugin",
+				message: `"${tagClass}" class doesn't exist`,
+				source: this.className,
+				severity: this._configHandler.getSeverity(this.className),
+				range: range,
+				className: documentClassName,
+				fsPath: XMLFile.fsPath
+			});
+		}
 	}
 
 	private _findAggregation(className: string, aggregationName: string): IUIAggregation | undefined {
