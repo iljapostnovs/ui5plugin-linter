@@ -13,13 +13,12 @@ export abstract class XMLLinter extends Linter {
 		const timeStart = new Date().getTime();
 
 		if (this._configHandler.getLinterUsage(this.className) && !this._configHandler.getIfLintingShouldBeSkipped(document)) {
-			errors.push(...this._getErrors(document));
-			if (errors instanceof Promise) {
-				errors.then(() => {
-					this._logTime(timeStart, document);
-				});
-			} else {
+			try {
+				errors.push(...this._getErrors(document));
 				this._logTime(timeStart, document);
+			} catch (error: any) {
+				console.error(error);
+				console.error(`Failed to lint ${document.fileName}, error: ${error.message}`);
 			}
 		}
 

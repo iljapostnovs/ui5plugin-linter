@@ -5,6 +5,7 @@ import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parse
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
+import { IUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
 export class WrongParametersLinter extends JSLinter {
 	protected className = JSLinters.WrongParametersLinter;
 	public static timePerChar = 0;
@@ -18,7 +19,7 @@ export class WrongParametersLinter extends JSLinter {
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
 			if (UIClass instanceof CustomUIClass && UIClass.acornClassBody) {
-				UIClass.acornClassBody.properties.forEach((node: any) => {
+				UIClass.acornClassBody.properties?.forEach((node: any) => {
 					const content = this._parser.syntaxAnalyser.expandAllContent(node.value);
 					const calls = content.filter(node => node.type === "CallExpression");
 					calls.forEach(call => {
@@ -35,60 +36,9 @@ export class WrongParametersLinter extends JSLinter {
 									if (method && !(<ICustomClassUIMethod>method).ui5ignored) {
 										const isException = this._configHandler.checkIfMemberIsException(fieldsAndMethods.className, method.name);
 										if (!isException) {
-
-											const methodParams = method.params;
-											const mandatoryMethodParams = methodParams.filter(param => !param.isOptional && param.type !== "boolean");
-											if (params.length < mandatoryMethodParams.length || params.length > methodParams.length) {
-												const range = RangeAdapter.acornLocationToRange(call.callee.property.loc);
-												errors.push({
-													acornNode: call,
-													className: UIClass.className,
-													code: "UI5Plugin",
-													source: this.className,
-													message: `Method "${methodName}" has ${methodParams.length} (${mandatoryMethodParams.length} mandatory) param(s), but you provided ${params.length}`,
-													range: range,
-													severity: this._configHandler.getSeverity(this.className),
-													fsPath: document.fileName
-												});
-											}
-
+											this._lintParamQuantity(method, params, call, errors, UIClass, methodName, document);
 											params.forEach((param: any, i: number) => {
-												const paramFromMethod = method.params[i];
-												if (paramFromMethod && (paramFromMethod.type !== "any" && paramFromMethod.type !== "void" && paramFromMethod.type)) {
-													const classNameOfTheParam = this._parser.syntaxAnalyser.getClassNameFromSingleAcornNode(param, UIClass);
-
-													if (classNameOfTheParam && classNameOfTheParam !== paramFromMethod.type) {
-														const { expectedClass, actualClass } = this._swapClassNames(paramFromMethod.type, classNameOfTheParam);
-														const paramFromMethodTypes = expectedClass.split("|");
-														const classNamesOfTheParam = actualClass.split("|");
-														let typeMismatch = !this._getIfClassNameIntersects(paramFromMethodTypes, classNamesOfTheParam);
-														if (typeMismatch) {
-															typeMismatch = !paramFromMethodTypes.find(className => {
-																return !!classNamesOfTheParam.find(classNameOfTheParam => {
-																	return !this._getIfClassesDiffers(className, classNameOfTheParam)
-																});
-															});
-														}
-														if (typeMismatch) {
-															const [className1, className2] = [
-																paramFromMethod.type.includes("__map__") ? "map" : paramFromMethod.type,
-																classNameOfTheParam.includes("__map__") ? "map" : classNameOfTheParam
-															];
-															const range = RangeAdapter.acornLocationToRange(param.loc);
-															errors.push({
-																acornNode: param,
-																code: "UI5Plugin",
-																className: UIClass.className,
-																source: this.className,
-																message: `"${paramFromMethod.name}" param is of type "${className1}", but provided "${className2}"`,
-																range: range,
-																severity: this._configHandler.getSeverity(this.className),
-																fsPath: document.fileName
-															});
-														}
-													}
-												}
-
+												this._lintParamType(method, i, param, UIClass, errors, document);
 											});
 										}
 									}
@@ -105,6 +55,62 @@ export class WrongParametersLinter extends JSLinter {
 		WrongParametersLinter.timePerChar = (end - start) / document.getText().length;
 		// console.timeEnd("WrongParameterLinter");
 		return errors;
+	}
+
+	private _lintParamQuantity(method: IUIMethod, params: any, call: any, errors: IError[], UIClass: CustomUIClass, methodName: any, document: TextDocument) {
+		const methodParams = method.params;
+		const mandatoryMethodParams = methodParams.filter(param => !param.isOptional && param.type !== "boolean");
+		if (params.length < mandatoryMethodParams.length || params.length > methodParams.length) {
+			const range = RangeAdapter.acornLocationToRange(call.callee.property.loc);
+			errors.push({
+				acornNode: call,
+				className: UIClass.className,
+				code: "UI5Plugin",
+				source: this.className,
+				message: `Method "${methodName}" has ${methodParams.length} (${mandatoryMethodParams.length} mandatory) param(s), but you provided ${params.length}`,
+				range: range,
+				severity: this._configHandler.getSeverity(this.className),
+				fsPath: document.fileName
+			});
+		}
+	}
+
+	private _lintParamType(method: IUIMethod, i: number, param: any, UIClass: CustomUIClass, errors: IError[], document: TextDocument) {
+		const paramFromMethod = method.params[i];
+		if (paramFromMethod && (paramFromMethod.type !== "any" && paramFromMethod.type !== "void" && paramFromMethod.type)) {
+			const classNameOfTheParam = this._parser.syntaxAnalyser.getClassNameFromSingleAcornNode(param, UIClass);
+
+			if (classNameOfTheParam && classNameOfTheParam !== paramFromMethod.type) {
+				const { expectedClass, actualClass } = this._swapClassNames(paramFromMethod.type, classNameOfTheParam);
+				const paramFromMethodTypes = expectedClass.split("|");
+				const classNamesOfTheParam = actualClass.split("|");
+				let typeMismatch = !this._getIfClassNameIntersects(paramFromMethodTypes, classNamesOfTheParam);
+				if (typeMismatch) {
+					typeMismatch = !paramFromMethodTypes.find(className => {
+						return !!classNamesOfTheParam.find(classNameOfTheParam => {
+							return !this._getIfClassesDiffers(className, classNameOfTheParam);
+						});
+					});
+				}
+				if (typeMismatch) {
+					const [className1, className2] = [
+						paramFromMethod.type.includes("__map__") ? "map" : paramFromMethod.type,
+						classNameOfTheParam.includes("__map__") ? "map" : classNameOfTheParam
+					];
+					const range = RangeAdapter.acornLocationToRange(param.loc);
+					errors.push({
+						acornNode: param,
+						code: "UI5Plugin",
+						className: UIClass.className,
+						source: this.className,
+						message: `"${paramFromMethod.name}" param is of type "${className1}", but provided "${className2}"`,
+						range: range,
+						severity: this._configHandler.getSeverity(this.className),
+						fsPath: document.fileName
+					});
+				}
+			}
+		}
 	}
 
 	private _getIfClassNameIntersects(classNames1: string[], classNames2: string[]) {
