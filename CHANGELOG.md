@@ -1,3 +1,6 @@
+## 0.5.3 (10-10-2021)
+* Update parser
+
 ## 0.5.2 (08-10-2021)
 * XML Linter position bugfixes
 
