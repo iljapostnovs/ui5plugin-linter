@@ -2,13 +2,19 @@ import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
+import * as fs from "fs";
 export class PackageLinterConfigHandler implements ILinterConfigHandler {
+	static readonly packageCache: { [key: string]: IUI5PackageConfigEntry } = {};
 	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: UI5Parser;
 	constructor(parser: UI5Parser, packagePath = join(process.cwd(), "/package.json")) {
 		this._parser = parser;
 		try {
-			this._package = require(packagePath);
+			if (PackageLinterConfigHandler.packageCache[packagePath]) {
+				this._package = PackageLinterConfigHandler.packageCache[packagePath];
+			} else {
+				this._package = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+			}
 		} catch (error) {
 			this._package = {};
 		}

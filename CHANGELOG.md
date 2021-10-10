@@ -1,3 +1,6 @@
+## 0.5.4 (11-10-2021)
+* Remove dynamic require for package.json reading
+
 ## 0.5.3 (10-10-2021)
 * Update parser
 
