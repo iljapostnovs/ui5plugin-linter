@@ -14,6 +14,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 				this._package = PackageLinterConfigHandler.packageCache[packagePath];
 			} else {
 				this._package = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+				PackageLinterConfigHandler.packageCache[packagePath] = this._package;
 			}
 		} catch (error) {
 			this._package = {};

@@ -1,3 +1,6 @@
+## 0.5.5 (11-10-2021)
+* Cache bugfixes
+
 ## 0.5.4 (11-10-2021)
 * Remove dynamic require for package.json reading
 
