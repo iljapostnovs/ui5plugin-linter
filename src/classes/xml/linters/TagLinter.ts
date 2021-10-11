@@ -14,8 +14,11 @@ export class TagLinter extends XMLLinter {
 		const XMLFile = TextDocumentTransformer.toXMLFile(document);
 		if (XMLFile) {
 			const tags = XMLParser.getAllTags(XMLFile);
-			tags.forEach(tag => {
-				errors.push(...this._getClassNameErrors(tag, XMLFile));
+			tags.forEach((tag, index) => {
+				const previousTag = tags[index - 1];
+				if (!previousTag || previousTag.text !== "<!-- @ui5ignore -->") {
+					errors.push(...this._getClassNameErrors(tag, XMLFile));
+				}
 			});
 		}
 
