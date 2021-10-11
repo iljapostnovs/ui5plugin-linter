@@ -1,3 +1,6 @@
+## 0.5.6 (11-10-2021)
+* Fix tag namespace linter for commented text in XML
+
 ## 0.5.5 (11-10-2021)
 * Cache bugfixes
 

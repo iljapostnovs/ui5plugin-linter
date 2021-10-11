@@ -30,7 +30,7 @@ export class TagLinter extends XMLLinter {
 		if (!tagClass) {
 			const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
 
-			if (range) {
+			if (range && XMLParser.getIfPositionIsNotInComments(XMLFile, tag.positionBegin)) {
 				const prefix = XMLParser.getTagPrefix(tag.text);
 				errors.push({
 					code: "UI5plugin",
