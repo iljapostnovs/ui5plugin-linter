@@ -1,3 +1,6 @@
+## 0.5.7 (11-10-2021)
+* Add @ui5ignore support for tag linter
+
 ## 0.5.6 (11-10-2021)
 * Fix tag namespace linter for commented text in XML
 
