@@ -16,6 +16,55 @@ ui5linter
 ## Config
 ### Linter config
 UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.</br>
+### Configuration example
+```jsonc
+{
+  "ui5": {
+    "ui5parser": {
+      "ui5version": "1.84.19",
+      "dataSource": "https://sapui5.hana.ondemand.com/",
+      "rejectUnauthorized": true,
+      "libsToLoad": [
+        "sap.uxap",
+        "sap.viz"
+      ]
+    },
+    "ui5linter": {
+      "severity": {
+        "WrongParametersLinter": "Error",
+        "WrongOverrideLinter": "Warning",
+        "WrongImportLinter": "Information",
+        "WrongFilePathLinter": "Hint"
+      },
+      "usage": {
+        "WrongParametersLinter": true,
+        "WrongOverrideLinter": false
+      },
+      "jsLinterExceptions": [{
+        "className": "com.test.MyCustomClass",
+        /*method or field name*/
+        "memberName": "myCustomMethod",
+        /*all classes which extends com.test.MyCustomClass will
+        inherit this exception as well*/
+        "applyToChildren": true
+      }],
+      /*classes to exclude from linting*/
+      "jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"],
+      /*views and fragments to exclude from linting*/
+      "xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"],
+      "componentsToInclude": ["com.test"],
+      /*it makes sense to use only componentsToInclude or componentsToExclude, but not both at once.
+      "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
+      "componentsToInclude" comes handy when you have many different components which project depends
+      on, but it is necessary to lint only one*/
+      "componentsToExclude": ["com.custom.library"]
+    }
+  }
+}
+```
+
+---
+# Default linter config
 Default config is as follows:
 ```json
 {
@@ -122,53 +171,7 @@ It is possible to override properties in your ```package.json```. See [Configura
 It is possible to add config for [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) as well.
 > Check [ui5plugin-parser](https://www.npmjs.com/package/ui5plugin-parser) -> ```Config default values``` as a reference for parser properties</br>
 > See [Configuration example](#configuration-example)
----
-## Configuration example
-```jsonc
-{
-  "ui5": {
-    "ui5parser": {
-      "ui5version": "1.84.19",
-      "dataSource": "https://sapui5.hana.ondemand.com/",
-      "rejectUnauthorized": true,
-      "libsToLoad": [
-        "sap.uxap",
-        "sap.viz"
-      ]
-    },
-    "ui5linter": {
-      "severity": {
-        "WrongParametersLinter": "Error",
-        "WrongOverrideLinter": "Warning",
-        "WrongImportLinter": "Information",
-        "WrongFilePathLinter": "Hint"
-      },
-      "usage": {
-        "WrongParametersLinter": true,
-        "WrongOverrideLinter": false
-      },
-      "jsLinterExceptions": [{
-        "className": "com.test.MyCustomClass",
-        /*method or field name*/
-        "memberName": "myCustomMethod",
-        /*all classes which extends com.test.MyCustomClass will
-        inherit this exception as well*/
-        "applyToChildren": true
-      }],
-      /*classes to exclude from linting*/
-      "jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"],
-      /*views and fragments to exclude from linting*/
-      "xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"],
-      "componentsToInclude": ["com.test"],
-      /*it makes sense to use only componentsToInclude or componentsToExclude, but not both at once.
-      "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
-      "componentsToInclude" comes handy when you have many different components which project depends
-      on, but it is necessary to lint only one*/
-      "componentsToExclude": ["com.custom.library"]
-    }
-  }
-}
-```
+
 ---
 ## package.json interface
 The technical interface of possible entries:
