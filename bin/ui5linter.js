@@ -6,6 +6,9 @@ const Severity = require("../dist/classes/Linter").Severity;
 
 (async function() {
 	const parser = UI5Parser.getInstance();
+	if (process.argv.includes("--rmcache")) {
+		parser.clearCache();
+	}
 	await parser.initialize();
 	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
 	const XMLLinterErrorFactory = require("../dist/classes/xml/XMLLinterErrorFactory").XMLLinterErrorFactory;

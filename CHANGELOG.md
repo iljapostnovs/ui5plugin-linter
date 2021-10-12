@@ -1,3 +1,6 @@
+## 0.5.8 (12-10-2021)
+* Add --rmcache command
+
 ## 0.5.7 (11-10-2021)
 * Add @ui5ignore support for tag linter
 
