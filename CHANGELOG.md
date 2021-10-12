@@ -1,3 +1,6 @@
+## 0.5.9 (12-10-2021)
+* Position bugfix for Interface linter and abstract class linter
+
 ## 0.5.8 (12-10-2021)
 * Add --rmcache command
 

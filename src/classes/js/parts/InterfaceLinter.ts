@@ -34,8 +34,8 @@ export class InterfaceLinter extends JSLinter {
 					code: "UI5Plugin",
 					message: `Interface "${member.owner}" requires "${member.name}" member implementation`,
 					range: {
-						start: { line: 0, column: 0 },
-						end: { line: 0, column: 0 }
+						start: { line: 1, column: 0 },
+						end: { line: 1, column: 0 }
 					},
 					severity: this._configHandler.getSeverity(this.className),
 					fsPath: document.fileName
