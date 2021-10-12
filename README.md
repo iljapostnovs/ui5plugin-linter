@@ -16,6 +16,11 @@ ui5linter
 ## Config
 ### Linter config
 UI5 Linter searches for ```package.json``` in your CWD (Current Working Directory) and locates the config there.</br>
+> **Cache** <br/>
+> ui5plugin-parser preload the library metadata and stores it in cache. If "libsToLoad" were changed, it is necessary to clear cache. It is possible by adding ```--rmcache``` flag to ui5linter: <br/>
+>```cmd
+>ui5linter --rmcache
+>```
 ### Configuration example
 ```jsonc
 {
