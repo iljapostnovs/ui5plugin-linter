@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const UI5Parser = require("ui5plugin-parser").UI5Parser;
 const TextDocument = require("ui5plugin-parser").TextDocument;
+const WorkspaceFolder = require("ui5plugin-parser").WorkspaceFolder;
 const chalk = require("chalk");
 const Severity = require("../dist/classes/Linter").Severity;
 
@@ -9,7 +10,16 @@ const Severity = require("../dist/classes/Linter").Severity;
 	if (process.argv.includes("--rmcache")) {
 		parser.clearCache();
 	}
-	await parser.initialize();
+
+	const workspaceFolders = [new WorkspaceFolder(process.cwd())];
+	const PackageLinterConfigHandler = require("../dist/classes/config/PackageLinterConfigHandler").PackageLinterConfigHandler;
+	const additionalWorkspacePaths = PackageLinterConfigHandler.getPackageAdditionalWorkspacePaths();
+	if (additionalWorkspacePaths) {
+		const path = require("path");
+		const resolvedPaths = additionalWorkspacePaths.map(additionalComponent => new WorkspaceFolder(path.resolve(additionalComponent)));
+		workspaceFolders.push(...resolvedPaths);
+	}
+	await parser.initialize(workspaceFolders);
 	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
 	const XMLLinterErrorFactory = require("../dist/classes/xml/XMLLinterErrorFactory").XMLLinterErrorFactory;
 	const PropertiesLinterErrorFactory = require("../dist/classes/properties/PropertiesLinterErrorFactory").PropertiesLinterErrorFactory;

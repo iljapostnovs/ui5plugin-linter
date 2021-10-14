@@ -62,7 +62,12 @@ UI5 Linter searches for ```package.json``` in your CWD (Current Working Director
       "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
       "componentsToInclude" comes handy when you have many different components which project depends
       on, but it is necessary to lint only one*/
-      "componentsToExclude": ["com.custom.library"]
+      "componentsToExclude": ["com.custom.library"],
+      //Handy to add additional workspace paths if e.g. library is outside of CWD
+      "additionalWorkspacePaths": [
+        "C:\\MyLibrary",
+        "../MyLibrary"
+      ]
     }
   }
 }
@@ -164,7 +169,8 @@ Default config is as follows:
       "jsClassExceptions": [],
       "xmlClassExceptions": [],
       "componentsToInclude": [],
-      "componentsToExclude": []
+      "componentsToExclude": [],
+      "additionalWorkspacePaths": []
     }
   }
 }
@@ -199,6 +205,7 @@ interface IUI5LinterEntryFields {
   xmlClassExceptions?: string[]
   componentsToInclude?: string[]
   componentsToExclude?: string[]
+  additionalWorkspacePaths?: string[]
 }
 ```
 Enumerations:
