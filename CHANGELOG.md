@@ -1,3 +1,6 @@
+## 0.5.12 (14-10-2021)
+* Bugfix for reference linter
+
 ## 0.5.11 (14-10-2021)
 * Update parser
 
