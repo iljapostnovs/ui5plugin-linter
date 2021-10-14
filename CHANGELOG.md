@@ -1,4 +1,7 @@
 ## 0.5.13 (14-10-2021)
+* Update parser
+
+## 0.5.13 (14-10-2021)
 * Add UI5 version to console output
 * Add deprecation errors for class members
 
