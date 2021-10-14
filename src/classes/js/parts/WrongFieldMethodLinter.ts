@@ -2,8 +2,10 @@ import { TextDocument } from "ui5plugin-parser";
 import { CustomUIClass, UI5Ignoreable } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
-import { JSLinters, IError, CustomDiagnosticType } from "../../Linter";
+import { JSLinters, IError, CustomDiagnosticType, DiagnosticTag } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
+import { IFieldsAndMethods } from "ui5plugin-parser/dist/classes/UI5Classes/interfaces/IUIClassFactory";
+import { IMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
 export class WrongFieldMethodLinter extends JSLinter {
 	protected className = JSLinters.WrongFieldMethodLinter;
 	public static timePerChar = 0;
@@ -52,7 +54,7 @@ export class WrongFieldMethodLinter extends JSLinter {
 						nextNode = nodeStack.shift();
 						nodes.push(nextNode);
 					}
-					let className = this._parser.syntaxAnalyser.findClassNameForStack(nodes.concat([]), currentClassName, currentClassName, true);
+					const className = this._parser.syntaxAnalyser.findClassNameForStack(nodes.concat([]), currentClassName, currentClassName, true);
 					const isException = this._checkIfClassNameIsException(className);
 					if (!className || isException || nextNode?.type === "Identifier" && nextNode?.name === "sap") {
 						droppedNodes.push(...nodeStack);
@@ -70,74 +72,36 @@ export class WrongFieldMethodLinter extends JSLinter {
 						const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
 
 						if (nextNodeName && !isMethodException) {
-							const fieldsAndMethods = classNames.map(className => strategy.destructueFieldsAndMethodsAccordingToMapParams(className));
-							const singleFieldsAndMethods = fieldsAndMethods.find(fieldsAndMethods => {
-								if (nextNode && fieldsAndMethods && nextNodeName) {
-									const method = fieldsAndMethods.methods.find(method => method.name === nextNodeName);
-									const field = fieldsAndMethods.fields.find(field => field.name === nextNodeName);
-
-									return method || field;
-								}
-
-								return false;
-							});
+							const singleFieldsAndMethods = this._getFieldsAndMethods(classNames, strategy, nextNode, nextNodeName);
 
 							if (!singleFieldsAndMethods) {
-								if (className.includes("__map__")) {
-									className = "map";
-								}
-								const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
-								if (!isMethodException) {
-									const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
-									errorNodes.push(nextNode);
-									errors.push({
-										message: `"${nextNodeName}" does not exist in "${className}"`,
-										code: "UI5Plugin",
-										source: this.className,
-										range: range,
-										acornNode: nextNode,
-										className: UIClass.className,
-										type: CustomDiagnosticType.NonExistentMethod,
-										methodName: nextNodeName,
-										sourceClassName: className,
-										severity: this._configHandler.getSeverity(this.className),
-										fsPath: document.fileName
-									});
+								const shouldBreak = this._fillNonExistantMethodError(className, nextNodeName, nextNode, errorNodes, errors, UIClass, document);
+								if (shouldBreak) {
 									break;
 								}
 							} else {
-								const member = singleFieldsAndMethods.fields.find(field => field.name === nextNodeName) || singleFieldsAndMethods.methods.find(method => method.name === nextNodeName);
-								const isIgnored = !!(<UI5Ignoreable>member)?.ui5ignored;
-								if (!isIgnored) {
-									let sErrorMessage = "";
-									if (member?.visibility === "protected") {
-										const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
-										if (currentDocumentClassName && !this._parser.classFactory.isClassAChildOfClassB(currentDocumentClassName, singleFieldsAndMethods.className)) {
-											sErrorMessage = `"${nextNodeName}" is a protected member of class "${member.owner}"`;
-										}
-									} else if (member?.visibility === "private") {
-										const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
-										if (currentDocumentClassName && member.owner !== currentDocumentClassName) {
-											sErrorMessage = `"${nextNodeName}" is a private member of class "${member.owner}"`;
-										}
-									}
-
-									if (sErrorMessage) {
+								const shouldBreak = this._fillAccessLevelModifierErrors(singleFieldsAndMethods, nextNodeName, document, nextNode, errorNodes, errors, UIClass, className);
+								if (shouldBreak) {
+									break;
+								} else {
+									const allMembers: IMember[] = [...singleFieldsAndMethods.fields, ...singleFieldsAndMethods.methods];
+									const member = allMembers.find(member => member.name === nextNodeName);
+									if (member?.deprecated) {
 										const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
 										errorNodes.push(nextNode);
 										errors.push({
-											message: sErrorMessage,
+											message: `"${nextNodeName}" is deprecated`,
 											code: "UI5Plugin",
 											source: this.className,
 											range: range,
 											acornNode: nextNode,
-											methodName: nextNodeName,
 											className: UIClass.className,
+											tags: [DiagnosticTag.Deprecated],
+											methodName: nextNodeName,
 											sourceClassName: className,
 											severity: this._configHandler.getSeverity(this.className),
 											fsPath: document.fileName
 										});
-										break;
 									}
 								}
 							}
@@ -159,6 +123,88 @@ export class WrongFieldMethodLinter extends JSLinter {
 		}
 
 		return errors;
+	}
+
+	private _fillNonExistantMethodError(className: string, nextNodeName: any, nextNode: any, errorNodes: any[], errors: IError[], UIClass: CustomUIClass, document: TextDocument) {
+		let shouldBreak = false;
+		if (className.includes("__map__")) {
+			className = "map";
+		}
+		const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
+		if (!isMethodException) {
+			const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
+			errorNodes.push(nextNode);
+			errors.push({
+				message: `"${nextNodeName}" does not exist in "${className}"`,
+				code: "UI5Plugin",
+				source: this.className,
+				range: range,
+				acornNode: nextNode,
+				className: UIClass.className,
+				type: CustomDiagnosticType.NonExistentMethod,
+				methodName: nextNodeName,
+				sourceClassName: className,
+				severity: this._configHandler.getSeverity(this.className),
+				fsPath: document.fileName
+			});
+			shouldBreak = true;
+		}
+
+		return shouldBreak;
+	}
+
+	private _fillAccessLevelModifierErrors(singleFieldsAndMethods: IFieldsAndMethods, nextNodeName: any, document: TextDocument, nextNode: any, errorNodes: any[], errors: IError[], UIClass: CustomUIClass, className: string) {
+		let shouldBreak = false;
+		const member = singleFieldsAndMethods.fields.find(field => field.name === nextNodeName) || singleFieldsAndMethods.methods.find(method => method.name === nextNodeName);
+		const isIgnored = !!(<UI5Ignoreable>member)?.ui5ignored;
+		if (!isIgnored) {
+			let sErrorMessage = "";
+			if (member?.visibility === "protected") {
+				const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
+				if (currentDocumentClassName && !this._parser.classFactory.isClassAChildOfClassB(currentDocumentClassName, singleFieldsAndMethods.className)) {
+					sErrorMessage = `"${nextNodeName}" is a protected member of class "${member.owner}"`;
+				}
+			} else if (member?.visibility === "private") {
+				const currentDocumentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
+				if (currentDocumentClassName && member.owner !== currentDocumentClassName) {
+					sErrorMessage = `"${nextNodeName}" is a private member of class "${member.owner}"`;
+				}
+			}
+
+			if (sErrorMessage) {
+				const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
+				errorNodes.push(nextNode);
+				errors.push({
+					message: sErrorMessage,
+					code: "UI5Plugin",
+					source: this.className,
+					range: range,
+					acornNode: nextNode,
+					methodName: nextNodeName,
+					className: UIClass.className,
+					sourceClassName: className,
+					severity: this._configHandler.getSeverity(this.className),
+					fsPath: document.fileName
+				});
+				shouldBreak = true;
+			}
+		}
+		return shouldBreak;
+	}
+
+	private _getFieldsAndMethods(classNames: string[], strategy: FieldsAndMethodForPositionBeforeCurrentStrategy, nextNode: any, nextNodeName: any) {
+		const fieldsAndMethods = classNames.map(className => strategy.destructueFieldsAndMethodsAccordingToMapParams(className));
+		const singleFieldsAndMethods = fieldsAndMethods.find(fieldsAndMethods => {
+			if (nextNode && fieldsAndMethods && nextNodeName) {
+				const method = fieldsAndMethods.methods.find(method => method.name === nextNodeName);
+				const field = fieldsAndMethods.fields.find(field => field.name === nextNodeName);
+
+				return method || field;
+			}
+
+			return false;
+		});
+		return singleFieldsAndMethods;
 	}
 
 	private _checkIfClassNameIsException(className = "") {
