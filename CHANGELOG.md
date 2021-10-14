@@ -1,3 +1,6 @@
+## 0.5.15 (15-10-2021)
+* Introduce additionalWorkspacePaths property for configuration
+
 ## 0.5.14 (14-10-2021)
 * Update parser
 

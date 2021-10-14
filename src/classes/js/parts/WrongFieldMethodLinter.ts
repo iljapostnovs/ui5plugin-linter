@@ -75,34 +75,19 @@ export class WrongFieldMethodLinter extends JSLinter {
 							const singleFieldsAndMethods = this._getFieldsAndMethods(classNames, strategy, nextNode, nextNodeName);
 
 							if (!singleFieldsAndMethods) {
-								const shouldBreak = this._fillNonExistantMethodError(className, nextNodeName, nextNode, errorNodes, errors, UIClass, document);
-								if (shouldBreak) {
-									break;
+								const isAnyMethodAnException = classNames.length > 0 ? classNames.some(className => this._configHandler.checkIfMemberIsException(className, nextNodeName)) : false;
+								if (!isAnyMethodAnException) {
+									const shouldBreak = this._fillNonExistantMethodError(className, nextNodeName, nextNode, errorNodes, errors, UIClass, document);
+									if (shouldBreak) {
+										break;
+									}
 								}
 							} else {
 								const shouldBreak = this._fillAccessLevelModifierErrors(singleFieldsAndMethods, nextNodeName, document, nextNode, errorNodes, errors, UIClass, className);
 								if (shouldBreak) {
 									break;
 								} else {
-									const allMembers: IMember[] = [...singleFieldsAndMethods.fields, ...singleFieldsAndMethods.methods];
-									const member = allMembers.find(member => member.name === nextNodeName);
-									if (member?.deprecated) {
-										const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
-										errorNodes.push(nextNode);
-										errors.push({
-											message: `"${nextNodeName}" is deprecated`,
-											code: "UI5Plugin",
-											source: this.className,
-											range: range,
-											acornNode: nextNode,
-											className: UIClass.className,
-											tags: [DiagnosticTag.Deprecated],
-											methodName: nextNodeName,
-											sourceClassName: className,
-											severity: this._configHandler.getSeverity(this.className),
-											fsPath: document.fileName
-										});
-									}
+									this._fillDeprecationErrors(singleFieldsAndMethods, nextNodeName, nextNode, errorNodes, errors, UIClass, className, document);
 								}
 							}
 						}
@@ -123,6 +108,28 @@ export class WrongFieldMethodLinter extends JSLinter {
 		}
 
 		return errors;
+	}
+
+	private _fillDeprecationErrors(singleFieldsAndMethods: IFieldsAndMethods, nextNodeName: any, nextNode: any, errorNodes: any[], errors: IError[], UIClass: CustomUIClass, className: string, document: TextDocument) {
+		const allMembers: IMember[] = [...singleFieldsAndMethods.fields, ...singleFieldsAndMethods.methods];
+		const member = allMembers.find(member => member.name === nextNodeName);
+		if (member?.deprecated) {
+			const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
+			errorNodes.push(nextNode);
+			errors.push({
+				message: `"${nextNodeName}" is deprecated`,
+				code: "UI5Plugin",
+				source: this.className,
+				range: range,
+				acornNode: nextNode,
+				className: UIClass.className,
+				tags: [DiagnosticTag.Deprecated],
+				methodName: nextNodeName,
+				sourceClassName: className,
+				severity: this._configHandler.getSeverity(this.className),
+				fsPath: document.fileName
+			});
+		}
 	}
 
 	private _fillNonExistantMethodError(className: string, nextNodeName: any, nextNode: any, errorNodes: any[], errors: IError[], UIClass: CustomUIClass, document: TextDocument) {

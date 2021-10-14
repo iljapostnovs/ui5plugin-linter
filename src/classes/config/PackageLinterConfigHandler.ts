@@ -21,6 +21,15 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		}
 	}
 
+	static getPackageAdditionalWorkspacePaths(packagePath = join(process.cwd(), "/package.json")) {
+		try {
+			const npmPackage: IUI5PackageConfigEntry = JSON.parse(fs.readFileSync(packagePath, "utf8")) || {};
+			return npmPackage.ui5?.ui5linter?.additionalWorkspacePaths;
+		} catch (error) {
+			return undefined;
+		}
+	}
+
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
 		const componentsToInclude = this._package.ui5?.ui5linter?.componentsToInclude;
@@ -222,6 +231,7 @@ export interface IUI5LinterEntryFields {
 	xmlClassExceptions?: string[]
 	componentsToInclude?: string[]
 	componentsToExclude?: string[]
+	additionalWorkspacePaths?: string[]
 }
 
 export interface IUI5LinterEntry {
