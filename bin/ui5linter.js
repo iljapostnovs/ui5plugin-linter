@@ -79,6 +79,8 @@ const Severity = require("../dist/classes/Linter").Severity;
 		console.log(chalk.bold.underline.redBright(`\nErrors: ${errors.length}\n`));
 	}
 
+	console.log(`UI5 Version: ${parser.configHandler.getUI5Version()}`);
+
 	if (errors.length > 0) {
 		process.exit(1);
 	} else {
