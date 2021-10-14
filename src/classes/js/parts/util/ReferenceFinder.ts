@@ -111,7 +111,7 @@ export class ReferenceFinder {
 	}
 
 	private _getCurrentMethodMentioning(member: ICustomClassUIMethod | ICustomClassUIField, UIClass: CustomUIClass) {
-		const regexp = new RegExp(`(?<=\\.)${member.name}(\\(|\\)|\\,|\\.|\\s|;|\\[)(?!=)`, "g");
+		const regexp = new RegExp(`(?<=\\.)${member.name}(\\(|\\)|\\,|\\.|\\s|;|\\[|\\])(?!=)`, "g");
 		const results: RegExpExecArray[] = [];
 		let result = regexp.exec(UIClass.classText);
 		while (result) {
