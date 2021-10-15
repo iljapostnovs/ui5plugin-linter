@@ -1,3 +1,6 @@
+## 0.5.16 (15-10-2021)
+* Make deprecation linter honor exceptions
+
 ## 0.5.15 (15-10-2021)
 * Introduce additionalWorkspacePaths property for configuration
 
