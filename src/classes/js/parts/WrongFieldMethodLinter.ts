@@ -111,24 +111,27 @@ export class WrongFieldMethodLinter extends JSLinter {
 	}
 
 	private _fillDeprecationErrors(singleFieldsAndMethods: IFieldsAndMethods, nextNodeName: any, nextNode: any, errorNodes: any[], errors: IError[], UIClass: CustomUIClass, className: string, document: TextDocument) {
-		const allMembers: IMember[] = [...singleFieldsAndMethods.fields, ...singleFieldsAndMethods.methods];
-		const member = allMembers.find(member => member.name === nextNodeName);
-		if (member?.deprecated) {
-			const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
-			errorNodes.push(nextNode);
-			errors.push({
-				message: `"${nextNodeName}" is deprecated`,
-				code: "UI5Plugin",
-				source: this.className,
-				range: range,
-				acornNode: nextNode,
-				className: UIClass.className,
-				tags: [DiagnosticTag.Deprecated],
-				methodName: nextNodeName,
-				sourceClassName: className,
-				severity: this._configHandler.getSeverity(this.className),
-				fsPath: document.fileName
-			});
+		const isMethodException = this._configHandler.checkIfMemberIsException(className, nextNodeName);
+		if (!isMethodException) {
+			const allMembers: IMember[] = [...singleFieldsAndMethods.fields, ...singleFieldsAndMethods.methods];
+			const member = allMembers.find(member => member.name === nextNodeName);
+			if (member?.deprecated) {
+				const range = RangeAdapter.acornLocationToRange(nextNode.property.loc);
+				errorNodes.push(nextNode);
+				errors.push({
+					message: `"${nextNodeName}" is deprecated`,
+					code: "UI5Plugin",
+					source: this.className,
+					range: range,
+					acornNode: nextNode,
+					className: UIClass.className,
+					tags: [DiagnosticTag.Deprecated],
+					methodName: nextNodeName,
+					sourceClassName: className,
+					severity: this._configHandler.getSeverity(this.className),
+					fsPath: document.fileName
+				});
+			}
 		}
 	}
 
