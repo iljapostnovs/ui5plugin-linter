@@ -1,3 +1,6 @@
+## 0.5.17 (17-10-2021)
+* Bugfixes for wrong file path linter
+
 ## 0.5.16 (15-10-2021)
 * Make deprecation linter honor exceptions
 
