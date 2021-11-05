@@ -1,3 +1,6 @@
+## 0.5.18 (05-11-2021)
+* Update ui5 parser
+
 ## 0.5.17 (17-10-2021)
 * Bugfixes for wrong file path linter
 
