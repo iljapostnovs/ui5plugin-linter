@@ -1,3 +1,6 @@
+## 0.5.19 (05-11-2021)
+* Update ui5 parser
+
 ## 0.5.18 (05-11-2021)
 * Update ui5 parser
 
