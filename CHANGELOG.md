@@ -1,3 +1,6 @@
+## 0.5.20 (28-11-2021)
+* Update ui5 parser and add support for XML linting of inline require in xml
+
 ## 0.5.19 (05-11-2021)
 * Update ui5 parser
 
