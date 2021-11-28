@@ -1,5 +1,6 @@
 import { TextDocument, XMLParser } from "ui5plugin-parser";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
+import { ITag } from "ui5plugin-parser/dist/classes/utils/XMLParser";
 import { RangeAdapter } from "../../..";
 import { Severity, XMLLinters } from "../../Linter";
 import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
@@ -40,7 +41,7 @@ export class TagAttributeLinter extends XMLLinter {
 							const classOfTheTag = [libraryPath, className].join(".");
 							tagAttributes.forEach(tagAttribute => {
 								//check tag attributes
-								const attributeValidation = this._validateTagAttribute(classOfTheTag, tagAttribute, tagAttributes, document);
+								const attributeValidation = this._validateTagAttribute(classOfTheTag, tagAttribute, tagAttributes, document, tags);
 								if (!attributeValidation.valid) {
 									const indexOfTagBegining = tag.text.indexOf(tagAttribute);
 									const positionBegin = tag.positionBegin + indexOfTagBegining;
@@ -67,7 +68,7 @@ export class TagAttributeLinter extends XMLLinter {
 		}
 		return errors;
 	}
-	private _validateTagAttribute(className: string, attribute: string, attributes: string[], document: TextDocument): IAttributeValidation {
+	private _validateTagAttribute(className: string, attribute: string, attributes: string[], document: TextDocument, tags: ITag[]): IAttributeValidation {
 		let attributeValidation: IAttributeValidation = {
 			valid: false,
 			severity: this._configHandler.getSeverity(this.className)
@@ -79,11 +80,11 @@ export class TagAttributeLinter extends XMLLinter {
 		const isExclusion = attributeName.startsWith("xmlns") || this._isAttributeAlwaysValid(className, attributeName);
 		const isAttributeNameDuplicated = this._getIfAttributeNameIsDuplicated(attribute, attributes);
 		const attributeNameValid = !isAttributeNameDuplicated && (isExclusion || this._validateAttributeName(className, attribute));
-		const attributeValueValidData = this._validateAttributeValue(className, attribute, document);
+		const attributeValueValidData = this._validateAttributeValue(className, attribute, document, tags);
 		attributeValidation.valid = attributeNameValid && attributeValueValidData.isValueValid;
 
 		if (!attributeNameValid && UIClass.parentClassNameDotNotation) {
-			attributeValidation = this._validateTagAttribute(UIClass.parentClassNameDotNotation, attribute, attributes, document);
+			attributeValidation = this._validateTagAttribute(UIClass.parentClassNameDotNotation, attribute, attributes, document, tags);
 		} else if (!attributeValidation.valid) {
 			let message = "";
 			if (isAttributeNameDuplicated) {
@@ -108,7 +109,7 @@ export class TagAttributeLinter extends XMLLinter {
 		return isDuplicated;
 	}
 
-	private _validateAttributeValue(className: string, attribute: string, document: TextDocument) {
+	private _validateAttributeValue(className: string, attribute: string, document: TextDocument, tags: ITag[]) {
 		let isValueValid = true;
 		let message;
 		let severity = this._configHandler.getSeverity(this.className);
@@ -143,9 +144,11 @@ export class TagAttributeLinter extends XMLLinter {
 					const formattedEventName = parts.pop();
 					const className = parts.join(".");
 					isValueValid = !!XMLParser.getMethodsOfTheControl(className).find(method => method.name === formattedEventName);
+				} else if (eventName.split(".").length === 2) {
+					({ isValueValid, message } = this._validateAttributeValueInCaseOfInTagRequire(eventName, tags, isValueValid, message));
 				}
 			}
-			message = `Event handler "${eventName}" not found in "${responsibleControlName}".`
+			message = message || `Event handler "${eventName}" not found in "${responsibleControlName}".`
 		}
 
 		if (isValueValid && property?.defaultValue && attributeValue === property.defaultValue) {
@@ -155,6 +158,23 @@ export class TagAttributeLinter extends XMLLinter {
 		}
 
 		return { isValueValid, message, severity };
+	}
+
+	private _validateAttributeValueInCaseOfInTagRequire(eventName: string, tags: ITag[], isValueValid: boolean, message: any) {
+		const eventNameParts = eventName.split(".");
+		const className = eventNameParts.shift();
+		const methodName = eventNameParts.shift();
+
+		if (className && methodName) {
+			const attributesWithRequire = XMLParser.getAllAttributesWithRequire(tags);
+			const classPath = XMLParser.getClassPathFromRequire(attributesWithRequire, className);
+			if (classPath) {
+				const className = classPath.replace(/\//g, ".");
+				isValueValid = !!XMLParser.getMethodsOfTheControl(className).find(method => method.name === methodName);
+				message = `Method "${methodName}" not found in "${className}"`;
+			}
+		}
+		return { isValueValid, message };
 	}
 
 	private _validateAttributeName(className: string, attribute: string) {
