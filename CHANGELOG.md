@@ -1,3 +1,6 @@
+## 0.5.23 (12-01-2021)
+* Update dependencies
+
 ## 0.5.22 (29-11-2021)
 * Update ui5parser
 
