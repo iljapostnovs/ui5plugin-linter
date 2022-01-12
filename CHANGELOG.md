@@ -1,3 +1,6 @@
+## 0.5.24 (12-01-2021)
+* Rollback chalk
+
 ## 0.5.23 (12-01-2021)
 * Update dependencies
 
