@@ -1,3 +1,6 @@
+## 0.6.0 (19-02-2021)
+* Add unused class linter
+
 ## 0.5.24 (12-01-2021)
 * Rollback chalk
 
