@@ -35,15 +35,20 @@ export class UnusedClassLinter extends JSLinter {
 	}
 
 	private _checkIfClassIsUsed(UIClass: CustomUIClass) {
+		const isException = this._checkClassForLintingExceptions(UIClass);
 		const allCustomUIClasses = this._parser.classFactory.getAllCustomUIClasses();
 
-		return allCustomUIClasses.some(customUIClass => {
+		return isException || allCustomUIClasses.some(customUIClass => {
 			return this._checkIfClassIsImportedInUIDefine(customUIClass, UIClass) ||
 				this._checkIfClassIsUsedAsInterface(customUIClass, UIClass)
 		}) ||
 			this._checkIfClassMentionedInManifest(UIClass) ||
 			this._checkIfClassIsViewsController(UIClass) ||
 			this._checkIfClassIsUsedInView(UIClass);
+	}
+
+	private _checkClassForLintingExceptions(UIClass: CustomUIClass) {
+		return UIClass.classFSPath?.endsWith(".Component.js") || false;
 	}
 
 	private _checkIfClassIsUsedInView(UIClass: CustomUIClass) {
