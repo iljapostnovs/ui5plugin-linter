@@ -1,3 +1,6 @@
+## 0.6.2 (19-02-2021)
+* Make Component.js exception case insensitive
+
 ## 0.6.1 (19-02-2021)
 * Add Component.js as exception to unused class linter
 
