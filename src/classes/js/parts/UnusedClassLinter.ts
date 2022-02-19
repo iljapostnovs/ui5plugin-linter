@@ -48,7 +48,7 @@ export class UnusedClassLinter extends JSLinter {
 	}
 
 	private _checkClassForLintingExceptions(UIClass: CustomUIClass) {
-		return UIClass.classFSPath?.endsWith(".Component.js") || false;
+		return UIClass.classFSPath?.toLowerCase().endsWith("component.js") || false;
 	}
 
 	private _checkIfClassIsUsedInView(UIClass: CustomUIClass) {
