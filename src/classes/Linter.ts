@@ -32,7 +32,8 @@ export enum JSLinters {
 	WrongFilePathLinter = "WrongFilePathLinter",
 	WrongImportLinter = "WrongImportLinter",
 	WrongOverrideLinter = "WrongOverrideLinter",
-	WrongParametersLinter = "WrongParametersLinter"
+	WrongParametersLinter = "WrongParametersLinter",
+	UnusedClassLinter = "UnusedClassLinter"
 }
 export enum CustomDiagnosticType {
 	NonExistentMethod = 1,

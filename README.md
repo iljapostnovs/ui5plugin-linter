@@ -94,7 +94,8 @@ Default config is as follows:
         "TagAttributeLinter": "Error",
         "PublicMemberLinter": "Information",
         "InterfaceLinter": "Error",
-        "AbstractClassLinter": "Error"
+        "AbstractClassLinter": "Error",
+        "UnusedClassLinter": "Error"
       },
       "usage": {
         "WrongParametersLinter": true,
@@ -110,7 +111,8 @@ Default config is as follows:
         "TagAttributeLinter": true,
         "PublicMemberLinter": true,
         "InterfaceLinter": true,
-        "AbstractClassLinter": true
+        "AbstractClassLinter": true,
+        "UnusedClassLinter": true
       },
       "jsLinterExceptions": [{
         "className": "sap.ui.core.Element",
@@ -229,7 +231,8 @@ enum JSLinters {
   WrongFilePathLinter = "WrongFilePathLinter",
   WrongImportLinter = "WrongImportLinter",
   WrongOverrideLinter = "WrongOverrideLinter",
-  WrongParametersLinter = "WrongParametersLinter"
+  WrongParametersLinter = "WrongParametersLinter",
+  UnusedClassLinter = "UnusedClassLinter"
 }
 enum Severity {
   Warning = "Warning",

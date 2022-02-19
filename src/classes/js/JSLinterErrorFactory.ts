@@ -11,6 +11,7 @@ import { AbstractClassLinter } from "./parts/AbstractClassLinter";
 import { InterfaceLinter } from "./parts/InterfaceLinter";
 import { TextDocument } from "ui5plugin-parser";
 import { IError, Linter } from "../Linter";
+import { UnusedClassLinter } from "./parts/UnusedClassLinter";
 
 export class JSLinterErrorFactory extends Linter {
 	timePerchar = 0;
@@ -25,7 +26,8 @@ export class JSLinterErrorFactory extends Linter {
 			new PublicMemberLinter(this._parser, this._configHandler),
 			new WrongOverrideLinter(this._parser, this._configHandler),
 			new AbstractClassLinter(this._parser, this._configHandler),
-			new InterfaceLinter(this._parser, this._configHandler)
+			new InterfaceLinter(this._parser, this._configHandler),
+			new UnusedClassLinter(this._parser, this._configHandler)
 		];
 
 		const errors = linters.flatMap(linter => linter.getLintingErrors(document));
