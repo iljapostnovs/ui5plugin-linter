@@ -1,3 +1,6 @@
+## 0.6.3 (21-02-2021)
+* Bugfix for multiple types
+
 ## 0.6.2 (19-02-2021)
 * Make Component.js exception case insensitive
 
