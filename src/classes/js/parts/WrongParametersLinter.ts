@@ -156,9 +156,9 @@ export class WrongParametersLinter extends JSLinter {
 			actualClass = this._parser.syntaxAnalyser.getResultOfPromise(actualClass);
 		}
 
-		if (expectedClass.endsWith("[]") && actualClass.endsWith("[]")) {
-			expectedClass = expectedClass.replace("[]", "");
-			actualClass = actualClass.replace("[]", "");
+		if (expectedClass.endsWith("[]") && actualClass.endsWith("[]") && expectedClass.indexOf("|") === -1 && actualClass.indexOf("|") === -1) {
+			expectedClass = expectedClass.substring(0, expectedClass.length - 2);
+			actualClass = actualClass.substring(0, actualClass.length - 2);
 		}
 
 		return { expectedClass, actualClass };
