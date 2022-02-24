@@ -171,7 +171,7 @@ export class WrongParametersLinter extends JSLinter {
 
 	private _swapClassName(className: string) {
 		const numbers = ["number", "float", "int", "integer"];
-		if (className.endsWith("array")) {
+		if (className.toLowerCase() === "array") {
 			className = "any[]";
 		}
 		if (className.includes("__map__") || className.includes("__mapparam__")) {
@@ -187,7 +187,7 @@ export class WrongParametersLinter extends JSLinter {
 		if (className === "Promise") {
 			className = "Promise<any>";
 		}
-		if (numbers.includes(className)) {
+		if (numbers.includes(className.toLowerCase())) {
 			className = "number";
 		}
 

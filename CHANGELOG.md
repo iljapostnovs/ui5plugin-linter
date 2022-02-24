@@ -1,3 +1,6 @@
+## 0.6.4 (24-02-2021)
+* Minor bugfixes
+
 ## 0.6.3 (21-02-2021)
 * Bugfix for multiple types
 
