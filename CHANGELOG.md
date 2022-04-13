@@ -1,3 +1,6 @@
+## 0.6.5 (13-04-2021)
+* Dependency update
+
 ## 0.6.4 (24-02-2021)
 * Minor bugfixes
 
