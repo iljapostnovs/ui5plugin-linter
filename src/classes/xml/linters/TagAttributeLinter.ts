@@ -124,7 +124,12 @@ export class TagAttributeLinter extends XMLLinter {
 		}
 		const isAttributeBinded = attributeValue.startsWith("{") && attributeValue.endsWith("}");
 
-		if (isAttributeBinded || property?.type === "string") {
+		if (attributeValue.startsWith("cmd:")) {
+			isValueValid = this._checkIfCommandIsMentionedInManifest(attributeValue, document);
+			if (!isValueValid) {
+				message = `Command "${attributeValue}" is not found in manifest`;
+			}
+		} else if (isAttributeBinded || property?.type === "string") {
 			isValueValid = true;
 		} else if (property?.type === "sap.ui.core.URI") {
 			isValueValid = true;
@@ -134,11 +139,6 @@ export class TagAttributeLinter extends XMLLinter {
 			isValueValid = ["true", "false"].indexOf(attributeValue) > -1;
 		} else if (property?.type === "int") {
 			isValueValid = isNumeric(attributeValue);
-		} else if (property?.name.startsWith("cmd:")) {
-			isValueValid = this._checkIfCommandIsMentionedInManifest(attributeValue, document);
-			if (!isValueValid) {
-				message = `Command "${attributeValue}" is not found in manifest`;
-			}
 		} else if (event && responsibleControlName) {
 			const eventName = XMLParser.getEventHandlerNameFromAttributeValue(attributeValue);
 			isValueValid = !!XMLParser.getMethodsOfTheControl(responsibleControlName).find(method => method.name === eventName);
