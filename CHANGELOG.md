@@ -1,3 +1,6 @@
+## 0.6.5 (23-04-2021)
+* Add cmd: linting
+
 ## 0.6.5 (13-04-2021)
 * Dependency update
 
