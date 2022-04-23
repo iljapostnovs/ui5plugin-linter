@@ -134,6 +134,11 @@ export class TagAttributeLinter extends XMLLinter {
 			isValueValid = ["true", "false"].indexOf(attributeValue) > -1;
 		} else if (property?.type === "int") {
 			isValueValid = isNumeric(attributeValue);
+		} else if (property?.name.startsWith("cmd:")) {
+			isValueValid = this._checkIfCommandIsMentionedInManifest(attributeValue, document);
+			if (!isValueValid) {
+				message = `Command "${attributeValue}" is not found in manifest`;
+			}
 		} else if (event && responsibleControlName) {
 			const eventName = XMLParser.getEventHandlerNameFromAttributeValue(attributeValue);
 			isValueValid = !!XMLParser.getMethodsOfTheControl(responsibleControlName).find(method => method.name === eventName);
@@ -158,6 +163,22 @@ export class TagAttributeLinter extends XMLLinter {
 		}
 
 		return { isValueValid, message, severity };
+	}
+
+	private _checkIfCommandIsMentionedInManifest(attributeValue: string, document: TextDocument): boolean {
+		let isCommandMentionedInManifest = false;
+		const documentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
+		const manifest = documentClassName && this._parser.fileReader.getManifestForClass(documentClassName);
+
+		if (manifest) {
+			const commandName = attributeValue.replace("cmd:", "");
+			isCommandMentionedInManifest = !!manifest.content["sap.ui5"]?.commands?.[commandName];
+		} else {
+			//Let's skip linting if manifest wasn't found
+			isCommandMentionedInManifest = true;
+		}
+
+		return isCommandMentionedInManifest;
 	}
 
 	private _validateAttributeValueInCaseOfInTagRequire(eventName: string, tags: ITag[], isValueValid: boolean, message: any) {
