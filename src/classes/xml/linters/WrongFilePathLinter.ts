@@ -70,7 +70,7 @@ export class WrongFilePathLinter extends XMLLinter {
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "");
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "").replace(".ts", "");
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}

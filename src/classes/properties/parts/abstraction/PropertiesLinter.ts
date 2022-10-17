@@ -1,7 +1,9 @@
 import { TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 import { IError, Linter, PropertiesLinters } from "../../../Linter";
 
-export abstract class PropertiesLinter extends Linter {
+export abstract class PropertiesLinter extends Linter<AbstractUI5Parser<AbstractCustomClass>, AbstractCustomClass> {
 	protected abstract className: PropertiesLinters;
 	timePerChar = 0;
 	protected abstract _getErrors(document: TextDocument): IError[];

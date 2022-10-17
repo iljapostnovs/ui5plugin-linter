@@ -73,7 +73,7 @@ export class ReferenceFinder {
 		const cache = UIClass.getCache<IReferenceCodeLensCacheable>("referenceCodeLensCache") || {};
 		if (cache[member.owner]?.[`_${member.name}`]) {
 			locations.push(...cache[member.owner][`_${member.name}`]);
-		} else if (UIClass.classFSPath) {
+		} else if (UIClass.fsPath) {
 			const results: RegExpExecArray[] = this._getCurrentMethodMentioning(member, UIClass);
 
 			const currentLocations: ILocation[] = [];
@@ -95,7 +95,7 @@ export class ReferenceFinder {
 				) {
 					const range = RangeAdapter.offsetsRange(UIClass.classText, result.index, result.index + member.name.length);
 					if (range) {
-						currentLocations.push({ filePath: UIClass.classFSPath || "", range: range });
+						currentLocations.push({ filePath: UIClass.fsPath || "", range: range });
 					}
 				}
 			});

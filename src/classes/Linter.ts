@@ -1,11 +1,13 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 import { ILinterConfigHandler } from "..";
 import { PackageLinterConfigHandler } from "./config/PackageLinterConfigHandler";
 
-export abstract class Linter {
-	protected readonly _parser: UI5Parser;
+export abstract class Linter<Parser extends AbstractUI5Parser<CustomClass>, CustomClass extends AbstractCustomClass> {
+	protected readonly _parser: Parser;
 	protected _configHandler: ILinterConfigHandler;
-	constructor(parser: UI5Parser, configHandler?: ILinterConfigHandler) {
+	constructor(parser: Parser, configHandler?: ILinterConfigHandler) {
 		this._parser = parser;
 		this._configHandler = configHandler || new PackageLinterConfigHandler(parser);
 	}

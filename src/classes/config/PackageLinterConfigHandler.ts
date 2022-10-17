@@ -1,13 +1,14 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument } from "ui5plugin-parser";
 import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 import { join } from "path";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 import * as fs from "fs";
+import { IUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 export class PackageLinterConfigHandler implements ILinterConfigHandler {
 	static readonly packageCache: { [key: string]: IUI5PackageConfigEntry } = {};
 	protected readonly _package: IUI5PackageConfigEntry;
-	protected readonly _parser: UI5Parser;
-	constructor(parser: UI5Parser, packagePath = join(process.cwd(), "/package.json")) {
+	protected readonly _parser: IUI5Parser<any>;
+	constructor(parser: IUI5Parser<any>, packagePath = join(process.cwd(), "/package.json")) {
 		this._parser = parser;
 		try {
 			if (PackageLinterConfigHandler.packageCache[packagePath]) {

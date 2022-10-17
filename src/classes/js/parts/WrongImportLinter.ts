@@ -1,9 +1,9 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { DiagnosticTag, IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class WrongImportLinter extends JSLinter {
+export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongImportLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -19,7 +19,7 @@ export class WrongImportLinter extends JSLinter {
 						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
 						if (range) {
 							errors.push({
-								acornNode: UIDefine.acornNode,
+								acornNode: UIDefine.node,
 								code: "UI5Plugin",
 								className: UIClass.className,
 								source: this.className,
@@ -33,7 +33,7 @@ export class WrongImportLinter extends JSLinter {
 						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
 						if (range) {
 							errors.push({
-								acornNode: UIDefine.acornNode,
+								acornNode: UIDefine.node,
 								code: "UI5Plugin",
 								className: UIClass.className,
 								source: this.className,

@@ -1,9 +1,10 @@
-import { TextDocument } from "ui5plugin-parser";
-import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class AbstractClassLinter extends JSLinter {
+export class AbstractClassLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.AbstractClassLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -11,7 +12,7 @@ export class AbstractClassLinter extends JSLinter {
 		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.parentClassNameDotNotation) {
 			const parent = this._parser.classFactory.getParent(UIClass);
-			if (parent?.abstract) {
+			if (parent?.abstract && parent instanceof CustomUIClass) {
 				const undefinedMembers: ICustomMember[] = [];
 				const members = [
 					...UIClass.methods,

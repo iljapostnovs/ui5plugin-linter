@@ -6,7 +6,7 @@ import { TagLinter } from "./linters/TagLinter";
 import { UnusedNamespaceLinter } from "./linters/UnusedNamespaceLinter";
 import { WrongFilePathLinter } from "./linters/WrongFilePathLinter";
 
-export class XMLLinterErrorFactory extends Linter {
+export class XMLLinterErrorFactory extends Linter<any, any> {
 	timePerchar = 0;
 	getLintingErrors(document: TextDocument) {
 		const linters: XMLLinter[] = [
