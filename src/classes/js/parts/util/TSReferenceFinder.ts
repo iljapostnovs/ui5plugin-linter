@@ -1,7 +1,9 @@
-import { ConstructorDeclaration } from "ts-morph";
+import { MethodDeclaration } from "ts-morph";
+import * as ts from "typescript";
 import { UI5TSParser, XMLParser } from "ui5plugin-parser";
 import {
 	CustomTSClass,
+	ICustomClassTSConstructor,
 	ICustomClassTSField,
 	ICustomClassTSMethod
 } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
@@ -23,23 +25,30 @@ export class TSReferenceFinder {
 	constructor(parser: UI5TSParser) {
 		this._parser = parser;
 	}
-	public getReferenceLocations(member: ICustomClassTSField | ICustomClassTSMethod) {
+	public getReferenceLocations(member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor) {
 		const locations: ILocation[] = [];
 
 		const UIClass = this._parser.classFactory.getUIClass(member.owner);
 		if (UIClass instanceof CustomTSClass) {
 			this._addLocationsFromUIClass(member, UIClass, locations);
-			const viewsAndFragments = this._parser.classFactory.getViewsAndFragmentsOfControlHierarchically(
-				UIClass,
-				[],
-				true,
-				true,
-				true
-			);
-			const viewAndFragmentArray = [...viewsAndFragments.fragments, ...viewsAndFragments.views];
-			viewAndFragmentArray.forEach(XMLDoc => {
-				this._addLocationsFromXMLDocument(XMLDoc, member, locations);
-			});
+
+			if (member.name !== "constructor") {
+				const viewsAndFragments = this._parser.classFactory.getViewsAndFragmentsOfControlHierarchically(
+					UIClass,
+					[],
+					true,
+					true,
+					true
+				);
+				const viewAndFragmentArray = [...viewsAndFragments.fragments, ...viewsAndFragments.views];
+				viewAndFragmentArray.forEach(XMLDoc => {
+					this._addLocationsFromXMLDocument(
+						XMLDoc,
+						member as Exclude<typeof member, ICustomClassTSConstructor>,
+						locations
+					);
+				});
+			}
 		}
 
 		return locations;
@@ -82,7 +91,7 @@ export class TSReferenceFinder {
 	}
 
 	private _addLocationsFromUIClass(
-		member: ICustomClassTSField | ICustomClassTSMethod,
+		member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor,
 		UIClass: CustomTSClass,
 		locations: ILocation[]
 	) {
@@ -98,9 +107,9 @@ export class TSReferenceFinder {
 				?.filter(reference => {
 					const notAReferenceToItself =
 						reference.getSourceFile().getFilePath() !== UIClass.fsPath ||
-						(!(member.node instanceof ConstructorDeclaration) &&
-							reference.getNode().getStart() !== member.node?.getNameNode().getStart()) ||
-						(member.node instanceof ConstructorDeclaration &&
+						(!(member.node?.isKind(ts.SyntaxKind.Constructor)) &&
+							reference.getNode().getStart() !== (<MethodDeclaration>member.node).getNameNode().getStart()) ||
+						(member.node?.isKind(ts.SyntaxKind.Constructor) &&
 							reference.getNode().getStart() !== member.node.getStart());
 					return notAReferenceToItself;
 				})
