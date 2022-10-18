@@ -1,30 +1,22 @@
+/* eslint-disable @typescript-eslint/indent */
 import { MethodDeclaration } from "ts-morph";
 import * as ts from "typescript";
-import { UI5TSParser, XMLParser } from "ui5plugin-parser";
+import { UI5TSParser } from "ui5plugin-parser";
 import {
 	CustomTSClass,
 	ICustomClassTSConstructor,
 	ICustomClassTSField,
 	ICustomClassTSMethod
 } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
-import { IXMLFile } from "ui5plugin-parser/dist/classes/utils/FileReader";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
 import { IRange } from "../../../Linter";
-export interface ILocation {
-	filePath: string;
-	range: IRange;
-}
-export interface IReferenceCodeLensCacheable {
-	[className: string]: {
-		[methodName: string]: ILocation[];
-	};
-}
+import ReferenceFinderBase, { ILocation, IReferenceCodeLensCacheable } from "./ReferenceFinderBase";
 
-export class TSReferenceFinder {
-	protected readonly _parser: UI5TSParser;
-	constructor(parser: UI5TSParser) {
-		this._parser = parser;
-	}
+export class TSReferenceFinder extends ReferenceFinderBase<
+	ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor,
+	UI5TSParser,
+	CustomTSClass
+> {
 	public getReferenceLocations(member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor) {
 		const locations: ILocation[] = [];
 
@@ -44,7 +36,7 @@ export class TSReferenceFinder {
 				viewAndFragmentArray.forEach(XMLDoc => {
 					this._addLocationsFromXMLDocument(
 						XMLDoc,
-						member as Exclude<typeof member, ICustomClassTSConstructor>,
+						member,
 						locations
 					);
 				});
@@ -54,43 +46,7 @@ export class TSReferenceFinder {
 		return locations;
 	}
 
-	private _addLocationsFromXMLDocument(
-		XMLDoc: IXMLFile,
-		member: ICustomClassTSField | ICustomClassTSMethod,
-		locations: ILocation[]
-	) {
-		const cache = XMLDoc.getCache<IReferenceCodeLensCacheable>("referenceCodeLensCache") || {};
-		if (cache[member.owner]?.[`_${member.name}`]) {
-			locations.push(...cache[member.owner][`_${member.name}`]);
-		} else {
-			const tagsAndAttributes = XMLParser.getXMLFunctionCallTagsAndAttributes(XMLDoc, member.name, member.owner);
-
-			const currentLocations: ILocation[] = [];
-			tagsAndAttributes.forEach(tagAndAttribute => {
-				tagAndAttribute.attributes.forEach(attribute => {
-					const positionBegin =
-						tagAndAttribute.tag.positionBegin +
-						tagAndAttribute.tag.text.indexOf(attribute) +
-						attribute.indexOf(member.name);
-					const positionEnd = positionBegin + member.name.length;
-					const range = RangeAdapter.offsetsRange(XMLDoc.content, positionBegin, positionEnd);
-					if (range) {
-						currentLocations.push({ filePath: XMLDoc.fsPath, range: range });
-					}
-				});
-			});
-			if (currentLocations.length > 0) {
-				locations.push(...currentLocations);
-			}
-			if (!cache[member.owner]) {
-				cache[member.owner] = {};
-			}
-			cache[member.owner][`_${member.name}`] = currentLocations;
-			XMLDoc.setCache("referenceCodeLensCache", cache);
-		}
-	}
-
-	private _addLocationsFromUIClass(
+	protected _addLocationsFromUIClass(
 		member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor,
 		UIClass: CustomTSClass,
 		locations: ILocation[]
@@ -107,8 +63,9 @@ export class TSReferenceFinder {
 				?.filter(reference => {
 					const notAReferenceToItself =
 						reference.getSourceFile().getFilePath() !== UIClass.fsPath ||
-						(!(member.node?.isKind(ts.SyntaxKind.Constructor)) &&
-							reference.getNode().getStart() !== (<MethodDeclaration>member.node).getNameNode().getStart()) ||
+						(!member.node?.isKind(ts.SyntaxKind.Constructor) &&
+							reference.getNode().getStart() !==
+								(<MethodDeclaration>member.node).getNameNode().getStart()) ||
 						(member.node?.isKind(ts.SyntaxKind.Constructor) &&
 							reference.getNode().getStart() !== member.node.getStart());
 					return notAReferenceToItself;

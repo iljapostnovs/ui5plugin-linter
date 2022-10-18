@@ -1,17 +1,26 @@
 #!/usr/bin/env node
 const UI5Parser = require("ui5plugin-parser").UI5Parser;
+const UI5TSParser = require("ui5plugin-parser").UI5TSParser;
 const TextDocument = require("ui5plugin-parser").TextDocument;
 const WorkspaceFolder = require("ui5plugin-parser").WorkspaceFolder;
+const AbstractUI5Parser = require("ui5plugin-parser").AbstractUI5Parser;
 const chalk = require("chalk");
 const Severity = require("../dist/classes/Linter").Severity;
 
 (async function() {
-	const parser = UI5Parser.getInstance();
+	const workspaceFolders = [new WorkspaceFolder(process.cwd())];
+	let parser;
+	const isTypescriptProject = AbstractUI5Parser.getIsTypescriptProject(workspaceFolders);
+	if (isTypescriptProject) {
+		console.log(chalk.blue.underline.bold("Recognized as Typescript project"));
+		parser = AbstractUI5Parser.getInstance(UI5TSParser);
+	} else {
+		parser = AbstractUI5Parser.getInstance(UI5Parser);
+	}
 	if (process.argv.includes("--rmcache")) {
 		parser.clearCache();
 	}
 
-	const workspaceFolders = [new WorkspaceFolder(process.cwd())];
 	const PackageLinterConfigHandler = require("../dist/classes/config/PackageLinterConfigHandler").PackageLinterConfigHandler;
 	const additionalWorkspacePaths = PackageLinterConfigHandler.getPackageAdditionalWorkspacePaths();
 	if (additionalWorkspacePaths) {
@@ -19,17 +28,20 @@ const Severity = require("../dist/classes/Linter").Severity;
 		const resolvedPaths = additionalWorkspacePaths.map(additionalComponent => new WorkspaceFolder(path.resolve(additionalComponent)));
 		workspaceFolders.push(...resolvedPaths);
 	}
+	console.log(`UI5 Version: ${parser.configHandler.getUI5Version()}`);
 	await parser.initialize(workspaceFolders);
 	const JSLinterErrorFactory = require("../dist/classes/js/JSLinterErrorFactory").JSLinterErrorFactory;
+	const TSLinterErrorFactory = require("../dist/classes/js/TSLinterErrorFactory").TSLinterErrorFactory;
 	const XMLLinterErrorFactory = require("../dist/classes/xml/XMLLinterErrorFactory").XMLLinterErrorFactory;
 	const PropertiesLinterErrorFactory = require("../dist/classes/properties/PropertiesLinterErrorFactory").PropertiesLinterErrorFactory;
-	const JSLinter = new JSLinterErrorFactory(parser);
+	const CustomClassLinter = isTypescriptProject ? new TSLinterErrorFactory(parser) : new JSLinterErrorFactory(parser);
 	const XMLLinter = new XMLLinterErrorFactory(parser);
 	const propertiesLinter = new PropertiesLinterErrorFactory(parser);
 	const XMLFiles = [
 		...parser.fileReader.getAllViews(),
 		...parser.fileReader.getAllFragments()
 	];
+
 	const propertiesFiles = parser.fileReader.getResourceModelFiles();
 	const propertiesTextDocuments = propertiesFiles.map(propertyFile => {
 		const manifest = parser.fileReader.getManifestForClass(propertyFile.componentName + ".");
@@ -38,8 +50,8 @@ const Severity = require("../dist/classes/Linter").Severity;
 
 	const customClasses = parser.classFactory.getAllCustomUIClasses();
 	const lintingErrors = customClasses.flatMap(customClass => {
-		const textDocument = new TextDocument(customClass.classText, customClass.classFSPath || "");
-		return JSLinter.getLintingErrors(textDocument);
+		const textDocument = new TextDocument(customClass.classText, customClass.fsPath || "");
+		return CustomClassLinter.getLintingErrors(textDocument);
 	}).concat(XMLFiles.flatMap(XMLFile => {
 		const textDocument = new TextDocument(XMLFile.content || "", XMLFile.fsPath || "");
 		return XMLLinter.getLintingErrors(textDocument);
@@ -89,7 +101,15 @@ const Severity = require("../dist/classes/Linter").Severity;
 		console.log(chalk.bold.underline.redBright(`\nErrors: ${errors.length}\n`));
 	}
 
-	console.log(`UI5 Version: ${parser.configHandler.getUI5Version()}`);
+	const allMessages = [
+		...hints,
+		...informationMessages,
+		...warnings,
+		...errors
+	];
+	if (allMessages.length === 0) {
+		console.log(chalk.bold.underline.greenBright("No errors detected"));
+	}
 
 	if (errors.length > 0) {
 		process.exit(1);
