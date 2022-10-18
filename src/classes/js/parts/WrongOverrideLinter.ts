@@ -1,10 +1,10 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { AbstractUIClass, IUIField, IUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class WrongOverrideLinter extends JSLinter {
+export class WrongOverrideLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongOverrideLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -32,19 +32,19 @@ export class WrongOverrideLinter extends JSLinter {
 	private _getIfMemberIsWronglyOverriden(UIClass: CustomUIClass, UIMember: ICustomClassUIMethod | ICustomClassUIField) {
 		let error: IError | undefined;
 		const parentMember = this._getMemberFromParent(UIClass, UIMember);
-		if (parentMember && parentMember.visibility === "private" && UIMember.memberPropertyNode) {
-			const range = RangeAdapter.acornLocationToRange(UIMember.memberPropertyNode.loc);
+		if (parentMember && parentMember.visibility === "private" && UIMember.loc) {
+			const range = RangeAdapter.acornLocationToRange(UIMember.loc);
 			error = {
 				message: `You can't override "${UIMember.name}" because it is a private member of class "${parentMember.owner}"`,
 				code: "UI5Plugin",
 				source: this.className,
 				range: range,
 				className: UIClass.className,
-				acornNode: UIMember.acornNode,
+				acornNode: UIMember.node,
 				methodName: UIMember.name,
 				sourceClassName: UIClass.className,
 				severity: this._configHandler.getSeverity(this.className),
-				fsPath: UIClass.classFSPath || ""
+				fsPath: UIClass.fsPath || ""
 			};
 		}
 

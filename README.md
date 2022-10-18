@@ -21,6 +21,15 @@ UI5 Linter searches for ```package.json``` in your CWD (Current Working Director
 >```cmd
 >ui5linter --rmcache
 >```
+
+### TS vs JS
+#### Initialization
+If any typescript file is found in the project, parser considers that it's TS project. <br/>
+```tsconfig.json``` should be located in CWD.
+
+#### Folder exclusions
+For convenience purposes ```UI5TSParser``` ignores ```webapp``` and ```src-gen``` folders, because they contain transpiled JS/XML files, which can make the parser to think that source files are there. If build folder name is different, is should be added to ```excludeFolderPatterns``` in your config (```VSCode Preferences``` in case of UI5 Extension, ```package.json``` in case of cli usage).
+
 ### Configuration example
 ```jsonc
 {

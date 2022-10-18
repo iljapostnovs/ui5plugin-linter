@@ -1,10 +1,11 @@
 
-import { TextDocument } from "ui5plugin-parser";
-import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { ICustomClassField, ICustomClassMethod, ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class InterfaceLinter extends JSLinter {
+export class InterfaceLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.InterfaceLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -12,8 +13,8 @@ export class InterfaceLinter extends JSLinter {
 		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.interfaces && UIClass.interfaces.length > 0) {
 			const interfaceMembers: ICustomMember[] = UIClass.interfaces.flatMap(theInterface => [
-				...this._parser.classFactory.getClassMethods(theInterface, false),
-				...this._parser.classFactory.getClassFields(theInterface, false)
+				...this._parser.classFactory.getClassMethods(theInterface, false) as ICustomClassMethod[],
+				...this._parser.classFactory.getClassFields(theInterface, false) as ICustomClassField[]
 			]);
 			const undefinedMembers: ICustomMember[] = [];
 			const members = [

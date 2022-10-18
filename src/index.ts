@@ -7,6 +7,7 @@ import { XMLLinterErrorFactory } from "./classes/xml/XMLLinterErrorFactory";
 import { PropertiesLinterErrorFactory } from "./classes/properties/PropertiesLinterErrorFactory";
 import { ILinterConfigHandler } from "./classes/config/ILinterConfigHandler";
 import { PackageLinterConfigHandler } from "./classes/config/PackageLinterConfigHandler";
+import { TSLinterErrorFactory } from "./classes/js/TSLinterErrorFactory";
 
 export {
 	Severity,
@@ -17,6 +18,7 @@ export {
 	PositionAdapter,
 	RangeAdapter,
 	JSLinterErrorFactory,
+	TSLinterErrorFactory,
 	XMLLinterErrorFactory,
 	PropertiesLinterErrorFactory
 }

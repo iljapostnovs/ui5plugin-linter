@@ -1,10 +1,12 @@
 import { TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 import { IError, Linter, XMLLinters } from "../../../Linter";
 export interface IXMLError extends IError {
 	attribute?: string;
 }
 
-export abstract class XMLLinter extends Linter {
+export abstract class XMLLinter extends Linter<AbstractUI5Parser<AbstractCustomClass>, AbstractCustomClass> {
 	protected abstract className: XMLLinters;
 	timePerChar = 0;
 	protected abstract _getErrors(document: TextDocument): IError[];

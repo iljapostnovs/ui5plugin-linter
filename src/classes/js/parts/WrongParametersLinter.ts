@@ -1,4 +1,4 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { SAPNodeDAO } from "ui5plugin-parser/dist/classes/librarydata/SAPNodeDAO";
 import { CustomUIClass, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
@@ -6,7 +6,7 @@ import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 import { IUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
-export class WrongParametersLinter extends JSLinter {
+export class WrongParametersLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongParametersLinter;
 	public static timePerChar = 0;
 	private static readonly _sapNodeDAO = new SAPNodeDAO();

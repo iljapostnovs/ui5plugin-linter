@@ -2,9 +2,9 @@ import { TextDocument } from "ui5plugin-parser";
 import { IError, Linter } from "../Linter";
 import { UnusedTranslationsLinter } from "./parts/UnusedTranslationsLinter";
 
-export class PropertiesLinterErrorFactory extends Linter {
+export class PropertiesLinterErrorFactory extends Linter<any, any> {
 	getLintingErrors(document: TextDocument) {
-		const linters: Linter[] = [
+		const linters: Linter<any, any>[] = [
 			new UnusedTranslationsLinter(this._parser, this._configHandler)
 		];
 

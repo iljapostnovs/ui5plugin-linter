@@ -1,4 +1,4 @@
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { CustomUIClass, UI5Ignoreable } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/UI5Classes/JSParser/strategies/FieldsAndMethodForPositionBeforeCurrentStrategy";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
@@ -6,7 +6,7 @@ import { JSLinters, IError, CustomDiagnosticType, DiagnosticTag } from "../../Li
 import { JSLinter } from "./abstraction/JSLinter";
 import { IFieldsAndMethods } from "ui5plugin-parser/dist/classes/UI5Classes/interfaces/IUIClassFactory";
 import { IMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
-export class WrongFieldMethodLinter extends JSLinter {
+export class WrongFieldMethodLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongFieldMethodLinter;
 	public static timePerChar = 0;
 	_getErrors(document: TextDocument): IError[] {

@@ -1,11 +1,21 @@
 import { JSLinter } from "./abstraction/JSLinter";
-import { TextDocument } from "ui5plugin-parser";
-import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { TextDocument, UI5Parser, UI5TSParser } from "ui5plugin-parser";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError, DiagnosticTag } from "../../Linter";
 import { ReferenceFinder } from "./util/ReferenceFinder";
+import {
+	AbstractCustomClass,
+	ICustomClassField,
+	ICustomClassMethod
+} from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { TSReferenceFinder } from "./util/TSReferenceFinder";
+import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 
-export class UnusedMemberLinter extends JSLinter {
+export class UnusedMemberLinter<
+	Parser extends AbstractUI5Parser<CustomClass>,
+	CustomClass extends AbstractCustomClass
+> extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.UnusedMemberLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -14,18 +24,18 @@ export class UnusedMemberLinter extends JSLinter {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass) {
-				const methodsAndFields: (ICustomClassUIField | ICustomClassUIMethod)[] = [
+			if (UIClass instanceof AbstractCustomClass) {
+				const methodsAndFields: (ICustomClassField | ICustomClassMethod)[] = [
 					...UIClass.methods,
 					...UIClass.fields
 				];
-				methodsAndFields.forEach((methodOrField: any) => {
+				methodsAndFields.forEach(methodOrField => {
 					const methodIsUsed = this._checkIfMemberIsUsed(UIClass, methodOrField);
-					if (!methodIsUsed && methodOrField.memberPropertyNode) {
-						const range = RangeAdapter.acornLocationToRange(methodOrField.memberPropertyNode.loc);
+					if (!methodIsUsed && methodOrField.loc) {
+						const range = RangeAdapter.acornLocationToRange(methodOrField.loc);
 						errors.push({
 							source: this.className,
-							acornNode: methodOrField.acornNode,
+							acornNode: methodOrField.node,
 							code: "UI5Plugin",
 							className: UIClass.className,
 							message: `No references found for "${methodOrField.name}" class member`,
@@ -36,7 +46,6 @@ export class UnusedMemberLinter extends JSLinter {
 						});
 					}
 				});
-
 			}
 		}
 		// console.timeEnd("Unused Method Linter");
@@ -44,7 +53,7 @@ export class UnusedMemberLinter extends JSLinter {
 		return errors;
 	}
 
-	private _checkIfMemberIsUsed(UIClass: CustomUIClass, member: ICustomClassUIMethod | ICustomClassUIField) {
+	private _checkIfMemberIsUsed(UIClass: AbstractCustomClass, member: ICustomClassField | ICustomClassMethod) {
 		let memberIsUsed =
 			member.ui5ignored ||
 			member.mentionedInTheXMLDocument ||
@@ -52,8 +61,11 @@ export class UnusedMemberLinter extends JSLinter {
 			this._checkIfMethodIsException(UIClass.className, member.name);
 
 		if (!memberIsUsed) {
-			const referenceCodeLens = new ReferenceFinder(this._parser);
-			const references = referenceCodeLens.getReferenceLocations(member);
+			const referenceFinder =
+				UIClass instanceof CustomUIClass
+					? new ReferenceFinder(this._parser as unknown as UI5Parser)
+					: new TSReferenceFinder(this._parser as unknown as UI5TSParser);
+			const references = referenceFinder.getReferenceLocations(member);
 			memberIsUsed = references.length > 0;
 		}
 
@@ -61,19 +73,35 @@ export class UnusedMemberLinter extends JSLinter {
 	}
 
 	private _checkIfMethodIsException(className: string, methodName: string) {
-		return this._configHandler.checkIfMemberIsException(className, methodName) ||
-			this._checkIfThisIsStandardMethodFromPropertyEventAggregationAssociation(className, methodName);
+		return (
+			this._configHandler.checkIfMemberIsException(className, methodName) ||
+			this._checkIfThisIsStandardMethodFromPropertyEventAggregationAssociation(className, methodName)
+		);
 	}
 
 	private _checkIfThisIsStandardMethodFromPropertyEventAggregationAssociation(className: string, methodName: string) {
-		const startsWith = ["set", "get", "add", "remove", "removeAll", "insert", "indexOf", "destroy", "bind", "unbind"];
+		const startsWith = [
+			"set",
+			"get",
+			"add",
+			"remove",
+			"removeAll",
+			"insert",
+			"indexOf",
+			"destroy",
+			"bind",
+			"unbind"
+		];
 
 		const isStandartMethod = !!startsWith.find(standartMethodStartsWith => {
 			let isStandartMethod = false;
 			if (methodName.startsWith(standartMethodStartsWith)) {
 				const memberNameCapital = methodName.replace(standartMethodStartsWith, "");
 				if (memberNameCapital) {
-					const memberName = `${memberNameCapital[0].toLowerCase()}${memberNameCapital.substring(1, memberNameCapital.length)}`
+					const memberName = `${memberNameCapital[0].toLowerCase()}${memberNameCapital.substring(
+						1,
+						memberNameCapital.length
+					)}`;
 					const events = this._parser.classFactory.getClassEvents(className);
 					isStandartMethod = !!events.find(event => event.name === memberName);
 					if (!isStandartMethod) {

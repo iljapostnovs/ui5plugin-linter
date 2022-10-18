@@ -9,14 +9,15 @@ import { PublicMemberLinter } from "./parts/PublicMemberLinter";
 import { WrongOverrideLinter } from "./parts/WrongOverrideLinter";
 import { AbstractClassLinter } from "./parts/AbstractClassLinter";
 import { InterfaceLinter } from "./parts/InterfaceLinter";
-import { TextDocument } from "ui5plugin-parser";
+import { TextDocument, UI5Parser } from "ui5plugin-parser";
 import { IError, Linter } from "../Linter";
 import { UnusedClassLinter } from "./parts/UnusedClassLinter";
+import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 
-export class JSLinterErrorFactory extends Linter {
+export class JSLinterErrorFactory extends Linter<UI5Parser, CustomUIClass> {
 	timePerchar = 0;
 	getLintingErrors(document: TextDocument): IError[] {
-		const linters: JSLinter[] = [
+		const linters: JSLinter<UI5Parser, CustomUIClass>[] = [
 			new WrongFieldMethodLinter(this._parser, this._configHandler),
 			new WrongClassNameLinter(this._parser, this._configHandler),
 			new WrongImportLinter(this._parser, this._configHandler),

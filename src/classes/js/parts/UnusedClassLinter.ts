@@ -1,11 +1,15 @@
 import { JSLinter } from "./abstraction/JSLinter";
 import { TextDocument, XMLParser } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError } from "../../Linter";
 import { IXMLFile } from "ui5plugin-parser/dist/classes/utils/FileReader";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 
-export class UnusedClassLinter extends JSLinter {
+export class UnusedClassLinter<
+	Parser extends AbstractUI5Parser<CustomClass>,
+	CustomClass extends AbstractCustomClass
+> extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.UnusedClassLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -13,7 +17,7 @@ export class UnusedClassLinter extends JSLinter {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass) {
+			if (UIClass instanceof AbstractCustomClass) {
 				const classIsUsed = this._checkIfClassIsUsed(UIClass);
 				if (!classIsUsed) {
 					const range = RangeAdapter.acornPositionsToRange({ column: 0, line: 1 }, { column: 0, line: 1 });
@@ -27,32 +31,37 @@ export class UnusedClassLinter extends JSLinter {
 						fsPath: document.fileName
 					});
 				}
-
 			}
 		}
 
 		return errors;
 	}
 
-	private _checkIfClassIsUsed(UIClass: CustomUIClass) {
+	private _checkIfClassIsUsed(UIClass: AbstractCustomClass) {
 		const isException = this._checkClassForLintingExceptions(UIClass);
 		const allCustomUIClasses = this._parser.classFactory.getAllCustomUIClasses();
 
-		return isException || allCustomUIClasses.some(customUIClass => {
-			return this._checkIfClassIsImportedInUIDefine(customUIClass, UIClass) ||
-				this._checkIfClassIsUsedAsInterface(customUIClass, UIClass)
-		}) ||
+		return (
+			isException ||
+			allCustomUIClasses.some(customUIClass => {
+				return (
+					this._checkIfClassIsImportedInUIDefine(customUIClass, UIClass) ||
+					this._checkIfClassIsUsedAsInterface(customUIClass, UIClass)
+				);
+			}) ||
 			this._checkIfClassMentionedInManifest(UIClass) ||
 			this._checkIfClassIsViewsController(UIClass) ||
-			this._checkIfClassIsUsedInView(UIClass);
+			this._checkIfClassIsUsedInView(UIClass)
+		);
 	}
 
-	private _checkClassForLintingExceptions(UIClass: CustomUIClass) {
-		return UIClass.classFSPath?.toLowerCase().endsWith("component.js") || false;
+	private _checkClassForLintingExceptions(UIClass: AbstractCustomClass) {
+		return UIClass.fsPath?.toLowerCase().endsWith("component.js") || false;
 	}
 
-	private _checkIfClassIsUsedInView(UIClass: CustomUIClass) {
-		const isControlOrElement = this._parser.classFactory.isClassAChildOfClassB(UIClass.className, "sap.ui.core.Control") ||
+	private _checkIfClassIsUsedInView(UIClass: AbstractCustomClass) {
+		const isControlOrElement =
+			this._parser.classFactory.isClassAChildOfClassB(UIClass.className, "sap.ui.core.Control") ||
 			this._parser.classFactory.isClassAChildOfClassB(UIClass.className, "sap.ui.core.Element");
 
 		if (!isControlOrElement) {
@@ -63,35 +72,36 @@ export class UnusedClassLinter extends JSLinter {
 		const fragments: IXMLFile[] = this._parser.fileReader.getAllFragments();
 		const XMLFiles: IXMLFile[] = views.concat(fragments);
 		const classNameLastPart = UIClass.className.split(".").pop();
-		return classNameLastPart && XMLFiles.some(XMLFile => {
-			if (XMLFile.content.indexOf(classNameLastPart) === -1) {
-				return false;
-			}
+		return (
+			classNameLastPart &&
+			XMLFiles.some(XMLFile => {
+				if (XMLFile.content.indexOf(classNameLastPart) === -1) {
+					return false;
+				}
 
-			const tags = XMLParser.getAllTags(XMLFile);
-			return tags.some(tag => {
-				const className = XMLParser.getFullClassNameFromTag(tag, XMLFile);
-				return className === UIClass.className;
-			});
-		});
-
+				const tags = XMLParser.getAllTags(XMLFile);
+				return tags.some(tag => {
+					const className = XMLParser.getFullClassNameFromTag(tag, XMLFile);
+					return className === UIClass.className;
+				});
+			})
+		);
 	}
 
-	private _checkIfClassIsUsedAsInterface(customUIClass: CustomUIClass, UIClass: CustomUIClass): unknown {
+	private _checkIfClassIsUsedAsInterface(customUIClass: AbstractCustomClass, UIClass: AbstractCustomClass): unknown {
 		return customUIClass.interfaces.some(interfaceName => {
 			return interfaceName === UIClass.className;
 		});
 	}
 
-	private _checkIfClassIsImportedInUIDefine(customUIClass: CustomUIClass, UIClass: CustomUIClass): unknown {
+	private _checkIfClassIsImportedInUIDefine(customUIClass: AbstractCustomClass, UIClass: AbstractCustomClass): unknown {
 		return customUIClass.UIDefine.some(UIDefine => {
 			return UIDefine.classNameDotNotation === UIClass.className;
 		});
 	}
 
-	private _checkIfClassIsViewsController(UIClass: CustomUIClass) {
-
-		if (UIClass.classFSPath?.endsWith(".controller.js")) {
+	private _checkIfClassIsViewsController(UIClass: AbstractCustomClass) {
+		if (UIClass.fsPath?.endsWith(".controller.js") || UIClass.fsPath?.endsWith(".controller.ts")) {
 			return this._parser.fileReader.getAllViews().some(view => {
 				return view.controllerName === UIClass.className;
 			});
@@ -100,7 +110,7 @@ export class UnusedClassLinter extends JSLinter {
 		}
 	}
 
-	private _checkIfClassMentionedInManifest(UIClass: CustomUIClass): unknown {
+	private _checkIfClassMentionedInManifest(UIClass: AbstractCustomClass): unknown {
 		const manifest = this._parser.fileReader.getManifestForClass(UIClass.className);
 		let isMentionedInManifest = false;
 

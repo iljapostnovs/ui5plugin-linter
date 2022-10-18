@@ -7,7 +7,7 @@
 		"strict": true,
 		"rootDir": "src",
 		"esModuleInterop": false,
-		"resolveJsonModule": true,
+		"resolveJsonModule": true
 	},
 	"exclude": [
 		"node_modules"
