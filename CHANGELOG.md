@@ -1,3 +1,6 @@
+## 0.7.1 (19-10-2021)
+* Update ui5 parser
+
 ## 0.7.0 (18-10-2021)
 * Update ui5 parser, add typescript support
 
