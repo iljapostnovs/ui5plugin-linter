@@ -90,7 +90,8 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 			PublicMemberLinter: Severity.Information,
 			InterfaceLinter: Severity.Error,
 			AbstractClassLinter: Severity.Error,
-			UnusedClassLinter: Severity.Error
+			UnusedClassLinter: Severity.Error,
+			WrongNamespaceLinter: Severity.Warning
 		};
 
 		return defaultSeverity[linter];
