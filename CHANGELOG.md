@@ -1,3 +1,6 @@
+## 0.7.2 (20-10-2021)
+* Add TS support for wrong class name linter, add Wrong namespace linter
+
 ## 0.7.1 (19-10-2021)
 * Update ui5 parser
 
