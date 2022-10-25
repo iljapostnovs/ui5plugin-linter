@@ -1,15 +1,20 @@
 import { JSLinter } from "./abstraction/JSLinter";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import {
-	CustomUIClass,
-	ICustomClassUIField,
-	ICustomClassUIMethod
-} from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { AbstractUI5Parser, TextDocument, UI5Parser, UI5TSParser } from "ui5plugin-parser";
+import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
 import { RangeAdapter } from "../../adapters/RangeAdapter";
 import { JSLinters, IError } from "../../Linter";
 import { ReferenceFinder } from "./util/ReferenceFinder";
+import {
+	AbstractCustomClass,
+	ICustomClassField,
+	ICustomClassMethod
+} from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { TSReferenceFinder } from "./util/TSReferenceFinder";
 
-export class PublicMemberLinter extends JSLinter<UI5Parser, CustomUIClass> {
+export class PublicMemberLinter<
+	Parser extends AbstractUI5Parser<CustomClass>,
+	CustomClass extends AbstractCustomClass
+> extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.PublicMemberLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -17,7 +22,7 @@ export class PublicMemberLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass) {
+			if (UIClass instanceof AbstractCustomClass) {
 				const publicMethods = UIClass.methods.filter(method => method.visibility === "public");
 				const publicFields = UIClass.fields.filter(field => field.visibility === "public");
 				publicMethods.forEach(method => {
@@ -64,7 +69,10 @@ export class PublicMemberLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		return errors;
 	}
 
-	private _checkIfMemberIsUsedElsewhere(UIClass: CustomUIClass, member: ICustomClassUIField | ICustomClassUIMethod) {
+	private _checkIfMemberIsUsedElsewhere(
+		UIClass: AbstractCustomClass,
+		member: ICustomClassField | ICustomClassMethod
+	) {
 		let memberIsUsed =
 			member.ui5ignored ||
 			member.mentionedInTheXMLDocument ||
@@ -72,8 +80,11 @@ export class PublicMemberLinter extends JSLinter<UI5Parser, CustomUIClass> {
 			this._checkIfMemberIsException(UIClass.className, member.name);
 
 		if (!memberIsUsed) {
-			const referenceCodeLens = new ReferenceFinder(this._parser);
-			const references = referenceCodeLens.getReferenceLocations(member).filter(reference => {
+			const referenceFinder =
+				UIClass instanceof CustomUIClass
+					? new ReferenceFinder(this._parser as unknown as UI5Parser)
+					: new TSReferenceFinder(this._parser as unknown as UI5TSParser);
+			const references = referenceFinder.getReferenceLocations(member).filter(reference => {
 				return reference.filePath !== UIClass.fsPath;
 			});
 			memberIsUsed = references.length > 0;

@@ -7,6 +7,7 @@ import { UnusedClassLinter } from "./parts/UnusedClassLinter";
 import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
 import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
 import { WrongNamespaceLinter } from "./parts/WrongNamespaceLinter";
+import { PublicMemberLinter } from "./parts/PublicMemberLinter";
 
 export class TSLinterErrorFactory extends Linter<UI5TSParser, CustomTSClass> {
 	timePerchar = 0;
@@ -16,7 +17,8 @@ export class TSLinterErrorFactory extends Linter<UI5TSParser, CustomTSClass> {
 			new WrongFilePathLinter(this._parser, this._configHandler),
 			new UnusedClassLinter(this._parser, this._configHandler),
 			new WrongClassNameLinter(this._parser, this._configHandler),
-			new WrongNamespaceLinter(this._parser, this._configHandler)
+			new WrongNamespaceLinter(this._parser, this._configHandler),
+			new PublicMemberLinter(this._parser, this._configHandler)
 		];
 
 		const errors = linters.flatMap(linter => linter.getLintingErrors(document));
