@@ -100,7 +100,14 @@ export class WrongFilePathLinter<
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "").replace(".ts", ".properties");
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "").replace(".ts", "");
+			if (sFileFSPath) {
+				isPathValid = fs.existsSync(sFileFSPath);
+			}
+		}
+
+		if (!isPathValid) {
+			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className);
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}
