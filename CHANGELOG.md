@@ -1,3 +1,6 @@
+## 0.7.7 (25-10-2022)
+* Update parser
+
 ## 0.7.6 (25-10-2022)
 * Update parser, add public member linter for TS
 
