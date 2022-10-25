@@ -1,5 +1,8 @@
+## 0.7.5 (25-10-2022)
+* Fix reference finder
+
 ## 0.7.4 (25-10-2022)
-* Update Ui5 parser
+* Fix WrongFilePathLinter
 
 ## 0.7.3 (24-10-2022)
 * Update UI5 parser

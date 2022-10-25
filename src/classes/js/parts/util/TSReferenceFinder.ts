@@ -9,6 +9,7 @@ import {
 	ICustomClassTSMethod
 } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
+import * as path from "path";
 import { IRange } from "../../../Linter";
 import ReferenceFinderBase, { ILocation, IReferenceCodeLensCacheable } from "./ReferenceFinderBase";
 
@@ -34,11 +35,7 @@ export class TSReferenceFinder extends ReferenceFinderBase<
 				);
 				const viewAndFragmentArray = [...viewsAndFragments.fragments, ...viewsAndFragments.views];
 				viewAndFragmentArray.forEach(XMLDoc => {
-					this._addLocationsFromXMLDocument(
-						XMLDoc,
-						member,
-						locations
-					);
+					this._addLocationsFromXMLDocument(XMLDoc, member, locations);
 				});
 			}
 		}
@@ -62,7 +59,7 @@ export class TSReferenceFinder extends ReferenceFinderBase<
 			references
 				?.filter(reference => {
 					const notAReferenceToItself =
-						reference.getSourceFile().getFilePath() !== UIClass.fsPath ||
+						path.resolve(reference.getSourceFile().getFilePath()) !== UIClass.fsPath ||
 						(!member.node?.isKind(ts.SyntaxKind.Constructor) &&
 							reference.getNode().getStart() !==
 								(<MethodDeclaration>member.node).getNameNode().getStart()) ||
@@ -78,7 +75,7 @@ export class TSReferenceFinder extends ReferenceFinderBase<
 					);
 					let referenceData: [IRange, string] | undefined;
 					if (range) {
-						referenceData = [range, reference.getSourceFile().getFilePath()];
+						referenceData = [range, path.resolve(reference.getSourceFile().getFilePath())];
 					}
 					return referenceData;
 				})
