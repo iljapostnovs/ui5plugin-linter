@@ -1,46 +1,49 @@
-## 0.7.3 (24-10-2021)
+## 0.7.4 (25-10-2022)
 * Update Ui5 parser
 
-## 0.7.2 (20-10-2021)
+## 0.7.3 (24-10-2022)
+* Update UI5 parser
+
+## 0.7.2 (20-10-2022)
 * Add TS support for wrong class name linter, add Wrong namespace linter
 
-## 0.7.1 (19-10-2021)
+## 0.7.1 (19-10-2022)
 * Update ui5 parser
 
-## 0.7.0 (18-10-2021)
+## 0.7.0 (18-10-2022)
 * Update ui5 parser, add typescript support
 
-## 0.6.8 (02-05-2021)
+## 0.6.8 (02-05-2022)
 * Update ui5 parser
 
-## 0.6.7 (23-04-2021)
+## 0.6.7 (23-04-2022)
 * Bugfixes
 
-## 0.6.6 (23-04-2021)
+## 0.6.6 (23-04-2022)
 * Add cmd: linting
 
-## 0.6.5 (13-04-2021)
+## 0.6.5 (13-04-2022)
 * Dependency update
 
-## 0.6.4 (24-02-2021)
+## 0.6.4 (24-02-2022)
 * Minor bugfixes
 
-## 0.6.3 (21-02-2021)
+## 0.6.3 (21-02-2022)
 * Bugfix for multiple types
 
-## 0.6.2 (19-02-2021)
+## 0.6.2 (19-02-2022)
 * Make Component.js exception case insensitive
 
-## 0.6.1 (19-02-2021)
+## 0.6.1 (19-02-2022)
 * Add Component.js as exception to unused class linter
 
-## 0.6.0 (19-02-2021)
+## 0.6.0 (19-02-2022)
 * Add unused class linter
 
-## 0.5.24 (12-01-2021)
+## 0.5.24 (12-01-2022)
 * Rollback chalk
 
-## 0.5.23 (12-01-2021)
+## 0.5.23 (12-01-2022)
 * Update dependencies
 
 ## 0.5.22 (29-11-2021)
