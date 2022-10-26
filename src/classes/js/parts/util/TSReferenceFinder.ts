@@ -1,28 +1,27 @@
 /* eslint-disable @typescript-eslint/indent */
 import { MethodDeclaration } from "ts-morph";
 import * as ts from "typescript";
-import { UI5TSParser } from "ui5plugin-parser";
+import { AnyCustomTSClass, ICustomTSField, ICustomTSMethod, UI5TSParser } from "ui5plugin-parser";
 import {
 	CustomTSClass,
-	ICustomClassTSConstructor,
-	ICustomClassTSField,
-	ICustomClassTSMethod
+	ICustomClassTSConstructor
 } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
 import { RangeAdapter } from "../../../adapters/RangeAdapter";
 import * as path from "path";
 import { IRange } from "../../../Linter";
 import ReferenceFinderBase, { ILocation, IReferenceCodeLensCacheable } from "./ReferenceFinderBase";
+import { CustomTSObject } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSObject";
 
 export class TSReferenceFinder extends ReferenceFinderBase<
-	ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor,
+	ICustomTSField | ICustomTSMethod | ICustomClassTSConstructor,
 	UI5TSParser,
-	CustomTSClass
+	AnyCustomTSClass
 > {
-	public getReferenceLocations(member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor) {
+	public getReferenceLocations(member: ICustomTSField | ICustomTSMethod | ICustomClassTSConstructor) {
 		const locations: ILocation[] = [];
 
 		const UIClass = this._parser.classFactory.getUIClass(member.owner);
-		if (UIClass instanceof CustomTSClass) {
+		if (UIClass instanceof CustomTSClass || UIClass instanceof CustomTSObject) {
 			this._addLocationsFromUIClass(member, UIClass, locations);
 
 			if (member.name !== "constructor") {
@@ -44,8 +43,8 @@ export class TSReferenceFinder extends ReferenceFinderBase<
 	}
 
 	protected _addLocationsFromUIClass(
-		member: ICustomClassTSField | ICustomClassTSMethod | ICustomClassTSConstructor,
-		UIClass: CustomTSClass,
+		member: ICustomTSField | ICustomTSMethod | ICustomClassTSConstructor,
+		UIClass: AnyCustomTSClass,
 		locations: ILocation[]
 	) {
 		const cache = UIClass.getCache<IReferenceCodeLensCacheable>("referenceCodeLensCache") || {};
