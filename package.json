@@ -1,6 +1,6 @@
 {
 	"name": "ui5plugin-linter",
-	"version": "0.7.7",
+	"version": "0.8.0",
 	"description": "UI5 Class linter",
 	"main": "dist/index.js",
 	"scripts": {
@@ -44,6 +44,6 @@
 		"chalk": "^4.1.2",
 		"line-column": "^1.0.2",
 		"ts-morph": "^16.0.0",
-		"ui5plugin-parser": "^0.6.6"
+		"ui5plugin-parser": "^0.7.0"
 	}
 }

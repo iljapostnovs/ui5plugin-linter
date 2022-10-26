@@ -8,6 +8,7 @@ import { JSLinter } from "./abstraction/JSLinter";
 import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
 import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
+import { CustomTSObject } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSObject";
 
 export class WrongFilePathLinter<
 	Parser extends AbstractUI5Parser<CustomClass>,
@@ -65,7 +66,7 @@ export class WrongFilePathLinter<
 			isPathValid = UIClass.classExists;
 		} else if (UIClass && UIClass instanceof EmptyUIClass) {
 			isPathValid = false;
-		} else if (UIClass && UIClass instanceof CustomTSClass) {
+		} else if (UIClass && (UIClass instanceof CustomTSClass || UIClass instanceof CustomTSObject)) {
 			isPathValid = true;
 		}
 
@@ -100,7 +101,10 @@ export class WrongFilePathLinter<
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "").replace(".ts", "");
+			const sFileFSPath = this._parser.fileReader
+				.convertClassNameToFSPath(className)
+				?.replace(".js", "")
+				.replace(".ts", "");
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}

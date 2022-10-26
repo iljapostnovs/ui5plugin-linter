@@ -1,18 +1,17 @@
 import { JSLinter } from "./parts/abstraction/JSLinter";
 import { UnusedMemberLinter } from "./parts/UnusedMemberLinter";
 import { WrongFilePathLinter } from "./parts/WrongFilePathLinter";
-import { TextDocument, UI5TSParser } from "ui5plugin-parser";
+import { AnyCustomTSClass, TextDocument, UI5TSParser } from "ui5plugin-parser";
 import { IError, Linter } from "../Linter";
 import { UnusedClassLinter } from "./parts/UnusedClassLinter";
-import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
 import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
 import { WrongNamespaceLinter } from "./parts/WrongNamespaceLinter";
 import { PublicMemberLinter } from "./parts/PublicMemberLinter";
 
-export class TSLinterErrorFactory extends Linter<UI5TSParser, CustomTSClass> {
+export class TSLinterErrorFactory extends Linter<UI5TSParser, AnyCustomTSClass> {
 	timePerchar = 0;
 	getLintingErrors(document: TextDocument): IError[] {
-		const linters: JSLinter<UI5TSParser, CustomTSClass>[] = [
+		const linters: JSLinter<UI5TSParser, AnyCustomTSClass>[] = [
 			new UnusedMemberLinter(this._parser, this._configHandler),
 			new WrongFilePathLinter(this._parser, this._configHandler),
 			new UnusedClassLinter(this._parser, this._configHandler),
