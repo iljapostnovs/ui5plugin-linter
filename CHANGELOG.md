@@ -1,3 +1,6 @@
+## 0.8.1 (29-10-2022)
+* Update parser
+
 ## 0.8.0 (26-10-2022)
 * Update parser, adapt linters to work with CustomTSObject
 
