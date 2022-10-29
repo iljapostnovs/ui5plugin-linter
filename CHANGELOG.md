@@ -1,3 +1,6 @@
+## 0.8.2 (29-10-2022)
+* Fix unused translations linter
+
 ## 0.8.1 (29-10-2022)
 * Update parser
 

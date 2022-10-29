@@ -1,7 +1,7 @@
 import { TextDocument } from "ui5plugin-parser";
-import { ResourceModelData, IInternalizationText } from "ui5plugin-parser/dist/classes/UI5Classes/ResourceModelData";
+import { IInternalizationText, ResourceModelData } from "ui5plugin-parser/dist/classes/UI5Classes/ResourceModelData";
 import { RangeAdapter } from "../../..";
-import { IError, DiagnosticTag, PropertiesLinters } from "../../Linter";
+import { DiagnosticTag, IError, PropertiesLinters } from "../../Linter";
 import { PropertiesLinter } from "./abstraction/PropertiesLinter";
 
 export class UnusedTranslationsLinter extends PropertiesLinter {
@@ -27,7 +27,11 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		const translationId = translation.id;
 		if (!this._getIfTranslationIsUsed(translationId)) {
-			const range = RangeAdapter.offsetsRange(document.getText(), translation.positionBegin, translation.positionEnd);
+			const range = RangeAdapter.offsetsRange(
+				document.getText(),
+				translation.positionBegin,
+				translation.positionEnd - 1
+			);
 			if (range) {
 				errors.push({
 					code: "UI5plugin",
@@ -35,7 +39,10 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 					source: this.className,
 					severity: this._configHandler.getSeverity(this.className),
 					tags: [DiagnosticTag.Unnecessary],
-					range: range,
+					range: {
+						start: range.start,
+						end: { column: range.end.column + 1, line: range.end.line }
+					},
 					className: className || "",
 					fsPath: document.fileName
 				});
@@ -47,9 +54,19 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 	private _getIfTranslationIsUsed(translationId: string) {
 		const UIClasses = this._parser.classFactory.getAllCustomUIClasses();
 		let isUsed = !!UIClasses.find(UIClass => this._checkIfUsed(UIClass.classText, translationId));
-		isUsed = isUsed || !!this._parser.fileReader.getAllViews().find(view => this._checkIfUsed(view.content, translationId));
-		isUsed = isUsed || !!this._parser.fileReader.getAllFragments().find(fragment => this._checkIfUsed(fragment.content, translationId));
-		isUsed = isUsed || !!this._parser.fileReader.getAllManifests().find(manifest => this._checkIfUsed(JSON.stringify(manifest.content), `{{${translationId}}}`));
+		isUsed =
+			isUsed ||
+			!!this._parser.fileReader.getAllViews().find(view => this._checkIfUsed(view.content, translationId));
+		isUsed =
+			isUsed ||
+			!!this._parser.fileReader
+				.getAllFragments()
+				.find(fragment => this._checkIfUsed(fragment.content, translationId));
+		isUsed =
+			isUsed ||
+			!!this._parser.fileReader
+				.getAllManifests()
+				.find(manifest => this._checkIfUsed(JSON.stringify(manifest.content), `{{${translationId}}}`));
 
 		return isUsed;
 	}
