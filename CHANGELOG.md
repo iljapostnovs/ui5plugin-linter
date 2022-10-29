@@ -1,5 +1,8 @@
+## 0.8.2 (29-10-2022)
+* Fix unused translations linter
+
 ## 0.8.1 (29-10-2022)
-* Update parser, fix unused translations linter
+* Update parser
 
 ## 0.8.0 (26-10-2022)
 * Update parser, adapt linters to work with CustomTSObject
