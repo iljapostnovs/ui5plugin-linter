@@ -9,7 +9,7 @@ import { IMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UICl
 export class WrongFieldMethodLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongFieldMethodLinter;
 	public static timePerChar = 0;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		return this._getLintingErrors(document);
 	}
 	private _getLintingErrors(document: TextDocument): IError[] {
@@ -17,17 +17,19 @@ export class WrongFieldMethodLinter extends JSLinter<UI5Parser, CustomUIClass> {
 
 		const currentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (currentClassName) {
-			const UIClass = <CustomUIClass>this._parser.classFactory.getUIClass(currentClassName);
-			const acornMethods = UIClass.acornMethodsAndFields.filter(fieldOrMethod => fieldOrMethod.value.type === "FunctionExpression").map((node: any) => node.value.body);
+			const UIClass = this._parser.classFactory.getUIClass(currentClassName);
+			if (UIClass instanceof CustomUIClass) {
+				const acornMethods = UIClass.acornMethodsAndFields.filter(fieldOrMethod => fieldOrMethod.value.type === "FunctionExpression").map((node: any) => node.value.body);
 
-			acornMethods.forEach((method: any) => {
-				if (method.body) {
-					method.body.forEach((node: any) => {
-						const validationErrors = this._getErrorsForExpression(node, UIClass, document);
-						errors = errors.concat(validationErrors);
-					});
-				}
-			});
+				acornMethods.forEach((method: any) => {
+					if (method.body) {
+						method.body.forEach((node: any) => {
+							const validationErrors = this._getErrorsForExpression(node, UIClass, document);
+							errors = errors.concat(validationErrors);
+						});
+					}
+				});
+			}
 
 		}
 

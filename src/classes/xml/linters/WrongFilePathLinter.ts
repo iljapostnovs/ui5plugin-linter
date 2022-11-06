@@ -1,13 +1,14 @@
 import * as fs from "fs";
 import { TextDocument } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
+import { EmptyUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/EmptyUIClass";
 import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
 import { RangeAdapter } from "../../..";
 import { XMLLinters } from "../../Linter";
-import { XMLLinter, IXMLError } from "./abstraction/XMLLinter";
+import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
 export class WrongFilePathLinter extends XMLLinter {
 	protected className = XMLLinters.WrongFilePathLinter;
-	_getErrors(document: TextDocument): IXMLError[] {
+	protected _getErrors(document: TextDocument): IXMLError[] {
 		const errors: IXMLError[] = [];
 		const documentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName) || "";
 
@@ -22,7 +23,11 @@ export class WrongFilePathLinter extends XMLLinter {
 						const sClassName = result[0];
 						const isClassNameValid = this._validateClassName(sClassName);
 						if (!isClassNameValid) {
-							const range = RangeAdapter.offsetsRange(XMLFile.content, result.index, result.index + sClassName.length);
+							const range = RangeAdapter.offsetsRange(
+								XMLFile.content,
+								result.index,
+								result.index + sClassName.length
+							);
 							if (range) {
 								errors.push({
 									code: "UI5Plugin",
@@ -49,8 +54,10 @@ export class WrongFilePathLinter extends XMLLinter {
 
 		if (!isPathValid) {
 			let UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass && UIClass instanceof CustomUIClass) {
-				isPathValid = UIClass.classExists;
+			if (UIClass instanceof AbstractCustomClass || UIClass instanceof EmptyUIClass) {
+				if (UIClass instanceof AbstractCustomClass) {
+					isPathValid = UIClass.classExists;
+				}
 
 				if (!isPathValid) {
 					const parts = className.split(".");
@@ -59,7 +66,9 @@ export class WrongFilePathLinter extends XMLLinter {
 						const className = parts.join(".");
 						UIClass = this._parser.classFactory.getUIClass(className);
 						if (UIClass.classExists) {
-							isPathValid = !!UIClass.methods.find(method => method.name === memberName) || !!UIClass.fields.find(field => field.name === memberName);
+							isPathValid =
+								!!UIClass.methods.find(method => method.name === memberName) ||
+								!!UIClass.fields.find(field => field.name === memberName);
 						}
 					}
 				}
@@ -70,12 +79,14 @@ export class WrongFilePathLinter extends XMLLinter {
 			if (className.endsWith(".")) {
 				className = className.substring(0, className.length - 1);
 			}
-			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className)?.replace(".js", "").replace(".ts", "");
+			const sFileFSPath = this._parser.fileReader
+				.convertClassNameToFSPath(className)
+				?.replace(".js", "")
+				.replace(".ts", "");
 			if (sFileFSPath) {
 				isPathValid = fs.existsSync(sFileFSPath);
 			}
 		}
-
 
 		return isPathValid;
 	}

@@ -5,7 +5,7 @@ import { DiagnosticTag, IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongImportLinter;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);

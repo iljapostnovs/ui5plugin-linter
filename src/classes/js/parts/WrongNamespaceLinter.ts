@@ -5,7 +5,7 @@ import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongNamespaceLinter extends JSLinter<UI5TSParser, AnyCustomTSClass> {
 	protected className = JSLinters.WrongNamespaceLinter;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);

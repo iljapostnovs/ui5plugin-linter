@@ -9,7 +9,7 @@ import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
 
 export class TagLinter extends XMLLinter {
 	protected className = XMLLinters.TagLinter;
-	_getErrors(document: TextDocument): IXMLError[] {
+	protected _getErrors(document: TextDocument): IXMLError[] {
 		const errors: IXMLError[] = [];
 		const XMLFile = TextDocumentTransformer.toXMLFile(document);
 		if (XMLFile) {

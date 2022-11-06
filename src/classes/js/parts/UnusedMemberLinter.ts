@@ -17,7 +17,7 @@ export class UnusedMemberLinter<
 	CustomClass extends AbstractCustomClass
 > extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.UnusedMemberLinter;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		// console.time("Unused Member Linter");

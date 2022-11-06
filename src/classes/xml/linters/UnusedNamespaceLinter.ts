@@ -5,7 +5,7 @@ import { XMLLinter, IXMLError } from "./abstraction/XMLLinter";
 
 export class UnusedNamespaceLinter extends XMLLinter {
 	protected className: XMLLinters = XMLLinters.UnusedNamespaceLinter;
-	_getErrors(document: TextDocument): IXMLError[] {
+	protected _getErrors(document: TextDocument): IXMLError[] {
 		const errors: IXMLError[] = [];
 
 		const documentText = document.getText();
