@@ -1,3 +1,6 @@
+## 0.8.4 (06-11-2022)
+* Update parser
+
 ## 0.8.3 (06-11-2022)
 * Refactoring and minor bugfixes
 
