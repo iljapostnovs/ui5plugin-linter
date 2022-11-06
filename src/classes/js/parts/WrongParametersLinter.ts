@@ -10,7 +10,7 @@ export class WrongParametersLinter extends JSLinter<UI5Parser, CustomUIClass> {
 	protected className = JSLinters.WrongParametersLinter;
 	public static timePerChar = 0;
 	private static readonly _sapNodeDAO = new SAPNodeDAO();
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		// console.time("WrongParameterLinter");

@@ -1,3 +1,6 @@
+## 0.8.3 (06-11-2022)
+* Refactoring and minor bugfixes
+
 ## 0.8.2 (29-10-2022)
 * Fix unused translations linter
 

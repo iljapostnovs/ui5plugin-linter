@@ -11,7 +11,7 @@ export class UnusedClassLinter<
 	CustomClass extends AbstractCustomClass
 > extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.UnusedClassLinter;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
@@ -56,7 +56,7 @@ export class UnusedClassLinter<
 	}
 
 	private _checkClassForLintingExceptions(UIClass: AbstractCustomClass) {
-		return UIClass.fsPath?.toLowerCase().endsWith("component.js") || false;
+		return UIClass.fsPath?.toLowerCase().endsWith("component.js") || UIClass.fsPath?.toLowerCase().endsWith("component.ts") || false;
 	}
 
 	private _checkIfClassIsUsedInView(UIClass: AbstractCustomClass) {

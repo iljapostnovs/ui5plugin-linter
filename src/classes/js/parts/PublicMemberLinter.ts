@@ -16,7 +16,7 @@ export class PublicMemberLinter<
 	CustomClass extends AbstractCustomClass
 > extends JSLinter<Parser, CustomClass> {
 	protected className = JSLinters.PublicMemberLinter;
-	_getErrors(document: TextDocument): IError[] {
+	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
