@@ -1,14 +1,14 @@
 {
 	"name": "ui5plugin-linter",
-	"version": "0.8.5",
+	"version": "0.8.6",
 	"description": "UI5 Class linter",
 	"main": "dist/index.js",
 	"scripts": {
 		"test": "test",
-		"compile": "tsc",
-		"compile-prod": "rd /s /q \"dist\" && tsc --project tsconfig-prod.json",
+		"compile": "npx tsc",
+		"compile-prod": "rd /s /q \"dist\" && npx tsc --project tsconfig-prod.json",
 		"watch": "npm run compile",
-		"lint": "tslint -p ./"
+		"lint": "eslint src"
 	},
 	"repository": {
 		"type": "git",
@@ -33,17 +33,17 @@
 	"homepage": "https://github.com/iljapostnovs/ui5plugin-linter#readme",
 	"devDependencies": {
 		"@types/line-column": "^1.0.0",
-		"@types/node": "^18.11.0",
-		"@typescript-eslint/eslint-plugin": "^5.40.0",
-		"@typescript-eslint/parser": "^5.40.0",
-		"eslint": "^8.25.0",
+		"@types/node": "^18.11.9",
+		"@typescript-eslint/eslint-plugin": "^5.45.0",
+		"@typescript-eslint/parser": "^5.45.0",
+		"eslint": "^8.28.0",
 		"ts-loader": "^9.4.1",
-		"typescript": "^4.8.4"
+		"typescript": "^4.9.3"
 	},
 	"dependencies": {
 		"chalk": "^4.1.2",
 		"line-column": "^1.0.2",
-		"ts-morph": "^16.0.0",
-		"ui5plugin-parser": "^0.7.4"
+		"ts-morph": "^17.0.1",
+		"ui5plugin-parser": "^0.7.5"
 	}
 }
