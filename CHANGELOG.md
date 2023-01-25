@@ -1,3 +1,7 @@
+## 0.8.7 (25-01-2023)
+
+-   Update parser
+
 ## 0.8.6 (28-11-2022)
 
 -   Update packages
