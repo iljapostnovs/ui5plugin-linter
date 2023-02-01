@@ -5,3 +5,6 @@ tsconfig-prod.json
 .eslintrc
 /node_modules
 /test
+/.github
+/.vscode
+.prettierrc
