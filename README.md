@@ -31,7 +31,7 @@ ui5linter
 UI5 Linter searches for `package.json` in your CWD (Current Working Directory) and locates the config there.</br>
 
 > **Cache** <br/>
-> ui5plugin-parser preload the library metadata and stores it in cache. If "libsToLoad" were changed, it is necessary to clear cache. It is possible by adding `--rmcache` flag to ui5linter: <br/>
+> ui5plugin-parser preloads the library metadata and stores it in cache. If `libsToLoad` were changed, it is necessary to clear cache. It is possible by adding `--rmcache` flag to ui5linter: <br/>
 >
 > ```cmd
 > ui5linter --rmcache
@@ -41,12 +41,14 @@ UI5 Linter searches for `package.json` in your CWD (Current Working Directory) a
 
 #### Initialization
 
-If any typescript file is found in the project, parser considers that it's TS project. <br/>
+If `tsconfig.json` is found in the CWD and any `.ts` files are found in the workspace, parser considers that it's TS project. <br/>
 `tsconfig.json` should be located in CWD.
 
 #### Folder exclusions
 
-For convenience purposes `UI5TSParser` ignores `webapp` and `src-gen` folders, because they contain transpiled JS/XML files, which can make the parser to think that source files are there. If build folder name is different, is should be added to `excludeFolderPatterns` in your config (`VSCode Preferences` in case of UI5 Extension, `package.json` in case of cli usage).
+For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they contain transpiled JS/XML files, which can make the parser to think that source files are there.
+
+> **Important!** If build folder name is different, is should be added to `excludeFolderPatterns` in your `package.json`.
 
 ### Configuration example
 
@@ -54,10 +56,12 @@ For convenience purposes `UI5TSParser` ignores `webapp` and `src-gen` folders, b
 {
 	"ui5": {
 		"ui5parser": {
-			"ui5version": "1.84.19",
+			"ui5version": "1.84.30",
 			"dataSource": "https://sapui5.hana.ondemand.com/",
 			"rejectUnauthorized": true,
-			"libsToLoad": ["sap.uxap", "sap.viz"]
+			"libsToLoad": ["sap.uxap", "sap.viz"],
+			//Handy to add additional workspace paths if e.g. library is outside of CWD
+			"additionalWorkspaces": ["../MyLibrary"]
 		},
 		"ui5linter": {
 			"severity": {
@@ -89,9 +93,7 @@ For convenience purposes `UI5TSParser` ignores `webapp` and `src-gen` folders, b
       "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
       "componentsToInclude" comes handy when you have many different components which project depends
       on, but it is necessary to lint only one*/
-			"componentsToExclude": ["com.custom.library"],
-			//Handy to add additional workspace paths if e.g. library is outside of CWD
-			"additionalWorkspacePaths": ["C:\\MyLibrary", "../MyLibrary"]
+			"componentsToExclude": ["com.custom.library"]
 		}
 	}
 }
@@ -218,8 +220,7 @@ Default config is as follows:
 			"jsClassExceptions": [],
 			"xmlClassExceptions": [],
 			"componentsToInclude": [],
-			"componentsToExclude": [],
-			"additionalWorkspacePaths": []
+			"componentsToExclude": []
 		}
 	}
 }
@@ -261,7 +262,6 @@ interface IUI5LinterEntryFields {
 	xmlClassExceptions?: string[];
 	componentsToInclude?: string[];
 	componentsToExclude?: string[];
-	additionalWorkspacePaths?: string[];
 }
 ```
 

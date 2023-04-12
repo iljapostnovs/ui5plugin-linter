@@ -1,23 +1,23 @@
-import { JSLinter } from "./parts/abstraction/JSLinter";
-import { WrongFieldMethodLinter } from "./parts/WrongFieldMethodLinter";
-import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
-import { WrongImportLinter } from "./parts/WrongImportLinter";
-import { WrongParametersLinter } from "./parts/WrongParametersLinter";
-import { UnusedMemberLinter } from "./parts/UnusedMemberLinter";
-import { WrongFilePathLinter } from "./parts/WrongFilePathLinter";
-import { PublicMemberLinter } from "./parts/PublicMemberLinter";
-import { WrongOverrideLinter } from "./parts/WrongOverrideLinter";
-import { AbstractClassLinter } from "./parts/AbstractClassLinter";
-import { InterfaceLinter } from "./parts/InterfaceLinter";
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
+import { TextDocument, UI5JSParser } from "ui5plugin-parser";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
 import { IError, Linter } from "../Linter";
+import { AbstractClassLinter } from "./parts/AbstractClassLinter";
+import { JSLinter } from "./parts/abstraction/JSLinter";
+import { InterfaceLinter } from "./parts/InterfaceLinter";
+import { PublicMemberLinter } from "./parts/PublicMemberLinter";
 import { UnusedClassLinter } from "./parts/UnusedClassLinter";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
+import { UnusedMemberLinter } from "./parts/UnusedMemberLinter";
+import { WrongClassNameLinter } from "./parts/WrongClassNameLinter";
+import { WrongFieldMethodLinter } from "./parts/WrongFieldMethodLinter";
+import { WrongFilePathLinter } from "./parts/WrongFilePathLinter";
+import { WrongImportLinter } from "./parts/WrongImportLinter";
+import { WrongOverrideLinter } from "./parts/WrongOverrideLinter";
+import { WrongParametersLinter } from "./parts/WrongParametersLinter";
 
-export class JSLinterErrorFactory extends Linter<UI5Parser, CustomUIClass> {
+export class JSLinterErrorFactory extends Linter<UI5JSParser, CustomJSClass> {
 	timePerchar = 0;
 	getLintingErrors(document: TextDocument): IError[] {
-		const linters: JSLinter<UI5Parser, CustomUIClass>[] = [
+		const linters: JSLinter<UI5JSParser, CustomJSClass>[] = [
 			new WrongFieldMethodLinter(this._parser, this._configHandler),
 			new WrongClassNameLinter(this._parser, this._configHandler),
 			new WrongImportLinter(this._parser, this._configHandler),

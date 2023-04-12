@@ -1,9 +1,9 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
+import { TextDocument, UI5JSParser } from "ui5plugin-parser";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { DiagnosticTag, IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
+export class WrongImportLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	protected className = JSLinters.WrongImportLinter;
 	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -11,12 +11,16 @@ export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass && UIClass.UIDefine) {
+			if (UIClass instanceof CustomJSClass && UIClass.UIDefine) {
 				UIClass.UIDefine.forEach(UIDefine => {
 					const importedClass = this._parser.classFactory.getUIClass(UIDefine.classNameDotNotation);
 					if (!importedClass.classExists) {
 						//TODO: check location generation
-						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
+						const range = RangeAdapter.offsetsRange(
+							UIClass.classText,
+							UIDefine.start + 1,
+							UIDefine.start + 1 + UIDefine.path.length
+						);
 						if (range) {
 							errors.push({
 								acornNode: UIDefine.node,
@@ -30,7 +34,11 @@ export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
 							});
 						}
 					} else if (importedClass.deprecated) {
-						const range = RangeAdapter.offsetsRange(UIClass.classText, UIDefine.start + 1, UIDefine.start + 1 + UIDefine.path.length);
+						const range = RangeAdapter.offsetsRange(
+							UIClass.classText,
+							UIDefine.start + 1,
+							UIDefine.start + 1 + UIDefine.path.length
+						);
 						if (range) {
 							errors.push({
 								acornNode: UIDefine.node,
@@ -47,7 +55,6 @@ export class WrongImportLinter extends JSLinter<UI5Parser, CustomUIClass> {
 					}
 				});
 			}
-
 		}
 		return errors;
 	}

@@ -1,6 +1,6 @@
 import { AnyCustomTSClass, TextDocument, UI5TSParser } from "ui5plugin-parser";
-import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
+import { CustomTSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/ts/CustomTSClass";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
 export class WrongNamespaceLinter extends JSLinter<UI5TSParser, AnyCustomTSClass> {

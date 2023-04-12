@@ -1,15 +1,20 @@
-import { JSLinter } from "./abstraction/JSLinter";
-import { AbstractUI5Parser, TextDocument, UI5Parser, UI5TSParser } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../Linter";
-import { ReferenceFinder } from "./util/ReferenceFinder";
+import {
+	AbstractUI5Parser,
+	ReferenceFinder,
+	TextDocument,
+	TSReferenceFinder,
+	UI5JSParser,
+	UI5TSParser
+} from "ui5plugin-parser";
 import {
 	AbstractCustomClass,
 	ICustomClassField,
 	ICustomClassMethod
-} from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { TSReferenceFinder } from "./util/TSReferenceFinder";
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { RangeAdapter } from "../../..";
+import { IError, JSLinters } from "../../Linter";
+import { JSLinter } from "./abstraction/JSLinter";
 
 export class PublicMemberLinter<
 	Parser extends AbstractUI5Parser<CustomClass>,
@@ -81,8 +86,8 @@ export class PublicMemberLinter<
 
 		if (!memberIsUsed) {
 			const referenceFinder =
-				UIClass instanceof CustomUIClass
-					? new ReferenceFinder(this._parser as unknown as UI5Parser)
+				UIClass instanceof CustomJSClass
+					? new ReferenceFinder(this._parser as unknown as UI5JSParser)
 					: new TSReferenceFinder(this._parser as unknown as UI5TSParser);
 			const references = referenceFinder.getReferenceLocations(member).filter(reference => {
 				return reference.filePath !== UIClass.fsPath;

@@ -1,6 +1,5 @@
-import { TextDocument } from "ui5plugin-parser";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
+import { AbstractUI5Parser, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
 import { IError, Linter, PropertiesLinters } from "../../../Linter";
 
 export abstract class PropertiesLinter extends Linter<AbstractUI5Parser<AbstractCustomClass>, AbstractCustomClass> {
@@ -11,7 +10,10 @@ export abstract class PropertiesLinter extends Linter<AbstractUI5Parser<Abstract
 		const errors: IError[] = [];
 		const timeStart = new Date().getTime();
 
-		if (this._configHandler.getLinterUsage(this.className) && !this._configHandler.getIfLintingShouldBeSkipped(document)) {
+		if (
+			this._configHandler.getLinterUsage(this.className) &&
+			!this._configHandler.getIfLintingShouldBeSkipped(document)
+		) {
 			errors.push(...this._getErrors(document));
 			if (errors instanceof Promise) {
 				errors.then(() => {

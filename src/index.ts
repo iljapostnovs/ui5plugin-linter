@@ -1,13 +1,13 @@
-import { Linter, Severity } from "./classes/Linter";
-import { JSLinter } from "./classes/js/parts/abstraction/JSLinter";
-import { PositionAdapter } from "./classes/adapters/PositionAdapter";
-import { RangeAdapter } from "./classes/adapters/RangeAdapter";
-import { JSLinterErrorFactory } from "./classes/js/JSLinterErrorFactory";
-import { XMLLinterErrorFactory } from "./classes/xml/XMLLinterErrorFactory";
-import { PropertiesLinterErrorFactory } from "./classes/properties/PropertiesLinterErrorFactory";
+import { PositionAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/PositionAdapter";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { ILinterConfigHandler } from "./classes/config/ILinterConfigHandler";
 import { PackageLinterConfigHandler } from "./classes/config/PackageLinterConfigHandler";
+import { JSLinterErrorFactory } from "./classes/js/JSLinterErrorFactory";
+import { JSLinter } from "./classes/js/parts/abstraction/JSLinter";
 import { TSLinterErrorFactory } from "./classes/js/TSLinterErrorFactory";
+import { Linter, Severity } from "./classes/Linter";
+import { PropertiesLinterErrorFactory } from "./classes/properties/PropertiesLinterErrorFactory";
+import { XMLLinterErrorFactory } from "./classes/xml/XMLLinterErrorFactory";
 
 export {
 	Severity,
@@ -21,4 +21,4 @@ export {
 	TSLinterErrorFactory,
 	XMLLinterErrorFactory,
 	PropertiesLinterErrorFactory
-}
+};

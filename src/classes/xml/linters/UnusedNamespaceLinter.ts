@@ -1,7 +1,7 @@
 import { TextDocument } from "ui5plugin-parser";
 import { RangeAdapter } from "../../..";
-import { XMLLinters, DiagnosticTag } from "../../Linter";
-import { XMLLinter, IXMLError } from "./abstraction/XMLLinter";
+import { DiagnosticTag, XMLLinters } from "../../Linter";
+import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
 
 export class UnusedNamespaceLinter extends XMLLinter {
 	protected className: XMLLinters = XMLLinters.UnusedNamespaceLinter;

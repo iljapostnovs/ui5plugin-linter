@@ -1,11 +1,11 @@
-import { JSLinter } from "./abstraction/JSLinter";
-import { AbstractUI5Parser, TextDocument } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../Linter";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
 import * as path from "path";
+import { AbstractUI5Parser, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { CustomTSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/ts/CustomTSClass";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
+import { IError, JSLinters } from "../../Linter";
+import { JSLinter } from "./abstraction/JSLinter";
 
 export class WrongClassNameLinter<
 	Parser extends AbstractUI5Parser<CustomClass>,
@@ -18,7 +18,7 @@ export class WrongClassNameLinter<
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass && UIClass.getUIDefineAcornBody()) {
+			if (UIClass instanceof CustomJSClass && UIClass.getUIDefineAcornBody()) {
 				if (UIClass.acornReturnedClassExtendBody) {
 					const classNameFromFile =
 						UIClass.acornReturnedClassExtendBody &&

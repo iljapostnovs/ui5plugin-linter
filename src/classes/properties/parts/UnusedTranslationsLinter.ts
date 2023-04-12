@@ -1,5 +1,5 @@
-import { TextDocument } from "ui5plugin-parser";
-import { IInternalizationText, ResourceModelData } from "ui5plugin-parser/dist/classes/UI5Classes/ResourceModelData";
+import { ParserPool, TextDocument } from "ui5plugin-parser";
+import { IInternalizationText } from "ui5plugin-parser/dist/classes/parsing/util/i18n/ResourceModelData";
 import { RangeAdapter } from "../../..";
 import { DiagnosticTag, IError, PropertiesLinters } from "../../Linter";
 import { PropertiesLinter } from "./abstraction/PropertiesLinter";
@@ -10,11 +10,11 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 		const errors: IError[] = [];
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
-			ResourceModelData.updateCache(document);
-			const manifest = this._parser.fileReader.getManifestForClass(className);
+			this._parser.resourceModelData.updateCache(document);
+			const manifest = ParserPool.getManifestForClass(className);
 			const componentName = manifest?.componentName;
-			if (componentName && ResourceModelData.resourceModels[componentName]) {
-				const translations = ResourceModelData.resourceModels[componentName];
+			if (componentName && this._parser.resourceModelData.resourceModels[componentName]) {
+				const translations = this._parser.resourceModelData.resourceModels[componentName];
 				translations.forEach(translation => {
 					errors.push(...this._getTranslationErrors(translation, document));
 				});
@@ -52,21 +52,17 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 		return errors;
 	}
 	private _getIfTranslationIsUsed(translationId: string) {
-		const UIClasses = this._parser.classFactory.getAllCustomUIClasses();
+		const UIClasses = ParserPool.getAllCustomUIClasses();
 		let isUsed = !!UIClasses.find(UIClass => this._checkIfUsed(UIClass.classText, translationId));
+		isUsed = isUsed || !!ParserPool.getAllViews().find(view => this._checkIfUsed(view.content, translationId));
 		isUsed =
 			isUsed ||
-			!!this._parser.fileReader.getAllViews().find(view => this._checkIfUsed(view.content, translationId));
+			!!ParserPool.getAllFragments().find(fragment => this._checkIfUsed(fragment.content, translationId));
 		isUsed =
 			isUsed ||
-			!!this._parser.fileReader
-				.getAllFragments()
-				.find(fragment => this._checkIfUsed(fragment.content, translationId));
-		isUsed =
-			isUsed ||
-			!!this._parser.fileReader
-				.getAllManifests()
-				.find(manifest => this._checkIfUsed(JSON.stringify(manifest.content), `{{${translationId}}}`));
+			!!ParserPool.getAllManifests().find(manifest =>
+				this._checkIfUsed(JSON.stringify(manifest.content), `{{${translationId}}}`)
+			);
 
 		return isUsed;
 	}

@@ -1,26 +1,25 @@
-
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import { ICustomClassField, ICustomClassMethod, ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
-import { JSLinters, IError } from "../../Linter";
+import { TextDocument, UI5JSParser } from "ui5plugin-parser";
+import {
+	ICustomClassField,
+	ICustomClassMethod,
+	ICustomMember
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class InterfaceLinter extends JSLinter<UI5Parser, CustomUIClass> {
+export class InterfaceLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	protected className = JSLinters.InterfaceLinter;
 	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
-		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
+		const UIClass = this._parser.textDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.interfaces && UIClass.interfaces.length > 0) {
 			const interfaceMembers: ICustomMember[] = UIClass.interfaces.flatMap(theInterface => [
-				...this._parser.classFactory.getClassMethods(theInterface, false) as ICustomClassMethod[],
-				...this._parser.classFactory.getClassFields(theInterface, false) as ICustomClassField[]
+				...(this._parser.classFactory.getClassMethods(theInterface, false) as ICustomClassMethod[]),
+				...(this._parser.classFactory.getClassFields(theInterface, false) as ICustomClassField[])
 			]);
 			const undefinedMembers: ICustomMember[] = [];
-			const members = [
-				...UIClass.methods,
-				...UIClass.fields
-			];
+			const members = [...UIClass.methods, ...UIClass.fields];
 			interfaceMembers.forEach(interfaceMember => {
 				const memberDefined = !!members.find(member => member.name === interfaceMember.name);
 				if (!memberDefined) {
@@ -42,7 +41,6 @@ export class InterfaceLinter extends JSLinter<UI5Parser, CustomUIClass> {
 					fsPath: document.fileName
 				});
 			});
-
 		}
 
 		return errors;

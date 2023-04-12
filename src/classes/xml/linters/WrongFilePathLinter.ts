@@ -1,8 +1,7 @@
 import * as fs from "fs";
-import { TextDocument } from "ui5plugin-parser";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { EmptyUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/EmptyUIClass";
-import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
+import { ParserPool, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { EmptyJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/EmptyJSClass";
 import { RangeAdapter } from "../../..";
 import { XMLLinters } from "../../Linter";
 import { IXMLError, XMLLinter } from "./abstraction/XMLLinter";
@@ -12,9 +11,9 @@ export class WrongFilePathLinter extends XMLLinter {
 		const errors: IXMLError[] = [];
 		const documentClassName = this._parser.fileReader.getClassNameFromPath(document.fileName) || "";
 
-		const XMLFile = TextDocumentTransformer.toXMLFile(document);
+		const XMLFile = this._parser.textDocumentTransformer.toXMLFile(document);
 		if (XMLFile) {
-			const manifest = this._parser.fileReader.getManifestForClass(XMLFile.name);
+			const manifest = ParserPool.getManifestForClass(XMLFile.name);
 			if (manifest) {
 				const rClassNamesRegex = new RegExp(`${manifest.componentName.replace(/\./, "\\.")}\\..*?(?="|')`, "g");
 				if (rClassNamesRegex) {
@@ -54,7 +53,7 @@ export class WrongFilePathLinter extends XMLLinter {
 
 		if (!isPathValid) {
 			let UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof AbstractCustomClass || UIClass instanceof EmptyUIClass) {
+			if (UIClass instanceof AbstractCustomClass || UIClass instanceof EmptyJSClass) {
 				if (UIClass instanceof AbstractCustomClass) {
 					isPathValid = UIClass.classExists;
 				}

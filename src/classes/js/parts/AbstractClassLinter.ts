@@ -1,27 +1,20 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import { ICustomMember } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { TextDocumentTransformer } from "ui5plugin-parser/dist/classes/utils/TextDocumentTransformer";
-import { JSLinters, IError } from "../../Linter";
+import { TextDocument, UI5JSParser } from "ui5plugin-parser";
+import { ICustomMember } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class AbstractClassLinter extends JSLinter<UI5Parser, CustomUIClass> {
+export class AbstractClassLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	protected className = JSLinters.AbstractClassLinter;
 	protected _getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
 
-		const UIClass = TextDocumentTransformer.toCustomUIClass(document);
+		const UIClass = this._parser.textDocumentTransformer.toCustomUIClass(document);
 		if (UIClass?.parentClassNameDotNotation) {
 			const parent = this._parser.classFactory.getParent(UIClass);
-			if (parent?.abstract && parent instanceof CustomUIClass) {
+			if (parent?.abstract && parent instanceof CustomJSClass) {
 				const undefinedMembers: ICustomMember[] = [];
-				const members = [
-					...UIClass.methods,
-					...UIClass.fields
-				];
-				const parentMembers = [
-					...parent.methods,
-					...parent.fields
-				];
+				const members = [...UIClass.methods, ...UIClass.fields];
+				const parentMembers = [...parent.methods, ...parent.fields];
 				const abstractMembers = parentMembers.filter(member => member.abstract);
 				abstractMembers.forEach(abstractMember => {
 					const memberDefined = !!members.find(member => member.name === abstractMember.name);
