@@ -1,4 +1,4 @@
-## 1.0.0 (10-04-2023)
+## 1.0.0 (13-04-2023)
 
 -   UI5 Parser updated to v1.0.0
 -   `additionalWorkspaces` config entry moved to parser
