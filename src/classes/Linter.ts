@@ -1,7 +1,7 @@
-import { TextDocument } from "ui5plugin-parser";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
-import { ILinterConfigHandler } from "..";
+import { AbstractUI5Parser, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { IRange } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
+import { ILinterConfigHandler } from "./config/ILinterConfigHandler";
 import { PackageLinterConfigHandler } from "./config/PackageLinterConfigHandler";
 
 export abstract class Linter<Parser extends AbstractUI5Parser<CustomClass>, CustomClass extends AbstractCustomClass> {
@@ -52,16 +52,6 @@ export enum Severity {
 export enum DiagnosticTag {
 	Unnecessary = 1,
 	Deprecated = 2
-}
-
-export interface IPosition {
-	line: number,
-	column: number
-}
-
-export interface IRange {
-	start: IPosition,
-	end: IPosition
 }
 
 export interface IError {

@@ -1,1 +1,32 @@
-{}
+{
+	"peacock.color": "#fbb040",
+	"workbench.colorCustomizations": {
+		"activityBar.activeBackground": "#fcc572",
+		"activityBar.background": "#fcc572",
+		"titleBar.activeBackground": "#fbb040",
+		"titleBar.inactiveBackground": "#fbb04099",
+		"activityBarBadge.background": "#039c5f",
+		"activityBarBadge.foreground": "#e7e7e7",
+		"activityBar.foreground": "#15202b",
+		"activityBar.inactiveForeground": "#15202b99",
+		"commandCenter.border": "#15202b99",
+		"titleBar.activeForeground": "#15202b",
+		"titleBar.inactiveForeground": "#15202b99",
+		"sash.hoverBorder": "#fcc572",
+		"statusBar.background": "#fbb040",
+		"statusBar.foreground": "#15202b",
+		"statusBarItem.hoverBackground": "#fa9b0e",
+		"statusBarItem.remoteBackground": "#fbb040",
+		"statusBarItem.remoteForeground": "#15202b"
+	},
+	"peacock.keepBadgeColor": false,
+	"peacock.keepForegroundColor": false,
+	"peacock.showColorInStatusBar": true,
+	"peacock.squigglyBeGone": false,
+	"peacock.affectEditorGroupBorder": false,
+	"peacock.affectSashHover": true,
+	"peacock.affectStatusBar": true,
+	"cSpell.words": [
+		"rmcache"
+	]
+}

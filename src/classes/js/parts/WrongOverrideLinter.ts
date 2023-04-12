@@ -1,10 +1,18 @@
-import { TextDocument, UI5Parser } from "ui5plugin-parser";
-import { CustomUIClass, ICustomClassUIField, ICustomClassUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { AbstractUIClass, IUIField, IUIMethod } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractUIClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../Linter";
+import { TextDocument, UI5JSParser } from "ui5plugin-parser";
+import {
+	AbstractJSClass,
+	IUIField,
+	IUIMethod
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+import {
+	CustomJSClass,
+	ICustomClassJSField,
+	ICustomClassJSMethod
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
+import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-export class WrongOverrideLinter extends JSLinter<UI5Parser, CustomUIClass> {
+export class WrongOverrideLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	protected className = JSLinters.WrongOverrideLinter;
 	_getErrors(document: TextDocument): IError[] {
 		const errors: IError[] = [];
@@ -12,11 +20,8 @@ export class WrongOverrideLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
-			if (UIClass instanceof CustomUIClass) {
-				const fieldsAndMethods = [
-					...UIClass.fields,
-					...UIClass.methods
-				];
+			if (UIClass instanceof CustomJSClass) {
+				const fieldsAndMethods = [...UIClass.fields, ...UIClass.methods];
 				fieldsAndMethods.forEach(fieldOrMethod => {
 					const error = this._getIfMemberIsWronglyOverriden(UIClass, fieldOrMethod);
 					if (error) {
@@ -29,7 +34,10 @@ export class WrongOverrideLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		return errors;
 	}
 
-	private _getIfMemberIsWronglyOverriden(UIClass: CustomUIClass, UIMember: ICustomClassUIMethod | ICustomClassUIField) {
+	private _getIfMemberIsWronglyOverriden(
+		UIClass: CustomJSClass,
+		UIMember: ICustomClassJSMethod | ICustomClassJSField
+	) {
 		let error: IError | undefined;
 		const parentMember = this._getMemberFromParent(UIClass, UIMember);
 		if (parentMember && parentMember.visibility === "private" && UIMember.loc) {
@@ -51,14 +59,14 @@ export class WrongOverrideLinter extends JSLinter<UI5Parser, CustomUIClass> {
 		return error;
 	}
 
-	private _getMemberFromParent(UIClass: AbstractUIClass, UIMember: IUIMethod | ICustomClassUIField): IUIMethod | IUIField | undefined {
-		let parentMember: IUIMethod | IUIField | undefined;
+	private _getMemberFromParent(
+		UIClass: AbstractJSClass,
+		UIMember: ICustomClassJSMethod | ICustomClassJSField
+	): IUIField | IUIMethod | undefined {
+		let parentMember: IUIField | IUIMethod | undefined;
 		if (UIClass.parentClassNameDotNotation) {
 			const UIClassParent = this._parser.classFactory.getUIClass(UIClass.parentClassNameDotNotation);
-			const fieldsAndMethods = [
-				...UIClassParent.fields,
-				...UIClassParent.methods
-			];
+			const fieldsAndMethods = [...UIClassParent.fields, ...UIClassParent.methods];
 			parentMember = fieldsAndMethods.find(parentMember => parentMember.name === UIMember.name);
 			if (!parentMember && UIClassParent.parentClassNameDotNotation) {
 				parentMember = this._getMemberFromParent(UIClassParent, UIMember);

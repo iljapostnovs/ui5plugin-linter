@@ -1,14 +1,13 @@
-import { TextDocument } from "ui5plugin-parser";
-import { CustomUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomUIClass";
-import { EmptyUIClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/EmptyUIClass";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
 import * as fs from "fs";
-import { JSLinters, IError } from "../../Linter";
+import { AbstractUI5Parser, ParserPool, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
+import { EmptyJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/EmptyJSClass";
+import { CustomTSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/ts/CustomTSClass";
+import { CustomTSObject } from "ui5plugin-parser/dist/classes/parsing/ui5class/ts/CustomTSObject";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
+import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
-import { CustomTSClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSClass";
-import { CustomTSObject } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/CustomTSObject";
 
 export class WrongFilePathLinter<
 	Parser extends AbstractUI5Parser<CustomClass>,
@@ -22,7 +21,7 @@ export class WrongFilePathLinter<
 		if (className) {
 			const UIClass = this._parser.classFactory.getUIClass(className);
 			if (UIClass instanceof AbstractCustomClass && UIClass.classText) {
-				const manifest = this._parser.fileReader.getManifestForClass(UIClass.className);
+				const manifest = ParserPool.getManifestForClass(UIClass.className);
 				if (manifest) {
 					const rClassNamesRegex = new RegExp(
 						`${manifest.componentName.replace(/\./, "\\.")}\\..*?(?="|'|}|\\[|\\]|>|\\|)`,
@@ -62,9 +61,9 @@ export class WrongFilePathLinter<
 	private _validateClassName(className: string) {
 		let isPathValid = false;
 		const UIClass = this._parser.classFactory.getUIClass(className);
-		if (UIClass && UIClass instanceof CustomUIClass) {
+		if (UIClass && UIClass instanceof CustomJSClass) {
 			isPathValid = UIClass.classExists;
-		} else if (UIClass && UIClass instanceof EmptyUIClass) {
+		} else if (UIClass && UIClass instanceof EmptyJSClass) {
 			isPathValid = false;
 		} else if (UIClass && (UIClass instanceof CustomTSClass || UIClass instanceof CustomTSObject)) {
 			isPathValid = true;
@@ -72,14 +71,14 @@ export class WrongFilePathLinter<
 
 		if (!isPathValid) {
 			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className, false, false, true);
-			const aAllViews = this._parser.fileReader.getAllViews();
+			const aAllViews = ParserPool.getAllViews();
 			const oView = aAllViews.find(oView => oView.fsPath === sFileFSPath);
 			isPathValid = !!oView;
 		}
 
 		if (!isPathValid) {
 			const sFileFSPath = this._parser.fileReader.convertClassNameToFSPath(className, false, true, false);
-			const aAllFragments = this._parser.fileReader.getAllFragments();
+			const aAllFragments = ParserPool.getAllFragments();
 			const oFragment = aAllFragments.find(oFragment => oFragment.fsPath === sFileFSPath);
 			isPathValid = !!oFragment;
 		}

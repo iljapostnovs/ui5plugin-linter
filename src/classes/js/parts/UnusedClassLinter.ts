@@ -1,10 +1,9 @@
+import { AbstractUI5Parser, ParserPool, TextDocument } from "ui5plugin-parser";
+import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import { IXMLFile } from "ui5plugin-parser/dist/classes/parsing/util/filereader/IFileReader";
+import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
+import { IError, JSLinters } from "../../Linter";
 import { JSLinter } from "./abstraction/JSLinter";
-import { TextDocument, XMLParser } from "ui5plugin-parser";
-import { RangeAdapter } from "../../adapters/RangeAdapter";
-import { JSLinters, IError } from "../../Linter";
-import { IXMLFile } from "ui5plugin-parser/dist/classes/utils/FileReader";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/UI5Classes/UI5Parser/UIClass/AbstractCustomClass";
-import { AbstractUI5Parser } from "ui5plugin-parser/dist/IUI5Parser";
 
 export class UnusedClassLinter<
 	Parser extends AbstractUI5Parser<CustomClass>,
@@ -39,14 +38,14 @@ export class UnusedClassLinter<
 
 	private _checkIfClassIsUsed(UIClass: AbstractCustomClass) {
 		const isException = this._checkClassForLintingExceptions(UIClass);
-		const allCustomUIClasses = this._parser.classFactory.getAllCustomUIClasses();
+		const allCustomJSClasses = ParserPool.getAllCustomUIClasses();
 
 		return (
 			isException ||
-			allCustomUIClasses.some(customUIClass => {
+			allCustomJSClasses.some(CustomJSClass => {
 				return (
-					this._checkIfClassIsImportedInUIDefine(customUIClass, UIClass) ||
-					this._checkIfClassIsUsedAsInterface(customUIClass, UIClass)
+					this._checkIfClassIsImportedInUIDefine(CustomJSClass, UIClass) ||
+					this._checkIfClassIsUsedAsInterface(CustomJSClass, UIClass)
 				);
 			}) ||
 			this._checkIfClassMentionedInManifest(UIClass) ||
@@ -56,7 +55,11 @@ export class UnusedClassLinter<
 	}
 
 	private _checkClassForLintingExceptions(UIClass: AbstractCustomClass) {
-		return UIClass.fsPath?.toLowerCase().endsWith("component.js") || UIClass.fsPath?.toLowerCase().endsWith("component.ts") || false;
+		return (
+			UIClass.fsPath?.toLowerCase().endsWith("component.js") ||
+			UIClass.fsPath?.toLowerCase().endsWith("component.ts") ||
+			false
+		);
 	}
 
 	private _checkIfClassIsUsedInView(UIClass: AbstractCustomClass) {
@@ -68,8 +71,8 @@ export class UnusedClassLinter<
 			return false;
 		}
 
-		const views: IXMLFile[] = this._parser.fileReader.getAllViews();
-		const fragments: IXMLFile[] = this._parser.fileReader.getAllFragments();
+		const views: IXMLFile[] = ParserPool.getAllViews();
+		const fragments: IXMLFile[] = ParserPool.getAllFragments();
 		const XMLFiles: IXMLFile[] = views.concat(fragments);
 		const classNameLastPart = UIClass.className.split(".").pop();
 		return (
@@ -79,30 +82,33 @@ export class UnusedClassLinter<
 					return false;
 				}
 
-				const tags = XMLParser.getAllTags(XMLFile);
+				const tags = this._parser.xmlParser.getAllTags(XMLFile);
 				return tags.some(tag => {
-					const className = XMLParser.getFullClassNameFromTag(tag, XMLFile);
+					const className = this._parser.xmlParser.getFullClassNameFromTag(tag, XMLFile);
 					return className === UIClass.className;
 				});
 			})
 		);
 	}
 
-	private _checkIfClassIsUsedAsInterface(customUIClass: AbstractCustomClass, UIClass: AbstractCustomClass): unknown {
-		return customUIClass.interfaces.some(interfaceName => {
+	private _checkIfClassIsUsedAsInterface(CustomJSClass: AbstractCustomClass, UIClass: AbstractCustomClass): unknown {
+		return CustomJSClass.interfaces.some(interfaceName => {
 			return interfaceName === UIClass.className;
 		});
 	}
 
-	private _checkIfClassIsImportedInUIDefine(customUIClass: AbstractCustomClass, UIClass: AbstractCustomClass): unknown {
-		return customUIClass.UIDefine.some(UIDefine => {
+	private _checkIfClassIsImportedInUIDefine(
+		CustomJSClass: AbstractCustomClass,
+		UIClass: AbstractCustomClass
+	): unknown {
+		return CustomJSClass.UIDefine.some(UIDefine => {
 			return UIDefine.classNameDotNotation === UIClass.className;
 		});
 	}
 
 	private _checkIfClassIsViewsController(UIClass: AbstractCustomClass) {
 		if (UIClass.fsPath?.endsWith(".controller.js") || UIClass.fsPath?.endsWith(".controller.ts")) {
-			return this._parser.fileReader.getAllViews().some(view => {
+			return ParserPool.getAllViews().some(view => {
 				return view.controllerName === UIClass.className;
 			});
 		} else {
@@ -111,7 +117,7 @@ export class UnusedClassLinter<
 	}
 
 	private _checkIfClassMentionedInManifest(UIClass: AbstractCustomClass): unknown {
-		const manifest = this._parser.fileReader.getManifestForClass(UIClass.className);
+		const manifest = ParserPool.getManifestForClass(UIClass.className);
 		let isMentionedInManifest = false;
 
 		try {
