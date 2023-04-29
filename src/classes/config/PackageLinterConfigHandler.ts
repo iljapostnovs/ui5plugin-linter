@@ -6,6 +6,10 @@ import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 export class PackageLinterConfigHandler implements ILinterConfigHandler {
 	static readonly packageCache: { [key: string]: IUI5PackageConfigEntry } = {};
+	private static _globalPackage?: IUI5PackageConfigEntry;
+	static setGlobalConfigPath(fsPath: string) {
+		this._globalPackage = JSON.parse(fs.readFileSync(fsPath, "utf8")) || {};
+	}
 	protected readonly _package: IUI5PackageConfigEntry;
 	protected readonly _parser: IUI5Parser;
 	constructor(parser: IUI5Parser, packagePath = join(process.cwd(), "/package.json")) {
@@ -25,10 +29,20 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean {
 		let shouldBeSkipped = false;
-		const componentsToInclude = this._package.ui5?.ui5linter?.componentsToInclude;
-		const componentsToExclude = this._package.ui5?.ui5linter?.componentsToExclude;
-		const jsClassesToExclude = this._package.ui5?.ui5linter?.jsClassExceptions;
-		const xmlClassesToExclude = this._package.ui5?.ui5linter?.xmlClassExceptions;
+
+		const componentsToInclude =
+			this._package.ui5?.ui5linter?.componentsToInclude ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.componentsToInclude;
+		const componentsToExclude =
+			this._package.ui5?.ui5linter?.componentsToExclude ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.componentsToExclude;
+		const jsClassesToExclude =
+			this._package.ui5?.ui5linter?.jsClassExceptions ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.jsClassExceptions;
+		const xmlClassesToExclude =
+			this._package.ui5?.ui5linter?.xmlClassExceptions ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.xmlClassExceptions;
+
 		if (componentsToInclude || componentsToExclude || jsClassesToExclude || xmlClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 			if (className) {
@@ -59,7 +73,11 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 	private _cache: { [key: string]: boolean } = {};
 
 	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters) {
-		return this._package?.ui5?.ui5linter?.severity?.[linter] ?? this._getDefaultSeverityFor(linter);
+		return (
+			this._package.ui5?.ui5linter?.severity?.[linter] ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.severity?.[linter] ??
+			this._getDefaultSeverityFor(linter)
+		);
 	}
 	private _getDefaultSeverityFor(linter: JSLinters | XMLLinters | PropertiesLinters): Severity {
 		const defaultSeverity: { [key in JSLinters | XMLLinters | PropertiesLinters]: Severity } = {
@@ -78,7 +96,8 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 			InterfaceLinter: Severity.Error,
 			AbstractClassLinter: Severity.Error,
 			UnusedClassLinter: Severity.Error,
-			WrongNamespaceLinter: Severity.Warning
+			WrongNamespaceLinter: Severity.Warning,
+			DuplicateTranslationLinter: Severity.Error
 		};
 
 		return defaultSeverity[linter];
@@ -158,12 +177,19 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 			}
 		];
 
-		const userExceptions: JSLinterException[] = this._package?.ui5?.ui5linter?.jsLinterExceptions || [];
+		const userExceptions: JSLinterException[] =
+			this._package.ui5?.ui5linter?.jsLinterExceptions ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.jsLinterExceptions ??
+			[];
 		return defaultExceptions.concat(userExceptions);
 	}
 
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters) {
-		return this._package?.ui5?.ui5linter?.usage?.[linter] ?? true;
+		return (
+			this._package.ui5?.ui5linter?.usage?.[linter] ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.usage?.[linter] ??
+			true
+		);
 	}
 
 	checkIfMemberIsException(className = "", memberName = "") {

@@ -125,7 +125,8 @@ Default config is as follows:
 				"InterfaceLinter": "Error",
 				"AbstractClassLinter": "Error",
 				"UnusedClassLinter": "Error",
-				"WrongNamespaceLinter": "Warning"
+				"WrongNamespaceLinter": "Warning",
+				"DuplicateTranslationLinter": "Error"
 			},
 			"usage": {
 				"WrongParametersLinter": true,
@@ -143,7 +144,8 @@ Default config is as follows:
 				"InterfaceLinter": true,
 				"AbstractClassLinter": true,
 				"UnusedClassLinter": true,
-				"WrongNamespaceLinter": true
+				"WrongNamespaceLinter": true,
+				"DuplicateTranslationLinter": true
 			},
 			"jsLinterExceptions": [
 				{
@@ -270,6 +272,7 @@ Enumerations:
 ```ts
 enum PropertiesLinters {
 	UnusedTranslationsLinter = "UnusedTranslationsLinter"
+	DuplicateTranslationLinter = "DuplicateTranslationLinter"
 }
 enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
