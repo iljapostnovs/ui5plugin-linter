@@ -29,7 +29,7 @@ export class DuplicateTranslationLinter extends PropertiesLinter {
 		const errors: IError[] = [];
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		const translationId = translation.id;
-		if (!this._getIfTranslationIsDuplicated(translationId, translations)) {
+		if (this._getIfTranslationIsDuplicated(translationId, translations)) {
 			const range = RangeAdapter.offsetsRange(
 				document.getText(),
 				translation.positionBegin,
@@ -38,7 +38,7 @@ export class DuplicateTranslationLinter extends PropertiesLinter {
 			if (range) {
 				errors.push({
 					code: "UI5plugin",
-					message: `Translation "${translationId}" already exists`,
+					message: `Translation "${translationId}" is duplicated`,
 					source: this.className,
 					severity: this._configHandler.getSeverity(this.className),
 					tags: [DiagnosticTag.Unnecessary],
@@ -55,6 +55,6 @@ export class DuplicateTranslationLinter extends PropertiesLinter {
 		return errors;
 	}
 	private _getIfTranslationIsDuplicated(translationId: string, translations: IInternalizationText[]) {
-		return translations.some(translation => translation.id === translationId);
+		return translations.filter(translation => translation.id === translationId).length > 1;
 	}
 }
