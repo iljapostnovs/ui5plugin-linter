@@ -16,7 +16,8 @@ export abstract class Linter<Parser extends AbstractUI5Parser<CustomClass>, Cust
 }
 
 export enum PropertiesLinters {
-	UnusedTranslationsLinter = "UnusedTranslationsLinter"
+	UnusedTranslationsLinter = "UnusedTranslationsLinter",
+	DuplicateTranslationLinter = "DuplicateTranslationLinter"
 }
 export enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
