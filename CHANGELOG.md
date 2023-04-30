@@ -1,4 +1,4 @@
-## 1.1.0 (29-04-2023)
+## 1.1.0 (01-05-2023)
 
 -   UI5 Parser updated to v1.1.0
 -   `Duplicate Translation Linter` added to properties linters
