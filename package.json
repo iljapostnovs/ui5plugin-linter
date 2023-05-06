@@ -1,6 +1,6 @@
 {
 	"name": "ui5plugin-linter",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "UI5 Class linter",
 	"main": "dist/index.js",
 	"scripts": {
@@ -17,7 +17,10 @@
 	"keywords": [
 		"ui5",
 		"fiori",
-		"sap"
+		"sap",
+		"linter",
+		"openui5",
+		"sapui5"
 	],
 	"author": "Ilja Postnovs",
 	"license": "Apache-2.0",
@@ -43,6 +46,6 @@
 	"dependencies": {
 		"chalk": "^4.1.2",
 		"line-column": "^1.0.2",
-		"ui5plugin-parser": "^1.1.0"
+		"ui5plugin-parser": "^1.1.1"
 	}
 }
