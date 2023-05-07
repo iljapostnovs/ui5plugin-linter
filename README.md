@@ -271,7 +271,7 @@ Enumerations:
 
 ```ts
 enum PropertiesLinters {
-	UnusedTranslationsLinter = "UnusedTranslationsLinter"
+	UnusedTranslationsLinter = "UnusedTranslationsLinter",
 	DuplicateTranslationLinter = "DuplicateTranslationLinter"
 }
 enum XMLLinters {
