@@ -1,7 +1,7 @@
 import { ParserPool, TextDocument } from "ui5plugin-parser";
 import { IInternalizationText } from "ui5plugin-parser/dist/classes/parsing/util/i18n/ResourceModelData";
 import { RangeAdapter } from "../../..";
-import { DiagnosticTag, IError, PropertiesLinters } from "../../Linter";
+import { IError, PropertiesLinters } from "../../Linter";
 import { PropertiesLinter } from "./abstraction/PropertiesLinter";
 
 export class DuplicateTranslationLinter extends PropertiesLinter {
@@ -41,7 +41,6 @@ export class DuplicateTranslationLinter extends PropertiesLinter {
 					message: `Translation "${translationId}" is duplicated`,
 					source: this.className,
 					severity: this._configHandler.getSeverity(this.className),
-					tags: [DiagnosticTag.Unnecessary],
 					range: {
 						start: range.start,
 						end: { column: range.end.column + 1, line: range.end.line }
@@ -55,6 +54,6 @@ export class DuplicateTranslationLinter extends PropertiesLinter {
 		return errors;
 	}
 	private _getIfTranslationIsDuplicated(translationId: string, translations: IInternalizationText[]) {
-		return translations.filter(translation => translation.id === translationId).length > 1;
+		return !!translations.find(translation => translation.id === translationId)?.hasKeyCollisions;
 	}
 }
