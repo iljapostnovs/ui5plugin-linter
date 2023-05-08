@@ -1,3 +1,7 @@
+## 1.4.1 (09-05-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.1
+
 ## 1.4.0 (09-05-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.0
