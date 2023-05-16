@@ -1,3 +1,9 @@
+## 1.5.0 (16-05-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.2
+-   `propertiesLinterExceptions` added to `ui5linter` configuration
+-   `@ui5ignore` is now supported in `i18n.properties`
+
 ## 1.4.2 (16-05-2023)
 
 -   Bugfix for linter not taking into account `jsClassesToExclude` for TS projects

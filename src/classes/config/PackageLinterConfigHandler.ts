@@ -58,7 +58,11 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 					}
 				}
 
-				if (!shouldBeSkipped && jsClassesToExclude && (document.fileName.endsWith(".js") || document.fileName.endsWith(".ts"))) {
+				if (
+					!shouldBeSkipped &&
+					jsClassesToExclude &&
+					(document.fileName.endsWith(".js") || document.fileName.endsWith(".ts"))
+				) {
 					shouldBeSkipped = jsClassesToExclude.includes(className);
 				}
 				if (!shouldBeSkipped && xmlClassesToExclude && document.fileName.endsWith(".xml")) {
@@ -192,6 +196,14 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		);
 	}
 
+	getPropertiesLinterExceptions(): string[] {
+		return (
+			this._package.ui5?.ui5linter?.propertiesLinterExceptions ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.propertiesLinterExceptions ??
+			[]
+		);
+	}
+
 	checkIfMemberIsException(className = "", memberName = "") {
 		const cacheKey = [className, memberName].join(",");
 
@@ -255,6 +267,7 @@ export interface IUI5LinterEntryFields {
 	jsLinterExceptions?: JSLinterException[];
 	jsClassExceptions?: string[];
 	xmlClassExceptions?: string[];
+	propertiesLinterExceptions?: string[];
 	componentsToInclude?: string[];
 	componentsToExclude?: string[];
 }
