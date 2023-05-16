@@ -1,3 +1,7 @@
+## 1.4.2 (16-05-2023)
+
+-   Bugfix for linter not taking into account `jsClassesToExclude` for TS projects
+
 ## 1.4.1 (09-05-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.1
