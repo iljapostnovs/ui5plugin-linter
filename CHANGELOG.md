@@ -1,3 +1,7 @@
+## 1.5.1 (16-05-2023)
+
+-   Fix `propertiesLinterExceptions` handling
+
 ## 1.5.0 (16-05-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.2

@@ -26,7 +26,7 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 		const errors: IError[] = [];
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		const translationId = translation.id;
-		if (!this._getIfTranslationIsUsed(translationId)) {
+		if (!this._getIfTranslationShouldBeSkipped(translation) && !this._getIfTranslationIsUsed(translationId)) {
 			const range = RangeAdapter.offsetsRange(
 				document.getText(),
 				translation.positionBegin,
@@ -51,6 +51,13 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 
 		return errors;
 	}
+
+	private _getIfTranslationShouldBeSkipped(translation: IInternalizationText) {
+		const exceptions = this._configHandler.getPropertiesLinterExceptions();
+
+		return translation.ui5ignored || exceptions.includes(translation.id);
+	}
+
 	private _getIfTranslationIsUsed(translationId: string) {
 		const UIClasses = ParserPool.getAllCustomUIClasses();
 		let isUsed = !!UIClasses.find(UIClass => this._checkIfUsed(UIClass.classText, translationId));
