@@ -88,6 +88,8 @@ For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they co
 			"jsClassExceptions": ["com.test.MyCustomClass1", "com.test.MyCustomClass2"],
 			/*views and fragments to exclude from linting*/
 			"xmlClassExceptions": ["com.test.view.Master", "com.test.fragment.MyToolbar"],
+			/*array of i18n translation ids to be ignored by UnusedTranslationsLinter*/
+			"propertiesLinterExceptions": ["MyView.MyButtonText", "MY_TRANSLATION_ID"],
 			"componentsToInclude": ["com.test"],
 			/*it makes sense to use only componentsToInclude or componentsToExclude, but not both at once.
       "componentsToExclude" comes in handy when you want to exclude e.g. libraries.
@@ -221,6 +223,7 @@ Default config is as follows:
 			],
 			"jsClassExceptions": [],
 			"xmlClassExceptions": [],
+			"propertiesLinterExceptions": [],
 			"componentsToInclude": [],
 			"componentsToExclude": []
 		}
@@ -262,6 +265,7 @@ interface IUI5LinterEntryFields {
 	jsLinterExceptions?: JSLinterException[];
 	jsClassExceptions?: string[];
 	xmlClassExceptions?: string[];
+	propertiesLinterExceptions?: string[];
 	componentsToInclude?: string[];
 	componentsToExclude?: string[];
 }
