@@ -58,7 +58,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 					}
 				}
 
-				if (!shouldBeSkipped && jsClassesToExclude && document.fileName.endsWith(".js")) {
+				if (!shouldBeSkipped && jsClassesToExclude && (document.fileName.endsWith(".js") || document.fileName.endsWith(".ts"))) {
 					shouldBeSkipped = jsClassesToExclude.includes(className);
 				}
 				if (!shouldBeSkipped && xmlClassesToExclude && document.fileName.endsWith(".xml")) {
