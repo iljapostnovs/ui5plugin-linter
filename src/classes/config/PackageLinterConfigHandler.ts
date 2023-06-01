@@ -188,6 +188,35 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		return defaultExceptions.concat(userExceptions);
 	}
 
+	getIdNamingPattern(): string {
+		return (
+			this._package.ui5?.ui5linter?.idNamingPattern ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.idNamingPattern ??
+			"^id{BindingPath}.*?{ControlName}$"
+		);
+	}
+
+	getEventNamingPattern(): string {
+		return (
+			this._package.ui5?.ui5linter?.eventNamingPattern ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.eventNamingPattern ??
+			"^on{BindingPath}{ControlName}.*?{EventName}$"
+		);
+	}
+
+	getAttributesToCheck(): string[] {
+		return (
+			this._package.ui5?.ui5linter?.attributesToCheck ??
+			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.attributesToCheck ?? [
+				"content",
+				"items",
+				"value",
+				"text",
+				"number"
+			]
+		);
+	}
+
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters) {
 		return (
 			this._package.ui5?.ui5linter?.usage?.[linter] ??
@@ -270,6 +299,9 @@ export interface IUI5LinterEntryFields {
 	propertiesLinterExceptions?: string[];
 	componentsToInclude?: string[];
 	componentsToExclude?: string[];
+	idNamingPattern?: string;
+	eventNamingPattern?: string;
+	attributesToCheck?: string[];
 }
 
 export interface IUI5LinterEntry {

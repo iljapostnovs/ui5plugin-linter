@@ -1,3 +1,9 @@
+## 1.6.0 (01-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.5
+-   XML attribute linter enhanced with `id` and `event handler` naming style check
+-   `ui5ignore` in XML files now supports attribute ignoring
+
 ## 1.5.2 (16-05-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.3
