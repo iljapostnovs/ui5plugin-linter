@@ -14,4 +14,7 @@ export interface ILinterConfigHandler {
 	checkIfMemberIsException(className: string, memberName: string): boolean;
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters): boolean;
 	getIfLintingShouldBeSkipped(document: TextDocument): boolean;
+	getIdNamingPattern(): string;
+	getEventNamingPattern(): string;
+	getAttributesToCheck(): string[];
 }
