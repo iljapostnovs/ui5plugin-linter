@@ -402,6 +402,8 @@ To exclude whole app or lib from linting, add app/lib id to `package.json`. Ther
 
 In order to keep the same style for naming the `id` and any `event handler` in views and fragments, three configuration entries are available: `idNamingPattern`, `eventNamingPattern`, `attributesToCheck`. Every `id` and `event handler` generates individual `RegExp`, and the value is checked against it.
 
+> **Hint!** To disable naming style checking, just set `idNamingPattern` or/and `eventNamingPattern` as empty string in `package.json`
+
 ### Variables
 
 In order to generate individual `RegExp`, there are variables available which will be applied at runtime. All variables are available in `camelCase` and `PascalCase`.
