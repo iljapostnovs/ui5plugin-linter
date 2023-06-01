@@ -525,6 +525,9 @@ interface IUI5LinterEntryFields {
 	propertiesLinterExceptions?: string[];
 	componentsToInclude?: string[];
 	componentsToExclude?: string[];
+	idNamingPattern?: string;
+	eventNamingPattern?: string;
+	attributesToCheck?: string[];
 }
 ```
 
