@@ -192,7 +192,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		return (
 			this._package.ui5?.ui5linter?.idNamingPattern ??
 			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.idNamingPattern ??
-			"^id{BindingPath}.*?{ControlName}$"
+			"^id{MeaningAssumption}.*?{ControlName}$"
 		);
 	}
 
@@ -200,7 +200,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		return (
 			this._package.ui5?.ui5linter?.eventNamingPattern ??
 			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.eventNamingPattern ??
-			"^on{BindingPath}{ControlName}.*?{EventName}$"
+			"^on{MeaningAssumption}{ControlName}.*?{EventName}$"
 		);
 	}
 
