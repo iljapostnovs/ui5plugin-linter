@@ -453,12 +453,13 @@ It is calculated as follows:
 
 1. Get value of `attributesToCheck` configuration
 2. Find first attribute from the control which exists in `attributesToCheck` array.
-3. Parse binding info
-4. Use binding text as a source for `BindingPath`
-    1. Find binding path. If binding path is an object, parse it and take the text from `path` field, otherwise crop `{` and `}`
-    2. Split string by `>`, left part is model name, right part is `binding path`
-        1. If model name is `i18n`, find the translation in `i18n.properties`, transform value to PascalCase and return the value
-        2. Else, remove `/results` from `binding path`, split the result by `_`, transform to PascalCase and return the value
+3. Parse attribute value
+	1. If attribute value is a binding, use binding text as a source for `BindingPath`
+		1. Find binding path. If binding path is an object, parse it and take the text from `path` field, otherwise crop `{` and `}`
+		2. Split string by `>`, left part is model name, right part is `binding path`
+			1. If model name is `i18n`, find the translation in `i18n.properties`, transform value to PascalCase and return the value
+			2. Else, remove `/results` from `binding path`, split the result by `_`, transform to PascalCase and return the value
+	2. If attribute value is not a binding, transform the value to PascalCase and return it
 
 | Attribute value           | BindingPath value                                      |
 | ------------------------- | ------------------------------------------------------ |

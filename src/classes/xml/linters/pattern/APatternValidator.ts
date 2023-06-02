@@ -18,7 +18,7 @@ export default abstract class APatternValidator<AdditionalData> {
 	abstract validateValue(value: string, additionalData: AdditionalData): void;
 
 	protected _getBindingPathFrom(attributeValue: string) {
-		const isObject = attributeValue.startsWith("{") && attributeValue.endsWith("}");
+		const isBinding = attributeValue.startsWith("{") && attributeValue.endsWith("}");
 		// /MyPath
 		// MyPath
 		// MyModel>MyPath
@@ -29,7 +29,7 @@ export default abstract class APatternValidator<AdditionalData> {
 		// i18n>text
 
 		let path = attributeValue;
-		if (isObject) {
+		if (isBinding) {
 			try {
 				const theObject = eval(`(${attributeValue})`);
 				path = theObject?.path ?? "";
@@ -38,27 +38,31 @@ export default abstract class APatternValidator<AdditionalData> {
 			}
 		}
 
-		const pathWithoutModel = path.split(">").pop();
-		const model = path.split(">").shift();
-		if (model === "i18n" && pathWithoutModel) {
-			const i18nText = this._getI18nTextById(pathWithoutModel);
-			const i18nPascalCase = i18nText && new PascalCase().transform(i18nText);
+		if (isBinding) {
+			const pathWithoutModel = path.split(">").pop();
+			const model = path.split(">").shift();
+			if (model === "i18n" && pathWithoutModel) {
+				const i18nText = this._getI18nTextById(pathWithoutModel);
+				const i18nPascalCase = i18nText && new PascalCase().transform(i18nText);
 
-			return i18nPascalCase;
+				return i18nPascalCase;
+			} else {
+				const pathWithoutResults = pathWithoutModel?.replace(/\/results$/, "");
+				const pathLastPart = pathWithoutResults?.split("/").pop();
+				const lastPartWithoutUnderscoreParts = pathLastPart?.split("_");
+				const lastPartPascalCase = lastPartWithoutUnderscoreParts
+					?.map(part => {
+						const partLower = this._isUpperCase(part) ? part.toLowerCase() : part;
+						const pascalCase = this._toFirstCharUpper(partLower);
+
+						return pascalCase;
+					})
+					.join("");
+
+				return lastPartPascalCase;
+			}
 		} else {
-			const pathWithoutResults = pathWithoutModel?.replace(/\/results$/, "");
-			const pathLastPart = pathWithoutResults?.split("/").pop();
-			const lastPartWithoutUnderscoreParts = pathLastPart?.split("_");
-			const lastPartPascalCase = lastPartWithoutUnderscoreParts
-				?.map(part => {
-					const partLower = this._isUpperCase(part) ? part.toLowerCase() : part;
-					const pascalCase = this._toFirstCharUpper(partLower);
-
-					return pascalCase;
-				})
-				.join("");
-
-			return lastPartPascalCase;
+			return new PascalCase().transform(path);
 		}
 	}
 	private _getI18nTextById(i18nId: string) {

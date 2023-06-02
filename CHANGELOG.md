@@ -1,3 +1,7 @@
+## 1.6.1 (02-06-2023)
+
+-   Bugfix for `AggregationName` distinguishing
+
 ## 1.6.0 (01-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.5
