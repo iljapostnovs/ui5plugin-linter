@@ -252,8 +252,8 @@ Default config is as follows:
 			"propertiesLinterExceptions": [],
 			"componentsToInclude": [],
 			"componentsToExclude": [],
-			"idNamingPattern": "^id{BindingPath}.*{ControlName}$",
-			"eventNamingPattern": "^on{BindingPath}{ControlName}.*?{EventName}$",
+			"idNamingPattern": "^id{MeaningAssumption}.*{ControlName}$",
+			"eventNamingPattern": "^on{MeaningAssumption}{ControlName}.*?{EventName}$",
 			"attributesToCheck": ["content", "items", "value", "text", "number"]
 		}
 	}
@@ -408,8 +408,8 @@ In order to keep the same style for naming the `id` and any `event handler` in v
 
 In order to generate individual `RegExp`, there are variables available which will be applied at runtime. All variables are available in `camelCase` and `PascalCase`.
 
-Example of `eventNamingPattern`: `^on{BindingPath}{ControlName}.*?{EventName}$`.
-Variables: `BindingPath`, `ControlName`, `EventName`.
+Example of `eventNamingPattern`: `^on{MeaningAssumption}{ControlName}.*?{EventName}$`.
+Variables: `MeaningAssumption`, `ControlName`, `EventName`.
 
 ```xml
 <Input
@@ -445,7 +445,7 @@ Variable is replaced with the name of the event handler. Available for `event ha
 <!-- eventName => borderReached -->
 ```
 
-#### BindingPath variable
+#### MeaningAssumption variable
 
 Variable is replaced with guessed value taken from attribute. Available for both `id` and `event handler` patterns. This is the most tricky variable.
 
@@ -454,14 +454,14 @@ It is calculated as follows:
 1. Get value of `attributesToCheck` configuration
 2. Find first attribute from the control which exists in `attributesToCheck` array.
 3. Parse attribute value
-	1. If attribute value is a binding, use binding text as a source for `BindingPath`
-		1. Find binding path. If binding path is an object, parse it and take the text from `path` field, otherwise crop `{` and `}`
-		2. Split string by `>`, left part is model name, right part is `binding path`
-			1. If model name is `i18n`, find the translation in `i18n.properties`, transform value to PascalCase and return the value
-			2. Else, remove `/results` from `binding path`, split the result by `_`, transform to PascalCase and return the value
-	2. If attribute value is not a binding, transform the value to PascalCase and return it
+    1. If attribute value is a binding, use binding text as a source for `MeaningAssumption`
+        1. Find binding path. If binding path is an object, parse it and take the text from `path` field, otherwise crop `{` and `}`
+        2. Split string by `>`, left part is model name, right part is `binding path`
+            1. If model name is `i18n`, find the translation in `i18n.properties`, transform value to PascalCase and return the value
+            2. Else, remove `/results` from `binding path`, split the result by `_`, transform to PascalCase and return the value
+    2. If attribute value is not a binding, transform the value to PascalCase and return it
 
-| Attribute value           | BindingPath value                                      |
+| Attribute value           | MeaningAssumption value                                |
 | ------------------------- | ------------------------------------------------------ |
 | {/OrderItems}             | OrderItems                                             |
 | {OrderId}                 | OrderId                                                |
@@ -470,7 +470,7 @@ It is calculated as follows:
 | {MyModel>/Orders}         | Orders                                                 |
 | {i18n>APP_TITLE}          | OrderApp (if text in `i18n.properties` is "Order App") |
 
-> **Hint!** > `BindingPath` is pure heuristics and of course will not work for all the cases. If it works most of the time well, but there are some exceptions, it is possible to ignore specific tag attribute errors. Check [View and fragment errors](#view-and-fragment-errors) section.
+> **Hint!** > `MeaningAssumption` is pure heuristics and of course will not work for all the cases. If it works most of the time well, but there are some exceptions, it is possible to ignore specific tag attribute errors. Check [View and fragment errors](#view-and-fragment-errors) section.
 
 Example.
 
@@ -485,14 +485,14 @@ Example.
 	controlName => list
 	EventName => Press
 	eventName => press
-	BindingPath => OrderItems
-	bindingPath => orderItems
+	MeaningAssumption => OrderItems
+	meaningAssumption => orderItems
  -->
 ```
 
 ### attributesToCheck configuration
 
-This configuration is a list of attributes, where `BindingPath` will be guessed from.
+This configuration is a list of attributes, where `MeaningAssumption` will be guessed from.
 For instance, if `attributesToCheck` is set to `"attributesToCheck": ["items"]`, the value will be guessed only from `items` attribute, e.g. in `sap.m.List`:
 
 ```xml

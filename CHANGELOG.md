@@ -1,3 +1,7 @@
+## 1.6.2 (03-06-2023)
+
+-   Rename `BindingPath` variable to `MeaningAssumption`
+
 ## 1.6.1 (02-06-2023)
 
 -   Bugfix for `AggregationName` distinguishing

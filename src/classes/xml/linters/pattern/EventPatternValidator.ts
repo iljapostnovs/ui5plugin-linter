@@ -29,14 +29,14 @@ export default class EventPatternValidator extends APatternValidator<[IUIEvent, 
 			? this._parser.xmlParser.getAttributeNameAndValue(bindingAttribute)
 			: { attributeValue: undefined };
 
-		const bindingPath = binding && this._getBindingPathFrom(binding);
+		const meaningAssumption = binding && this._getMeaningAssumptionFrom(binding);
 		const expectedIdWithReplacedVars = this._pattern
 			.replace(/\{ControlName\}/g, controlName ?? "")
 			.replace(/\{controlName\}/g, this._toFirstCharLower(controlName) ?? "")
 			.replace(/\{EventName\}/g, eventNameUpperCamel ?? "")
 			.replace(/\{eventName\}/g, this._toFirstCharLower(eventNameUpperCamel) ?? "")
-			.replace(/\{BindingPath\}/g, bindingPath ?? "")
-			.replace(/\{bindingPath\}/g, this._toFirstCharLower(bindingPath) ?? "");
+			.replace(/\{MeaningAssumption\}/g, meaningAssumption ?? "")
+			.replace(/\{meaningAssumption\}/g, this._toFirstCharLower(meaningAssumption) ?? "");
 
 		const expectedId =
 			expectedIdWithReplacedVars[0].toLowerCase() +

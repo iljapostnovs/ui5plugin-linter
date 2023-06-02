@@ -17,7 +17,7 @@ export default abstract class APatternValidator<AdditionalData> {
 
 	abstract validateValue(value: string, additionalData: AdditionalData): void;
 
-	protected _getBindingPathFrom(attributeValue: string) {
+	protected _getMeaningAssumptionFrom(attributeValue: string) {
 		const isBinding = attributeValue.startsWith("{") && attributeValue.endsWith("}");
 		// /MyPath
 		// MyPath
