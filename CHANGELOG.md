@@ -1,3 +1,8 @@
+## 1.6.3 (03-06-2023)
+
+-   Change priority of linting id and event handler style, now they are first priority
+-   Add `@ui5ignore-patterns` support for XML
+
 ## 1.6.2 (03-06-2023)
 
 -   Rename `BindingPath` variable to `MeaningAssumption`
