@@ -192,6 +192,16 @@ export class TagAttributeLinter extends XMLLinter {
 			.some(part => part.trim() === attributeName);
 	}
 
+	private _isAttributePatternIgnored(previousTag: ITag | undefined, attributeName: string): boolean {
+		return (
+			!!previousTag?.text
+				.match(/(?<=<!-- ?@ui5ignore-patterns ?)(([a-zA-Z]|\d|,| )*?)(?= ?-->)/)?.[0]
+				.split(",")
+				.some(part => part.trim() === attributeName) ||
+			!!(previousTag && /<!-- ?@ui5ignore-patterns ?-->/.test(previousTag.text))
+		);
+	}
+
 	private _getIfAttributeNameIsDuplicated(attribute: string, attributes: string[]) {
 		const attributeNames = attributes.map(
 			attribute => this._parser.xmlParser.getAttributeNameAndValue(attribute).attributeName
@@ -240,7 +250,7 @@ export class TagAttributeLinter extends XMLLinter {
 			if (!isValueValid) {
 				message = `Command "${attributeValue}" is not found in manifest`;
 			}
-		} else if (attributeName === "id" && shouldIdStyleBeChecked) {
+		} else if (attributeName === "id" && shouldIdStyleBeChecked && !this._isAttributePatternIgnored(previousTag, attributeName)) {
 			const id = attributeValue;
 			const pattern = this._configHandler.getIdNamingPattern();
 			const patternValidator = new IdPatternValidator(pattern, document, this._parser, this._configHandler);
@@ -270,6 +280,9 @@ export class TagAttributeLinter extends XMLLinter {
 			const patternValidator = new EventPatternValidator(pattern, document, this._parser, this._configHandler);
 
 			try {
+				if (!this._isAttributePatternIgnored(previousTag, attributeName)) {
+					patternValidator.validateValue(eventName, [event, tag]);
+				}
 				isValueValid = !!this._parser.xmlParser
 					.getMethodsOfTheControl(responsibleControlName)
 					.find(method => method.name === eventName);
@@ -290,8 +303,6 @@ export class TagAttributeLinter extends XMLLinter {
 							message
 						));
 					}
-				} else {
-					patternValidator.validateValue(eventName, [event, tag]);
 				}
 				message = message || `Event handler "${eventName}" not found in "${responsibleControlName}".`;
 			} catch (error: any) {

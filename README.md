@@ -341,6 +341,25 @@ To ignore specific attribute, `<-- @ui5ignore ${attributeName1}, ${attributeName
 />
 ```
 
+To ignore all id and event handler pattern errors of the next tag, `<-- @ui5ignore-patterns -->` can be used.
+
+```XML
+<!-- @ui5ignore-patterns -->
+<Text
+	id="myRandomId"
+/>
+```
+
+To ignore specific id or event handler pattern errors of the next tag, `<-- @ui5ignore-patterns ${attributeName1}, ${attributeName2} -->` can be used.
+
+```XML
+<!-- @ui5ignore-patterns id -->
+<Button
+	id="myRandomId"
+	press="myRandomHandler"
+/>
+```
+
 ### i18n errors
 
 To ignore translation errors, `# @ui5ignore` comment right above the translation can be used
