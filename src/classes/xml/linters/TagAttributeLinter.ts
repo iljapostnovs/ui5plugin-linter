@@ -270,8 +270,6 @@ export class TagAttributeLinter extends XMLLinter {
 			const patternValidator = new EventPatternValidator(pattern, document, this._parser, this._configHandler);
 
 			try {
-				patternValidator.validateValue(eventName, [event, tag]);
-
 				isValueValid = !!this._parser.xmlParser
 					.getMethodsOfTheControl(responsibleControlName)
 					.find(method => method.name === eventName);
@@ -292,6 +290,8 @@ export class TagAttributeLinter extends XMLLinter {
 							message
 						));
 					}
+				} else {
+					patternValidator.validateValue(eventName, [event, tag]);
 				}
 				message = message || `Event handler "${eventName}" not found in "${responsibleControlName}".`;
 			} catch (error: any) {
