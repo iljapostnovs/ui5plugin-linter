@@ -277,10 +277,10 @@ export class TagAttributeLinter extends XMLLinter {
 		} else if (event && responsibleControlName) {
 			const eventName = this._parser.xmlParser.getEventHandlerNameFromAttributeValue(attributeValue);
 			const pattern = this._configHandler.getEventNamingPattern();
-			const patternValidator = new EventPatternValidator(pattern, document, this._parser, this._configHandler);
+			const patternValidator = pattern && new EventPatternValidator(pattern, document, this._parser, this._configHandler);
 
 			try {
-				if (!this._isAttributePatternIgnored(previousTag, attributeName)) {
+				if (patternValidator && !this._isAttributePatternIgnored(previousTag, attributeName)) {
 					patternValidator.validateValue(eventName, [event, tag]);
 				}
 				isValueValid = !!this._parser.xmlParser
