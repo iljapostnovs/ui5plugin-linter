@@ -18,7 +18,11 @@ export default abstract class APatternValidator<AdditionalData> {
 	abstract validateValue(value: string, additionalData: AdditionalData): void;
 
 	protected _getMeaningAssumptionFrom(attributeValue: string) {
-		const isBinding = attributeValue.startsWith("{") && attributeValue.endsWith("}");
+		const isBinding =
+			attributeValue.startsWith("{") &&
+			attributeValue.endsWith("}") &&
+			attributeValue.match(/\{/g)?.length === 1 &&
+			attributeValue.match(/\}/g)?.length === 1;
 		// /MyPath
 		// MyPath
 		// MyModel>MyPath
@@ -52,7 +56,7 @@ export default abstract class APatternValidator<AdditionalData> {
 				const lastPartWithoutUnderscoreParts = pathLastPart?.split("_");
 				const lastPartPascalCase = lastPartWithoutUnderscoreParts
 					?.map(part => {
-						const partLower = this._isUpperCase(part) ? part.toLowerCase() : part;
+						const partLower = this._isUpperCase(part) ? part?.toLowerCase() : part;
 						const pascalCase = this._toFirstCharUpper(partLower);
 
 						return pascalCase;
@@ -61,7 +65,7 @@ export default abstract class APatternValidator<AdditionalData> {
 
 				return lastPartPascalCase;
 			}
-		} else {
+		} else if (!attributeValue.startsWith("{") && !attributeValue.endsWith("}")) {
 			return new PascalCase().transform(path);
 		}
 	}
@@ -75,8 +79,8 @@ export default abstract class APatternValidator<AdditionalData> {
 		}
 	}
 
-	protected _isUpperCase(anyString: string) {
-		return anyString.split("").every(char => char.toUpperCase() === char);
+	protected _isUpperCase(anyString?: string) {
+		return anyString?.split("").every(char => char.toUpperCase() === char);
 	}
 
 	protected _toFirstCharLower(anyString?: string) {

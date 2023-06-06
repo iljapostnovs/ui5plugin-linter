@@ -1,3 +1,7 @@
+## 1.6.4 (06-06-2023)
+
+-   Bugfix for empty id pattern
+
 ## 1.6.3 (03-06-2023)
 
 -   Change priority of linting id and event handler style, now they are first priority
