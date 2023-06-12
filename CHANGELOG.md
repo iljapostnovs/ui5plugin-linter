@@ -1,3 +1,8 @@
+## 1.7.0 (12-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.0
+-   Support for [rc](https://github.com/azu/rc-config-loader) files introduced
+
 ## 1.6.4 (06-06-2023)
 
 -   Bugfix for empty id pattern

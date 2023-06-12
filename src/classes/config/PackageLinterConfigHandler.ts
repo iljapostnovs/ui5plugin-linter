@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
+import { rcFile } from "rc-config-loader";
 import { ParserPool, TextDocument, toNative } from "ui5plugin-parser";
 import { IUI5Parser } from "ui5plugin-parser/dist/parser/abstraction/IUI5Parser";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
@@ -19,7 +20,9 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 			if (PackageLinterConfigHandler.packageCache[packagePath]) {
 				this._package = PackageLinterConfigHandler.packageCache[packagePath];
 			} else {
-				this._package = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+				const cwd = dirname(packagePath);
+				const config = rcFile("ui5plugin", { cwd: cwd, packageJSON: { fieldName: "ui5" } })?.config ?? {};
+				this._package = config;
 				PackageLinterConfigHandler.packageCache[packagePath] = this._package;
 			}
 		} catch (error) {

@@ -27,6 +27,8 @@
 	"peacock.affectSashHover": true,
 	"peacock.affectStatusBar": true,
 	"cSpell.words": [
+		"openui",
+		"pluginrc",
 		"rmcache"
 	]
 }

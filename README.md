@@ -63,7 +63,14 @@ For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they co
 
 ## Linter config
 
-UI5 Linter searches for `package.json` in your CWD (Current Working Directory) and locates the config there.
+UI5 Linter searches for `package.json` (or any other `rc` file, e.g. `.ui5pluginrc`) in your CWD (Current Working Directory) and locates the config there.
+
+Supported `rc` file types:
+ - `.ui5pluginrc`
+ - `.ui5pluginrc.json`
+ - `.ui5pluginrc.yaml`
+ - `.ui5pluginrc.yml`
+ - `.ui5pluginrc.js`
 
 See [configuration example](#configuration-example) below.
 
