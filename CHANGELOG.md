@@ -1,3 +1,8 @@
+## 1.7.1 (12-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.1
+-   Bugfix for `package.json` config
+
 ## 1.7.0 (12-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.0
