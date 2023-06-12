@@ -21,8 +21,10 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 				this._package = PackageLinterConfigHandler.packageCache[packagePath];
 			} else {
 				const cwd = dirname(packagePath);
-				const config = rcFile("ui5plugin", { cwd: cwd, packageJSON: { fieldName: "ui5" } })?.config ?? {};
-				this._package = config;
+				const { config, filePath } = rcFile("ui5plugin", { cwd: cwd, packageJSON: { fieldName: "ui5" } }) ?? {
+					config: {}
+				};
+				this._package = filePath?.endsWith("package.json") ? { ui5: config } : config;
 				PackageLinterConfigHandler.packageCache[packagePath] = this._package;
 			}
 		} catch (error) {
