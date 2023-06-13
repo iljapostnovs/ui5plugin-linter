@@ -1,3 +1,8 @@
+## 1.7.2 (13-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.2
+-   Migrate to `cosmiconfig`
+
 ## 1.7.1 (12-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.1
