@@ -1,6 +1,6 @@
-import { cosmiconfigSync } from "cosmiconfig";
 import * as fs from "fs";
 import { dirname, join } from "path";
+import { rcFile } from "rc-config-loader";
 import { ParserPool, TextDocument, toNative } from "ui5plugin-parser";
 import { IUI5Parser } from "ui5plugin-parser/dist/parser/abstraction/IUI5Parser";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
@@ -21,11 +21,10 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 				this._package = PackageLinterConfigHandler.packageCache[packagePath];
 			} else {
 				const cwd = dirname(packagePath);
-				const explorer = cosmiconfigSync("ui5plugin", { packageProp: "ui5.ui5linter" });
-				const { config, filepath } = explorer.search(cwd) ?? {
+				const { config, filePath } = rcFile("ui5plugin", { cwd: cwd, packageJSON: { fieldName: "ui5" } }) ?? {
 					config: {}
 				};
-				this._package = filepath?.endsWith("package.json") ? { ui5: { ui5linter: config } } : config;
+				this._package = filePath?.endsWith("package.json") ? { ui5: config } : config;
 				PackageLinterConfigHandler.packageCache[packagePath] = this._package;
 			}
 		} catch (error) {
