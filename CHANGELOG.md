@@ -1,3 +1,8 @@
+## 1.7.5 (23-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.5
+-   Fix config finding going into recursive
+
 ## 1.7.4 (19-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.4
