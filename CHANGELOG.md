@@ -1,3 +1,8 @@
+## 1.7.6 (27-06-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.6
+-   Add `configPath` to `IParserConfigHandler`
+
 ## 1.7.5 (23-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.5
