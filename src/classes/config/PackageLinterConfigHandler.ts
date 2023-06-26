@@ -6,33 +6,36 @@ import { IUI5Parser } from "ui5plugin-parser/dist/parser/abstraction/IUI5Parser"
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
 export class PackageLinterConfigHandler implements ILinterConfigHandler {
-	static readonly packageCache: { [key: string]: IUI5PackageConfigEntry } = {};
-	private static _globalPackage?: IUI5PackageConfigEntry;
+	static readonly configCache: { [key: string]: IUI5PackageConfigEntry } = {};
+	private static _globalConfig?: IUI5PackageConfigEntry;
 	static setGlobalConfigPath(fsPath: string) {
-		this._globalPackage = JSON.parse(fs.readFileSync(fsPath, "utf8")) || {};
+		this._globalConfig = JSON.parse(fs.readFileSync(fsPath, "utf8")) || {};
 	}
-	protected readonly _package: IUI5PackageConfigEntry;
+	protected readonly _config: IUI5PackageConfigEntry;
+	configPath?: string;
+	packagePath: string;
 	protected readonly _parser: IUI5Parser;
 	constructor(parser: IUI5Parser, packagePath = join(process.cwd(), "/package.json")) {
 		this._parser = parser;
-		packagePath = toNative(packagePath);
+		this.packagePath = toNative(packagePath);
 		try {
-			if (PackageLinterConfigHandler.packageCache[packagePath]) {
-				this._package = PackageLinterConfigHandler.packageCache[packagePath];
+			if (PackageLinterConfigHandler.configCache[this.packagePath]) {
+				this._config = PackageLinterConfigHandler.configCache[this.packagePath];
 			} else {
-				const cwd = dirname(packagePath);
+				const cwd = dirname(this.packagePath);
 				const { config, filePath } = rcFile("ui5plugin", { cwd: cwd, packageJSON: { fieldName: "ui5" } }) ?? {
 					config: {}
 				};
 				if (filePath && toNative(dirname(filePath)) === toNative(cwd)) {
-					this._package = filePath?.endsWith("package.json") ? { ui5: config } : config;
-					PackageLinterConfigHandler.packageCache[packagePath] = this._package;
+					this._config = filePath?.endsWith("package.json") ? { ui5: config } : config;
+					PackageLinterConfigHandler.configCache[this.packagePath] = this._config;
+					this.configPath = filePath;
 				} else {
-					this._package = {};
+					this._config = {};
 				}
 			}
 		} catch (error) {
-			this._package = {};
+			this._config = {};
 		}
 	}
 
@@ -40,17 +43,17 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		let shouldBeSkipped = false;
 
 		const componentsToInclude =
-			this._package.ui5?.ui5linter?.componentsToInclude ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.componentsToInclude;
+			this._config.ui5?.ui5linter?.componentsToInclude ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.componentsToInclude;
 		const componentsToExclude =
-			this._package.ui5?.ui5linter?.componentsToExclude ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.componentsToExclude;
+			this._config.ui5?.ui5linter?.componentsToExclude ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.componentsToExclude;
 		const jsClassesToExclude =
-			this._package.ui5?.ui5linter?.jsClassExceptions ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.jsClassExceptions;
+			this._config.ui5?.ui5linter?.jsClassExceptions ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.jsClassExceptions;
 		const xmlClassesToExclude =
-			this._package.ui5?.ui5linter?.xmlClassExceptions ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.xmlClassExceptions;
+			this._config.ui5?.ui5linter?.xmlClassExceptions ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.xmlClassExceptions;
 
 		if (componentsToInclude || componentsToExclude || jsClassesToExclude || xmlClassesToExclude) {
 			const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
@@ -87,8 +90,8 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 
 	getSeverity(linter: JSLinters | XMLLinters | PropertiesLinters) {
 		return (
-			this._package.ui5?.ui5linter?.severity?.[linter] ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.severity?.[linter] ??
+			this._config.ui5?.ui5linter?.severity?.[linter] ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.severity?.[linter] ??
 			this._getDefaultSeverityFor(linter)
 		);
 	}
@@ -191,32 +194,32 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		];
 
 		const userExceptions: JSLinterException[] =
-			this._package.ui5?.ui5linter?.jsLinterExceptions ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.jsLinterExceptions ??
+			this._config.ui5?.ui5linter?.jsLinterExceptions ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.jsLinterExceptions ??
 			[];
 		return defaultExceptions.concat(userExceptions);
 	}
 
 	getIdNamingPattern(): string {
 		return (
-			this._package.ui5?.ui5linter?.idNamingPattern ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.idNamingPattern ??
+			this._config.ui5?.ui5linter?.idNamingPattern ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.idNamingPattern ??
 			"^id{MeaningAssumption}.*?{ControlName}$"
 		);
 	}
 
 	getEventNamingPattern(): string {
 		return (
-			this._package.ui5?.ui5linter?.eventNamingPattern ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.eventNamingPattern ??
+			this._config.ui5?.ui5linter?.eventNamingPattern ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.eventNamingPattern ??
 			"^on{MeaningAssumption}{ControlName}.*?{EventName}$"
 		);
 	}
 
 	getAttributesToCheck(): string[] {
 		return (
-			this._package.ui5?.ui5linter?.attributesToCheck ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.attributesToCheck ?? [
+			this._config.ui5?.ui5linter?.attributesToCheck ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.attributesToCheck ?? [
 				"content",
 				"items",
 				"value",
@@ -228,16 +231,16 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 
 	getLinterUsage(linter: JSLinters | XMLLinters | PropertiesLinters) {
 		return (
-			this._package.ui5?.ui5linter?.usage?.[linter] ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.usage?.[linter] ??
+			this._config.ui5?.ui5linter?.usage?.[linter] ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.usage?.[linter] ??
 			true
 		);
 	}
 
 	getPropertiesLinterExceptions(): string[] {
 		return (
-			this._package.ui5?.ui5linter?.propertiesLinterExceptions ??
-			PackageLinterConfigHandler._globalPackage?.ui5?.ui5linter?.propertiesLinterExceptions ??
+			this._config.ui5?.ui5linter?.propertiesLinterExceptions ??
+			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.propertiesLinterExceptions ??
 			[]
 		);
 	}

@@ -17,4 +17,6 @@ export interface ILinterConfigHandler {
 	getIdNamingPattern(): string;
 	getEventNamingPattern(): string;
 	getAttributesToCheck(): string[];
+	packagePath: string;
+	configPath?: string;
 }
