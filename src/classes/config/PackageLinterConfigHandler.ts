@@ -99,6 +99,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		const defaultSeverity: { [key in JSLinters | XMLLinters | PropertiesLinters]: Severity } = {
 			WrongParametersLinter: Severity.Error,
 			WrongOverrideLinter: Severity.Error,
+			TagAttributeDefaultValueLinter: Severity.Information,
 			WrongImportLinter: Severity.Warning,
 			WrongFilePathLinter: Severity.Warning,
 			WrongFieldMethodLinter: Severity.Warning,

@@ -21,6 +21,7 @@ export enum PropertiesLinters {
 }
 export enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
+	TagAttributeDefaultValueLinter = "TagAttributeDefaultValueLinter",
 	TagLinter = "TagLinter",
 	UnusedNamespaceLinter = "UnusedNamespaceLinter",
 	WrongFilePathLinter = "WrongFilePathLinter"

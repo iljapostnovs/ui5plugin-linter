@@ -156,6 +156,7 @@ Default config is as follows:
 				"UnusedMemberLinter": "Information",
 				"TagLinter": "Error",
 				"TagAttributeLinter": "Error",
+				"TagAttributeDefaultValueLinter": "Information",
 				"PublicMemberLinter": "Information",
 				"InterfaceLinter": "Error",
 				"AbstractClassLinter": "Error",
@@ -175,6 +176,7 @@ Default config is as follows:
 				"UnusedMemberLinter": true,
 				"TagLinter": true,
 				"TagAttributeLinter": true,
+				"TagAttributeDefaultValueLinter": true,
 				"PublicMemberLinter": true,
 				"InterfaceLinter": true,
 				"AbstractClassLinter": true,
@@ -569,6 +571,7 @@ enum PropertiesLinters {
 }
 enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
+    TagAttributeDefaultValueLinter = "TagAttributeDefaultValueLinter",
 	TagLinter = "TagLinter",
 	UnusedNamespaceLinter = "UnusedNamespaceLinter",
 	WrongFilePathLinter = "WrongFilePathLinter"
