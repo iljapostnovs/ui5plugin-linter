@@ -9,6 +9,29 @@ Any support is highly appreciated!<br/>
 # Summary
 
 -   [How to use](#how-to-use)
+-   [Linters](#linters)
+    -   [JS/TS Linters](#jsts-linters)
+        -   [AbstractClassLinter](#abstractclasslinter)
+        -   [InterfaceLinter](#interfacelinter)
+        -   [PublicMemberLinter](#publicmemberlinter)
+        -   [UnusedMemberLinter](#unusedmemberlinter)
+        -   [WrongClassNameLinter](#wrongclassnamelinter)
+        -   [WrongFieldMethodLinter](#wrongfieldmethodlinter)
+        -   [WrongImportLinter](#wrongimportlinter)
+        -   [WrongOverrideLinter](#wrongoverridelinter)
+        -   [WrongParametersLinter](#wrongparameterslinter)
+        -   [UnusedClassLinter](#unusedclasslinter)
+        -   [WrongNamespaceLinter (TS only)](#wrongnamespacelinter-ts-only)
+        -   [EventTypeLinter (TS only, 1.115.1+)](#eventtypelinter-ts-only-11151)
+    -   [XML Linters](#xml-linters)
+        -   [TagAttributeLinter](#tagattributelinter)
+        -   [TagAttributeDefaultValueLinter](#tagattributedefaultvaluelinter)
+        -   [TagLinter](#taglinter)
+        -   [UnusedNamespaceLinter](#unusednamespacelinter)
+        -   [WrongFilePathLinter](#wrongfilepathlinter-1)
+    -   [Properties linters](#properties-linters)
+        -   [UnusedTranslationsLinter](#unusedtranslationslinter)
+        -   [DuplicateTranslationLinter](#duplicatetranslationlinter)
 -   [Configuration](#config)
 -   [Configuration example](#configuration-example)
 -   [Default configuration](#default-linter-config)
@@ -59,6 +82,210 @@ For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they co
 
 ---
 
+# Linters
+
+## JS/TS Linters
+
+### AbstractClassLinter
+
+Linter, which checks if all members of parent class (which is abstract) are implemented.
+
+![Alt text](images/AbstractClassLinter1.png)
+
+![Alt text](images/AbstractClassLinter2.png)
+
+### InterfaceLinter
+
+Checks if interface members of an interface are implemented.
+
+![Alt text](images/InterfaceLinter1.png)
+
+![Alt text](images/InterfaceLinter2.png)
+
+### PublicMemberLinter
+
+Checks if currently public member should be private. If no references for the member are found outside the current class, error will be shown.
+
+![Alt text](images/PublicMemberLinter.png)
+
+### UnusedMemberLinter
+
+Checks if member is used anywhere.
+
+![Alt text](images/UnusedMemberLinter.png)
+
+### WrongClassNameLinter
+
+Checks if class name is correct.
+
+![Alt text](images/WrongClassNameLinter1.png)
+
+![Alt text](images/WrongClassNameLinter2.png)
+
+### WrongFieldMethodLinter
+
+Checks for several things:
+
+-   If member is deprecated
+
+![Alt text](images/WrongFieldMethodLinter1.png)
+
+-   If member exists
+
+![Alt text](images/WrongFieldMethodLinter2.png)
+
+-   If access level modifiers are used correctly. E.g. if private/protected member from another class is called, it's an error.
+
+![Alt text](images/WrongFieldMethodLinter3.png)
+
+### WrongFilePathLinter
+
+Checks if all paths which starts with app id exists
+
+![Alt text](images/WrongFilePathLinter.png)
+
+### WrongImportLinter
+
+Checks if imported module exists and is not deprecated
+
+![Alt text](images/WrongImportLinter.png)
+
+### WrongOverrideLinter
+
+Checks if overriden member is not private
+
+![Alt text](images/WrongOverrideLinter1.png)
+
+![Alt text](images/WrongOverrideLinter2.png)
+
+### WrongParametersLinter
+
+Checks for several things:
+
+-   If all parameters are passed to the method
+-   If types of the parameters are correct
+
+![Alt text](images/WrongParametersLinter.png)
+
+> **Hint!** To set the type for the variable, JSDocs can be used.
+
+```javascript
+/**@type {sap.m.Table}*/
+let oTable;
+```
+
+> **Hint!** To make parameter optional, JSDocs can be used.
+
+```javascript
+/**
+ * @param {string} mandatoryParam mandatory parameter
+ * @param {string} [optionalParam] optional parameter
+ */
+myMethod(mandatoryParam, optionalParam) {}
+```
+
+### UnusedClassLinter
+
+Checks if class is used
+
+![Alt text](images/UnusedClassLinter.png)
+
+### WrongNamespaceLinter (TS only)
+
+Checks if namespace is provided and if it is correct.
+
+![Alt text](images/WrongNamespaceLinter1.png)
+
+![Alt text](images/WrongNamespaceLinter2.png)
+
+![Alt text](images/WrongNamespaceLinter4.png)
+
+![Alt text](images/WrongNamespaceLinter3.png)
+
+### EventTypeLinter (TS only, 1.115.1+)
+
+Checks if correct type for event variable is used in event handlers
+
+![Alt text](images/EventTypeLinter1.png)
+
+![Alt text](images/EventTypeLinter2.png)
+
+---
+
+## XML Linters
+
+### TagAttributeLinter
+
+Checks if attribute
+
+-   Exists
+-   Is not duplicated
+-   Value is correct
+-   Event handler exists
+-   Event handler and id naming style (check [ID and Event Handler patterns in views and fragments](#id-and-event-handler-patterns-in-views-and-fragments))
+
+![Alt text](images/TagAttributeLinter.png)
+
+### TagAttributeDefaultValueLinter
+
+Checks if entered value is not the same as default value
+
+![Alt text](images/TagAttributeDefaultValueLinter.png)
+
+### TagLinter
+
+Checks if:
+
+-   Prefix is defined
+
+![Alt text](images/TagLinter1.png)
+
+-   Aggregation exists
+
+![Alt text](images/TagLinter2.png)
+
+-   Library of aggregation is the same as library of the class
+
+![Alt text](images/TagLinter3.png)
+
+-   Class is not deprecated
+
+![Alt text](images/TagLinter4.png)
+
+-   Class exists
+
+![Alt text](images/TagLinter5.png)
+
+### UnusedNamespaceLinter
+
+Checks if namespace is used
+
+![Alt text](images/UnusedNamespaceLinter.png)
+
+### WrongFilePathLinter
+
+Checks if class exists
+
+![Alt text](images/WrongFilePathLinter1.png)
+
+![Alt text](images/WrongFilePathLinter2.png)
+
+## Properties linters
+
+### UnusedTranslationsLinter
+
+Checks if translation is used
+
+![Alt text](images/UnusedTranslationsLinter.png)
+
+### DuplicateTranslationLinter
+
+Checks if translation is not duplicated
+
+![Alt text](images/DuplicateTranslationLinter.png)
+
+---
+
 # Config
 
 ## Linter config
@@ -66,11 +293,12 @@ For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they co
 UI5 Linter searches for `package.json` (or any other `rc` file, e.g. `.ui5pluginrc`) in your CWD (Current Working Directory) and locates the config there.
 
 Supported `rc` file types:
- - `.ui5pluginrc`
- - `.ui5pluginrc.json`
- - `.ui5pluginrc.yaml`
- - `.ui5pluginrc.yml`
- - `.ui5pluginrc.js`
+
+-   `.ui5pluginrc`
+-   `.ui5pluginrc.json`
+-   `.ui5pluginrc.yaml`
+-   `.ui5pluginrc.yml`
+-   `.ui5pluginrc.js`
 
 See [configuration example](#configuration-example) below.
 
@@ -140,7 +368,7 @@ See [configuration example](#configuration-example) below.
 
 Default config is as follows:
 
-```json
+```jsonc
 {
 	"ui5": {
 		"ui5linter": {
@@ -156,12 +384,14 @@ Default config is as follows:
 				"UnusedMemberLinter": "Information",
 				"TagLinter": "Error",
 				"TagAttributeLinter": "Error",
+				"TagAttributeDefaultValueLinter": "Information",
 				"PublicMemberLinter": "Information",
 				"InterfaceLinter": "Error",
 				"AbstractClassLinter": "Error",
 				"UnusedClassLinter": "Error",
 				"WrongNamespaceLinter": "Warning",
-				"DuplicateTranslationLinter": "Error"
+				"DuplicateTranslationLinter": "Error",
+				"EventTypeLinter": "Error"
 			},
 			"usage": {
 				"WrongParametersLinter": true,
@@ -175,12 +405,14 @@ Default config is as follows:
 				"UnusedMemberLinter": true,
 				"TagLinter": true,
 				"TagAttributeLinter": true,
+				"TagAttributeDefaultValueLinter": true,
 				"PublicMemberLinter": true,
 				"InterfaceLinter": true,
 				"AbstractClassLinter": true,
 				"UnusedClassLinter": true,
 				"WrongNamespaceLinter": true,
-				"DuplicateTranslationLinter": true
+				"DuplicateTranslationLinter": true,
+				"EventTypeLinter": true //true if UI5 version is >=1.115.1
 			},
 			"jsLinterExceptions": [
 				{
@@ -569,6 +801,7 @@ enum PropertiesLinters {
 }
 enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
+	TagAttributeDefaultValueLinter = "TagAttributeDefaultValueLinter",
 	TagLinter = "TagLinter",
 	UnusedNamespaceLinter = "UnusedNamespaceLinter",
 	WrongFilePathLinter = "WrongFilePathLinter"
@@ -585,7 +818,8 @@ enum JSLinters {
 	WrongOverrideLinter = "WrongOverrideLinter",
 	WrongParametersLinter = "WrongParametersLinter",
 	UnusedClassLinter = "UnusedClassLinter",
-	WrongNamespaceLinter = "WrongNamespaceLinter"
+	WrongNamespaceLinter = "WrongNamespaceLinter",
+	EventTypeLinter = "EventTypeLinter"
 }
 enum Severity {
 	Warning = "Warning",

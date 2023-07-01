@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { dirname, join } from "path";
 import { rcFile } from "rc-config-loader";
 import { ParserPool, TextDocument, toNative } from "ui5plugin-parser";
+import UI5Version from "ui5plugin-parser/dist/classes/util/UI5Version";
 import { IUI5Parser } from "ui5plugin-parser/dist/parser/abstraction/IUI5Parser";
 import { JSLinters, PropertiesLinters, Severity, XMLLinters } from "../Linter";
 import { ILinterConfigHandler, JSLinterException } from "./ILinterConfigHandler";
@@ -99,6 +100,7 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		const defaultSeverity: { [key in JSLinters | XMLLinters | PropertiesLinters]: Severity } = {
 			WrongParametersLinter: Severity.Error,
 			WrongOverrideLinter: Severity.Error,
+			TagAttributeDefaultValueLinter: Severity.Information,
 			WrongImportLinter: Severity.Warning,
 			WrongFilePathLinter: Severity.Warning,
 			WrongFieldMethodLinter: Severity.Warning,
@@ -113,7 +115,8 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 			AbstractClassLinter: Severity.Error,
 			UnusedClassLinter: Severity.Error,
 			WrongNamespaceLinter: Severity.Warning,
-			DuplicateTranslationLinter: Severity.Error
+			DuplicateTranslationLinter: Severity.Error,
+			EventTypeLinter: Severity.Error
 		};
 
 		return defaultSeverity[linter];
@@ -233,8 +236,16 @@ export class PackageLinterConfigHandler implements ILinterConfigHandler {
 		return (
 			this._config.ui5?.ui5linter?.usage?.[linter] ??
 			PackageLinterConfigHandler._globalConfig?.ui5?.ui5linter?.usage?.[linter] ??
-			true
+			(linter === JSLinters.EventTypeLinter ? this._getIfLibraryVersionIsGreaterThan("1.115.1") : true)
 		);
+	}
+
+	_getIfLibraryVersionIsGreaterThan(expectedVersionText: string) {
+		const currentVersionText = this._parser.configHandler.getUI5Version();
+		const currentVersion = new UI5Version(currentVersionText);
+		const expectedVersion = new UI5Version(expectedVersionText);
+
+		return !currentVersion.isLesserThan(expectedVersion);
 	}
 
 	getPropertiesLinterExceptions(): string[] {

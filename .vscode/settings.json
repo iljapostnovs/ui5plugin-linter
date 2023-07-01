@@ -30,5 +30,7 @@
 		"openui",
 		"pluginrc",
 		"rmcache"
-	]
+	],
+	"typescript.implementationsCodeLens.enabled": true,
+	"typescript.referencesCodeLens.enabled": true
 }

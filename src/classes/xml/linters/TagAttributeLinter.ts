@@ -250,7 +250,11 @@ export class TagAttributeLinter extends XMLLinter {
 			if (!isValueValid) {
 				message = `Command "${attributeValue}" is not found in manifest`;
 			}
-		} else if (attributeName === "id" && shouldIdStyleBeChecked && !this._isAttributePatternIgnored(previousTag, attributeName)) {
+		} else if (
+			attributeName === "id" &&
+			shouldIdStyleBeChecked &&
+			!this._isAttributePatternIgnored(previousTag, attributeName)
+		) {
 			const id = attributeValue;
 			const pattern = this._configHandler.getIdNamingPattern();
 			const patternValidator = new IdPatternValidator(pattern, document, this._parser, this._configHandler);
@@ -277,7 +281,8 @@ export class TagAttributeLinter extends XMLLinter {
 		} else if (event && responsibleControlName) {
 			const eventName = this._parser.xmlParser.getEventHandlerNameFromAttributeValue(attributeValue);
 			const pattern = this._configHandler.getEventNamingPattern();
-			const patternValidator = pattern && new EventPatternValidator(pattern, document, this._parser, this._configHandler);
+			const patternValidator =
+				pattern && new EventPatternValidator(pattern, document, this._parser, this._configHandler);
 
 			try {
 				if (patternValidator && !this._isAttributePatternIgnored(previousTag, attributeName)) {
@@ -313,9 +318,14 @@ export class TagAttributeLinter extends XMLLinter {
 			}
 		}
 
-		if (isValueValid && property?.defaultValue && attributeValue === property.defaultValue) {
+		if (
+			isValueValid &&
+			property?.defaultValue &&
+			attributeValue === property.defaultValue &&
+			this._configHandler.getLinterUsage(XMLLinters.TagAttributeDefaultValueLinter)
+		) {
 			isValueValid = false;
-			severity = Severity.Information;
+			severity = this._configHandler.getSeverity(XMLLinters.TagAttributeDefaultValueLinter);
 			message = `Value "${attributeValue}" is unnecessary, it is the sames as default value of "${property.name}" property`;
 		}
 

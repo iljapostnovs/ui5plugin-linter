@@ -21,6 +21,7 @@ export enum PropertiesLinters {
 }
 export enum XMLLinters {
 	TagAttributeLinter = "TagAttributeLinter",
+	TagAttributeDefaultValueLinter = "TagAttributeDefaultValueLinter",
 	TagLinter = "TagLinter",
 	UnusedNamespaceLinter = "UnusedNamespaceLinter",
 	WrongFilePathLinter = "WrongFilePathLinter"
@@ -37,7 +38,8 @@ export enum JSLinters {
 	WrongOverrideLinter = "WrongOverrideLinter",
 	WrongParametersLinter = "WrongParametersLinter",
 	UnusedClassLinter = "UnusedClassLinter",
-	WrongNamespaceLinter = "WrongNamespaceLinter"
+	WrongNamespaceLinter = "WrongNamespaceLinter",
+	EventTypeLinter = "EventTypeLinter"
 }
 export enum CustomDiagnosticType {
 	NonExistentMethod = 1,
