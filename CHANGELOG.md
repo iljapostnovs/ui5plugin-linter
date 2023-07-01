@@ -1,6 +1,7 @@
 ## 1.8.0 (01-07-2023)
 
--   Add `TagAttributeDefaultValueLinter`, closes [#122](https://github.com/iljapostnovs/ui5plugin-linter/issues/122)
+-   `TagAttributeDefaultValueLinter` configuration entry added, closes [#122](https://github.com/iljapostnovs/ui5plugin-linter/issues/122). [Readme](README.md#tagattributedefaultvaluelinter)
+-   `EventTypeLinter` added. [Readme](README.md#eventtypelinter-ts-only-11151)
 
 ## 1.7.6 (27-06-2023)
 
