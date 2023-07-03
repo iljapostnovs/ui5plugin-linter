@@ -12,19 +12,9 @@ export default class IdPatternValidator extends APatternValidator<ITag> {
 	}
 
 	private _assembleExpectedValueRegExp(tag: ITag) {
-		const validForSearchAttributes = this._configHandler.getAttributesToCheck();
-		const tagAttributes = this._parser.xmlParser.getAttributesOfTheTag(tag);
 		const controlName = this._parser.xmlParser.getClassNameFromTag(tag.text);
-		const bindingAttribute = tagAttributes?.find(attribute => {
-			const { attributeName } = this._parser.xmlParser.getAttributeNameAndValue(attribute);
 
-			return validForSearchAttributes.includes(attributeName);
-		});
-		const { attributeValue: binding } = bindingAttribute
-			? this._parser.xmlParser.getAttributeNameAndValue(bindingAttribute)
-			: { attributeValue: undefined };
-
-		const meaningAssumption = binding && this._getMeaningAssumptionFrom(binding);
+		const meaningAssumption = this._generateMeaningAssumption(tag.attributes ?? []);
 		const expectedIdWithReplacedVars = this._pattern
 			.replace(/\{ControlName\}/g, controlName ?? "")
 			.replace(/\{controlName\}/g, this._toFirstCharLower(controlName) ?? "")
