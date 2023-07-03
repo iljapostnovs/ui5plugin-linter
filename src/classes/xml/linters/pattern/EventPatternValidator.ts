@@ -13,23 +13,13 @@ export default class EventPatternValidator extends APatternValidator<[IUIEvent, 
 	}
 
 	private _assembleExpectedValueRegExp(data: [IUIEvent, ITag]) {
-		const validForSearchAttributes = this._configHandler.getAttributesToCheck();
 		const [event, tag] = data;
-		const tagAttributes = this._parser.xmlParser.getAttributesOfTheTag(tag);
 		const eventNameUpperCamel = event.name
 			? event.name[0].toUpperCase() + event.name.substring(1, event.name.length)
 			: "";
 		const controlName = this._parser.xmlParser.getClassNameFromTag(tag.text);
-		const bindingAttribute = tagAttributes?.find(attribute => {
-			const { attributeName } = this._parser.xmlParser.getAttributeNameAndValue(attribute);
+		const meaningAssumption = this._generateMeaningAssumption(tag.attributes ?? []);
 
-			return validForSearchAttributes.includes(attributeName);
-		});
-		const { attributeValue: binding } = bindingAttribute
-			? this._parser.xmlParser.getAttributeNameAndValue(bindingAttribute)
-			: { attributeValue: undefined };
-
-		const meaningAssumption = binding && this._getMeaningAssumptionFrom(binding);
 		const expectedIdWithReplacedVars = this._pattern
 			.replace(/\{ControlName\}/g, controlName ?? "")
 			.replace(/\{controlName\}/g, this._toFirstCharLower(controlName) ?? "")

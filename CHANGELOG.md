@@ -1,3 +1,7 @@
+## 1.8.1 (03-07-2023)
+
+-   Nothing new, technical refactoring
+
 ## 1.8.0 (01-07-2023)
 
 -   `TagAttributeDefaultValueLinter` configuration entry added, closes [#122](https://github.com/iljapostnovs/ui5plugin-linter/issues/122). [Readme](README.md#tagattributedefaultvaluelinter)
