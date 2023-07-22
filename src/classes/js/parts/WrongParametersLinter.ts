@@ -1,6 +1,6 @@
 import { TextDocument, UI5JSParser } from "ui5plugin-parser";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/parsing/jsparser/typesearch/FieldsAndMethodForPositionBeforeCurrentStrategy";
-import { IUIMethod } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+import { IUIMethod } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import { CustomJSClass, ICustomClassJSMethod } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
 import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { IError, JSLinters } from "../../Linter";

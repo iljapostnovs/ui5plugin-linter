@@ -1,5 +1,5 @@
 import { AnyCustomTSClass, TextDocument, UI5TSParser } from "ui5plugin-parser";
-import { AbstractJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+import { AbstractBaseClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import { CustomTSClass, ICustomClassTSMethod } from "ui5plugin-parser/dist/classes/parsing/ui5class/ts/CustomTSClass";
 import { IXMLFile } from "ui5plugin-parser/dist/classes/parsing/util/filereader/IFileReader";
 import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
@@ -133,8 +133,8 @@ export class EventTypeLinter extends JSLinter<UI5TSParser, AnyCustomTSClass> {
 		return eventData;
 	}
 
-	private _getClassAndParents(className: string): AbstractJSClass[] {
-		const UIClasses: AbstractJSClass[] = [];
+	private _getClassAndParents(className: string): AbstractBaseClass[] {
+		const UIClasses: AbstractBaseClass[] = [];
 		const UIClass = this._parser.classFactory.getUIClass(className);
 		if (UIClass) {
 			UIClasses.push(UIClass);

@@ -1,8 +1,10 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
+/* eslint-disable @typescript-eslint/indent */
 import { TextDocument, UI5JSParser } from "ui5plugin-parser";
 import { FieldsAndMethodForPositionBeforeCurrentStrategy } from "ui5plugin-parser/dist/classes/parsing/jsparser/typesearch/FieldsAndMethodForPositionBeforeCurrentStrategy";
+import { IMember } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import { UI5Ignoreable } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
 import { IFieldsAndMethods } from "ui5plugin-parser/dist/classes/parsing/ui5class/factory/IClassFactory";
-import { IMember } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
 import { CustomJSClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/CustomJSClass";
 import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { CustomDiagnosticType, DiagnosticTag, IError, JSLinters } from "../../Linter";
@@ -102,8 +104,8 @@ export class WrongFieldMethodLinter extends JSLinter<UI5JSParser, CustomJSClass>
 								const isAnyMethodAnException =
 									classNames.length > 0
 										? classNames.some(className =>
-											this._configHandler.checkIfMemberIsException(className, nextNodeName)
-										)
+												this._configHandler.checkIfMemberIsException(className, nextNodeName)
+										  )
 										: false;
 								if (!isAnyMethodAnException) {
 									const shouldBreak = this._fillNonExistantMethodError(

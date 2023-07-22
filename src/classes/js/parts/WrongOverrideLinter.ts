@@ -1,9 +1,9 @@
 import { TextDocument, UI5JSParser } from "ui5plugin-parser";
 import {
-	AbstractJSClass,
+	AbstractBaseClass,
 	IUIField,
 	IUIMethod
-} from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import {
 	CustomJSClass,
 	ICustomClassJSField,
@@ -60,7 +60,7 @@ export class WrongOverrideLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	}
 
 	private _getMemberFromParent(
-		UIClass: AbstractJSClass,
+		UIClass: AbstractBaseClass,
 		UIMember: ICustomClassJSMethod | ICustomClassJSField
 	): IUIField | IUIMethod | undefined {
 		let parentMember: IUIField | IUIMethod | undefined;
