@@ -1,4 +1,4 @@
-import { IUIEvent } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+import { IUIEvent } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import { ITag } from "ui5plugin-parser/dist/classes/parsing/util/xml/XMLParser";
 import APatternValidator from "./APatternValidator";
 

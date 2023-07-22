@@ -1,5 +1,5 @@
 import { TextDocument } from "ui5plugin-parser";
-import { IUIAggregation } from "ui5plugin-parser/dist/classes/parsing/ui5class/js/AbstractJSClass";
+import { IUIAggregation } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractBaseClass";
 import { IXMLFile } from "ui5plugin-parser/dist/classes/parsing/util/filereader/IFileReader";
 import { ITag } from "ui5plugin-parser/dist/classes/parsing/util/xml/XMLParser";
 import { RangeAdapter } from "../../..";

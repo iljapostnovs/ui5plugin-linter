@@ -3,8 +3,9 @@
 Command Line Linter for UI5 based projects.
 
 Any support is highly appreciated!<br/>
+[<img src="images/paypal-donate-button.png" height="30"/>](https://www.paypal.com/donate/?hosted_button_id=HPZ5FA8C3KJ6W)
 [<img src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86" height="30"/>](https://github.com/sponsors/iljapostnovs)
-[<img src="https://newbie.zeromesh.net/donate.7.6.svg" height="30"/>](https://donate.cafe/iljapostnovs)
+[<img src="./images/donate.png" height="30"/>](https://donate.cafe/iljapostnovs)
 
 # Summary
 
@@ -78,7 +79,7 @@ If `tsconfig.json` is found in the CWD and any `.ts` files are found in the work
 
 For convenience purposes `UI5TSParser` ignores`src-gen` folders, because they contain transpiled JS/XML files, which can make the parser to think that source files are there.
 
-> **Important!** If build folder name is different, is should be added to `excludeFolderPatterns` in your `package.json`.
+> **Important!** If build folder name is different, it should be added to `excludeFolderPatterns` in your `package.json`.
 
 ---
 
@@ -526,7 +527,7 @@ To ignore class member errors, there are two ways to do it.
 Lets assume that there is a line, which gives incorrect amount of arguments error
 
 ```javascript
-this._myMethod("123", 643, true); //Method "_myMethod" has 2 (2 mandatory) param(s), but you provided 2
+this._myMethod("123", 643, true); //Method "_myMethod" has 2 (2 mandatory) param(s), but you provided 3
 ```
 
 In order to ignore this error, there are two ways to do it:
