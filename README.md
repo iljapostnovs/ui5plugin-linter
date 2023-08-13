@@ -693,7 +693,7 @@ Variable is replaced with the name of the tag. Available for both `id` and `even
 
 #### EventName variable
 
-Variable is replaced with the name of the event handler. Available for `event handler` patterns only.
+Variable is replaced with the name of the event. Available for `event handler` patterns only.
 
 ```xml
 <Button press="onButtonPress"/>
