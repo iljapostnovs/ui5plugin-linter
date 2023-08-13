@@ -9,6 +9,7 @@
 		"rootDir": "src",
 		"esModuleInterop": false,
 		"resolveJsonModule": true,
+		"skipLibCheck": true,
 		"declaration": true
 	},
 	"exclude": [
