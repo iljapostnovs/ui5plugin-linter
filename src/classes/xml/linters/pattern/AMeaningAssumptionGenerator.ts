@@ -32,11 +32,14 @@ export default abstract class AMeaningAssumptionGenerator {
 	}
 
 	protected _getMeaningAssumptionFrom(attributeValue: string) {
-		const isBinding =
-			attributeValue.startsWith("{") &&
-			attributeValue.endsWith("}") &&
-			attributeValue.match(/\{/g)?.length === 1 &&
-			attributeValue.match(/\}/g)?.length === 1;
+		let isBinding = attributeValue.startsWith("{") && attributeValue.endsWith("}");
+		if (isBinding) {
+			try {
+				eval(`(${attributeValue})`);
+			} catch (oError) {
+				isBinding = false;
+			}
+		}
 		// /MyPath
 		// MyPath
 		// MyModel>MyPath

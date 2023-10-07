@@ -4,12 +4,17 @@ const WorkspaceFolder = require("ui5plugin-parser").WorkspaceFolder;
 const UI5TSParser = require("ui5plugin-parser").UI5TSParser;
 const ParserFactory = require("ui5plugin-parser").ParserFactory;
 const ParserPool = require("ui5plugin-parser").ParserPool;
+const toNative = require("ui5plugin-parser/dist/classes/parsing/util/filereader/AbstractFileReader").toNative;
 const chalk = require("chalk");
 const Severity = require("../dist/classes/Linter").Severity;
+const XMLFormatter = require("../dist/classes/formatter/xml/XMLFormatter").XMLFormatter;
 const path = require("path");
+const fs = require("fs");
+const { minimatch } = require("minimatch");
 
 (async function() {
-	const currentWorkspaceFolderFsPath = process.cwd();
+
+	const currentWorkspaceFolderFsPath = toNative(process.cwd());
 	const workspaceFolders = [new WorkspaceFolder(currentWorkspaceFolderFsPath)];
 
 	const shouldClearCache = process.argv.includes("--rmcache");
@@ -18,6 +23,54 @@ const path = require("path");
 	const parsersToLint = parsers.filter(parser => path.resolve(parser.workspaceFolder.fsPath).startsWith(currentWorkspaceFolderFsPath));
 	if (parsersToLint.length === 0) {
 		console.log("No projects identified for linting");
+		return;
+	}
+
+	const shouldRunFormatter = process.argv.includes("--format");
+	if (shouldRunFormatter) {
+		const globPathArg= process.argv.find(value => value.startsWith("--path="));
+		const globPath = globPathArg?.substring("--path=".length, globPathArg.length) ?? "**/*.{fragment,view}.xml";
+
+		const parserData = parsersToLint.map(parser => ({
+			parser: parser,
+			XMLFiles: parser.fileReader.getAllFragments().concat(parser.fileReader.getAllViews())
+		}));
+
+		const aPromises = parserData.flatMap(parserData => {
+			return parserData.XMLFiles.map(XMLFile => {
+				if (!minimatch(XMLFile.fsPath.replace(/\\/g, "/"), globPath)) {
+					return new Promise(resolve => resolve());
+				}
+
+				const bShouldXmlFormatterTagEndByNewline = process.argv.includes("--tagEndNewline")
+				const document = new TextDocument(XMLFile.content, XMLFile.fsPath);
+				const formatter = new XMLFormatter(parserData.parser, bShouldXmlFormatterTagEndByNewline);
+
+				const newContent = formatter.formatDocument(document);
+				if (newContent && newContent !== XMLFile.content) {
+					return fs.promises.writeFile(XMLFile.fsPath, newContent, {
+						encoding: "utf-8"
+					}).then(() => {
+						console.info(chalk.bold.underline.blue(`"${XMLFile.fsPath}" formatted`));
+
+						return true;
+					});
+				} else {
+					return new Promise(resolve => resolve());
+				}
+			})
+		});
+
+		const result = await Promise.allSettled(aPromises);
+		const errors = result.filter(result => result.status === "rejected");
+		errors.forEach(error => {
+			console.error(chalk.bold.underline.red(`"${XMLFile.fsPath}" not formatted. Message: ${error.reason}\n`));
+		});
+
+		if (result.filter(result => result.value === true).length === 0) {
+			console.info(chalk.bold.underline.grey("No files formatted"));
+		}
+
 		return;
 	}
 

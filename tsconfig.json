@@ -4,6 +4,7 @@
 		"target": "es2020",
 		"outDir": "dist",
 		"sourceMap": true,
+		"skipLibCheck": true,
 		"strict": true,
 		"rootDir": "src",
 		"esModuleInterop": false,

@@ -1,3 +1,8 @@
+## 1.9.0 (07-10-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.2
+-   XML Formatter moved to this repo. [Readme](README.md#xml-formatter)
+
 ## 1.8.3 (13-08-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.1

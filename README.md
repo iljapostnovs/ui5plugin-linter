@@ -42,6 +42,7 @@ Any support is highly appreciated!<br/>
     -   [i18n errors](#i18n-errors)
     -   [Other ways](#other-ways)
 -   [ID and Event Handler patterns in views and fragments](#id-and-event-handler-patterns-in-views-and-fragments)
+-   [XML Formatter](#xml-formatter)
 
 ---
 
@@ -759,6 +760,33 @@ For instance, if `attributesToCheck` is set to `"attributesToCheck": ["items"]`,
 	id="idOrdersList"
 	items="{/Orders}"
 />
+```
+
+---
+
+## XML Formatter
+
+It is possible to format fragments and views using CMD.
+
+```bash
+ui5linter --format
+```
+
+### Path pattern
+
+It is possible to set the path pattern of the files which should be formatted.
+Default value: ­`**/*.{fragment,view}.xml`
+
+```bash
+ui5linter --format --path=**/*.{fragment,view}.xml
+```
+
+### Closing tag on newline
+
+It is possible to pass a parameter if closing tags (">", "/>") should be located on newline
+
+```bash
+ui5linter --format --tagEndNewline
 ```
 
 ---
