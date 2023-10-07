@@ -34,10 +34,12 @@ export default abstract class AMeaningAssumptionGenerator {
 	protected _getMeaningAssumptionFrom(attributeValue: string) {
 		let isBinding = attributeValue.startsWith("{") && attributeValue.endsWith("}");
 		if (isBinding) {
-			try {
-				eval(`(${attributeValue})`);
-			} catch (oError) {
-				isBinding = false;
+			if (!(attributeValue.match(/\{/g)?.length === 1 && attributeValue.match(/\}/g)?.length === 1)) {
+				try {
+					eval(`(${attributeValue})`);
+				} catch (oError) {
+					isBinding = false;
+				}
 			}
 		}
 		// /MyPath

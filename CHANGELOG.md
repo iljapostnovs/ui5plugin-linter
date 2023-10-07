@@ -1,3 +1,8 @@
+## 1.9.1 (07-10-2023)
+
+-   'AMeaningAssumptionGenerator' bugfix
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.3
+
 ## 1.9.0 (07-10-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.2
