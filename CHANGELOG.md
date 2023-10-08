@@ -1,3 +1,7 @@
+## 1.10.0 (08-10-2023)
+
+-   `--tagSpaceBeforeSelfClose` option added to XML Formatter
+
 ## 1.9.1 (07-10-2023)
 
 -   'AMeaningAssumptionGenerator' bugfix
