@@ -5,10 +5,12 @@ import { IUI5Parser } from "ui5plugin-parser/dist/parser/abstraction/IUI5Parser"
 
 export class XMLFormatter {
 	private readonly _bShouldXmlFormatterTagEndByNewline: boolean = true;
+	private readonly _bShouldXmlFormatterTagSpaceBeforeSelfClose: boolean = true;
 	private readonly _parser: IUI5Parser;
-	constructor(parser: IUI5Parser, bShouldXmlFormatterTagEndByNewline?: boolean) {
+	constructor(parser: IUI5Parser, bShouldXmlFormatterTagEndByNewline?: boolean, bShouldXmlFormatterTagSpaceBeforeSelfClose?: boolean) {
 		this._parser = parser;
 		this._bShouldXmlFormatterTagEndByNewline = bShouldXmlFormatterTagEndByNewline ?? true;
+		this._bShouldXmlFormatterTagSpaceBeforeSelfClose = bShouldXmlFormatterTagSpaceBeforeSelfClose ?? true;
 	}
 
 	formatDocument(document: TextDocument) {
@@ -109,6 +111,10 @@ export class XMLFormatter {
 		if (tagAttributes.length <= 1 || !this._bShouldXmlFormatterTagEndByNewline) {
 			formattedTag = formattedTag.trimEnd();
 			indentation = "";
+
+			if (tagEnd === "/>" && this._bShouldXmlFormatterTagSpaceBeforeSelfClose) {
+				indentation += " ";
+			}
 		}
 
 		formattedTag += `${indentation}${tagEnd}`;

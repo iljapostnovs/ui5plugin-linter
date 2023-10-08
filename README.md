@@ -789,6 +789,14 @@ It is possible to pass a parameter if closing tags (">", "/>") should be located
 ui5linter --format --tagEndNewline
 ```
 
+### Add space before a self-closing tag
+
+It is possible to pass a parameter if a space should be added before a self-closing tag ("/>")
+
+```bash
+ui5linter --format --tagSpaceBeforeSelfClose
+```
+
 ---
 
 ## package.json interface

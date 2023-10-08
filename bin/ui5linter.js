@@ -42,9 +42,10 @@ const { minimatch } = require("minimatch");
 					return new Promise(resolve => resolve());
 				}
 
-				const bShouldXmlFormatterTagEndByNewline = process.argv.includes("--tagEndNewline")
+				const bShouldXmlFormatterTagEndByNewline = process.argv.includes("--tagEndNewline");
+				const bShouldXmlFormatterTagSpaceBeforeSelfClose = process.argv.includes("--tagSpaceBeforeSelfClose");
 				const document = new TextDocument(XMLFile.content, XMLFile.fsPath);
-				const formatter = new XMLFormatter(parserData.parser, bShouldXmlFormatterTagEndByNewline);
+				const formatter = new XMLFormatter(parserData.parser, bShouldXmlFormatterTagEndByNewline, bShouldXmlFormatterTagSpaceBeforeSelfClose);
 
 				const newContent = formatter.formatDocument(document);
 				if (newContent && newContent !== XMLFile.content) {
