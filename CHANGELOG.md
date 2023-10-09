@@ -1,3 +1,7 @@
+## 1.11.0 (08-11-2023)
+
+-   Make XML Formatter preserve newlines
+
 ## 1.10.0 (08-10-2023)
 
 -   `--tagSpaceBeforeSelfClose` option added to XML Formatter
