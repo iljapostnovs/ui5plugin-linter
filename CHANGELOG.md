@@ -1,4 +1,4 @@
-## 1.11.0 (08-11-2023)
+## 1.11.0 (10-10-2023)
 
 -   Make XML Formatter preserve newlines
 
