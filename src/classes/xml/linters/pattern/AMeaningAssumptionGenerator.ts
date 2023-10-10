@@ -80,7 +80,8 @@ export default abstract class AMeaningAssumptionGenerator {
 
 						return pascalCase;
 					})
-					.join("");
+					.join("")
+					.replace(/[^a-zA-Z| ]/g, "");
 
 				return lastPartPascalCase;
 			}
