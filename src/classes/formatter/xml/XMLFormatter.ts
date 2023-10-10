@@ -20,6 +20,12 @@ export class XMLFormatter {
 			return;
 		}
 
+		const documentNewline = document.getText()
+			.match(/\r?\n/)?.[0] ?? "\n";
+		const documentNewlineEnding = document.getText()
+			.slice(-2)
+			.match(/\r?\n$/)?.[0] ?? "";
+
 		let indentationLevel = 0;
 		const formattedTags = allTags
 			.map(currentTag => {
@@ -36,7 +42,7 @@ export class XMLFormatter {
 			})
 			.reduce(this._removeUnnecessaryTags.bind(this), []);
 
-		return formattedTags.join("\n");
+		return formattedTags.join(documentNewline) + documentNewlineEnding;
 	}
 
 	private _removeUnnecessaryTags(accumulator: string[], currentTag: string): string[] {
