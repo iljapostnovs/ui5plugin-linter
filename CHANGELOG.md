@@ -1,3 +1,7 @@
+## 1.11.1 (16-10-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.4
+
 ## 1.11.0 (10-10-2023)
 
 -   Make XML Formatter preserve newlines
