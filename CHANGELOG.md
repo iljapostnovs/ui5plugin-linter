@@ -1,3 +1,8 @@
+## 1.13.0 (09-11-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.0
+-   Variable declarations are now being searched above class declaration as well
+
 ## 1.12.0 (09-11-2023)
 
 -   Implement indentation feature [#138](https://github.com/iljapostnovs/ui5plugin-linter/issues/138)
