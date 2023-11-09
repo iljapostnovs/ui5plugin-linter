@@ -797,6 +797,15 @@ It is possible to pass a parameter if a space should be added before a self-clos
 ui5linter --format --tagSpaceBeforeSelfClose
 ```
 
+### Indentation
+
+It is possible to pass a parameter which will determine indentation
+
+```bash
+ui5linter --format --indentation=space
+ui5linter --format --indentation=tab
+```
+
 ---
 
 ## package.json interface

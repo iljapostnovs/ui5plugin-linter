@@ -1,3 +1,8 @@
+## 1.12.0 (09-11-2023)
+
+-   Implement indentation feature [#138](https://github.com/iljapostnovs/ui5plugin-linter/issues/138)
+-   Fix [#136](https://github.com/iljapostnovs/ui5plugin-linter/issues/136)
+
 ## 1.11.1 (16-10-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.4

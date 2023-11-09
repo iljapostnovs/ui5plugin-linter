@@ -7,10 +7,19 @@ export class XMLFormatter {
 	private readonly _bShouldXmlFormatterTagEndByNewline: boolean = true;
 	private readonly _bShouldXmlFormatterTagSpaceBeforeSelfClose: boolean = true;
 	private readonly _parser: IUI5Parser;
-	constructor(parser: IUI5Parser, bShouldXmlFormatterTagEndByNewline?: boolean, bShouldXmlFormatterTagSpaceBeforeSelfClose?: boolean) {
+	private readonly _indentation: string;
+	constructor(
+		parser: IUI5Parser,
+		options?: {
+			shouldXmlFormatterTagEndByNewline?: boolean;
+			shouldXmlFormatterTagSpaceBeforeSelfClose?: boolean;
+			indentation?: string;
+		}
+	) {
 		this._parser = parser;
-		this._bShouldXmlFormatterTagEndByNewline = bShouldXmlFormatterTagEndByNewline ?? true;
-		this._bShouldXmlFormatterTagSpaceBeforeSelfClose = bShouldXmlFormatterTagSpaceBeforeSelfClose ?? true;
+		this._bShouldXmlFormatterTagEndByNewline = options?.shouldXmlFormatterTagEndByNewline ?? true;
+		this._bShouldXmlFormatterTagSpaceBeforeSelfClose = options?.shouldXmlFormatterTagSpaceBeforeSelfClose ?? true;
+		this._indentation = options?.indentation ?? "\t";
 	}
 
 	formatDocument(document: TextDocument) {
@@ -20,11 +29,12 @@ export class XMLFormatter {
 			return;
 		}
 
-		const documentNewline = document.getText()
-			.match(/\r?\n/)?.[0] ?? "\n";
-		const documentNewlineEnding = document.getText()
-			.slice(-2)
-			.match(/\r?\n$/)?.[0] ?? "";
+		const documentNewline = document.getText().match(/\r?\n/)?.[0] ?? "\n";
+		const documentNewlineEnding =
+			document
+				.getText()
+				.slice(-2)
+				.match(/\r?\n$/)?.[0] ?? "";
 
 		let indentationLevel = 0;
 		const formattedTags = allTags
@@ -102,12 +112,13 @@ export class XMLFormatter {
 		}
 		formattedTag += tagAttributes.reduce((accumulator, tagAttribute) => {
 			const tagData = this._parser.xmlParser.getAttributeNameAndValue(tagAttribute);
-			const attributeValueIndentation = tagAttributes.length === 1 ? indentation : indentation + "\t";
+			const attributeValueIndentation =
+				tagAttributes.length === 1 ? indentation : indentation + this._indentation;
 			const formattedAttributeValue = this._formatAttributeValue(
 				tagData.attributeValue,
 				attributeValueIndentation
 			);
-			accumulator += `${indentation}\t${tagData.attributeName}=${formattedAttributeValue}\n`;
+			accumulator += `${indentation}${this._indentation}${tagData.attributeName}=${formattedAttributeValue}\n`;
 			if (tagAttributes.length === 1) {
 				accumulator = ` ${accumulator.trimStart()}`;
 			}
@@ -140,17 +151,19 @@ export class XMLFormatter {
 				} else if (currentChar === "(") {
 					const nextChar = attributeValue[i + 1];
 					if (nextChar !== "{") {
-						indentation += "\t";
+						indentation += this._indentation;
 					}
-					const nextLine = nextChar === "(" ? `\n${indentation}\t` : "";
+					const nextLine = nextChar === "(" ? `\n${indentation}${this._indentation}` : "";
 					formattedValue += `${currentChar}${nextLine}`;
 				} else if (currentChar === ")") {
 					const lastFormattedValueChar = formattedValue[formattedValue.length - 1];
 					indentation = indentation.substring(0, indentation.length - 1);
 					const nextChar = attributeValue[i + 1];
-					const nextLine = !["\n", "\r", " ", undefined].includes(nextChar) ? `\n${indentation}\t` : "";
+					const nextLine = !["\n", "\r", " ", undefined].includes(nextChar)
+						? `\n${indentation}${this._indentation}`
+						: "";
 					formattedValue =
-						lastFormattedValueChar === "\t"
+						lastFormattedValueChar === `${this._indentation}`
 							? formattedValue.substring(0, formattedValue.length - 1)
 							: formattedValue;
 					formattedValue += `${currentChar}${nextLine}`;
@@ -163,7 +176,7 @@ export class XMLFormatter {
 							const necessaryIndentation =
 								this._getCurvyBracketsCount(attributeValue, i + 1) === 1
 									? indentation
-									: indentation + "\t";
+									: indentation + this._indentation;
 							const formattedBinding = this._formatAttributeObject(evaluatedValue, necessaryIndentation);
 							formattedValue += formattedBinding;
 						}
@@ -173,7 +186,8 @@ export class XMLFormatter {
 					}
 				} else if (currentChar === "\n") {
 					const positionEnd = this._getPositionOfIndentationEnd(attributeValue, i);
-					const necessaryIndentation = attributeValue[positionEnd] === "}" ? indentation : indentation + "\t";
+					const necessaryIndentation =
+						attributeValue[positionEnd] === "}" ? indentation : indentation + this._indentation;
 					formattedValue += "\n" + necessaryIndentation;
 					i = positionEnd - 1;
 				} else {
@@ -246,7 +260,7 @@ export class XMLFormatter {
 		const keys = Object.keys(anyObject);
 		keys.forEach(key => {
 			const value = anyObject[key];
-			formattedAttribute += `${indentation}\t${key}: `;
+			formattedAttribute += `${indentation}${this._indentation}${key}: `;
 			formattedAttribute += this._formatAttributeValuePart(value, indentation);
 			const isLastKey = keys.indexOf(key) === keys.length - 1;
 			if (!isLastKey) {
@@ -270,16 +284,16 @@ export class XMLFormatter {
 
 			if (arrayString.length > 80 && !value.every(innerValue => typeof innerValue === "object")) {
 				formattedAttribute +=
-					`[\n${indentation}\t\t` +
+					`[\n${indentation}${this._indentation.repeat(2)}` +
 					value
-						.map(innerValue => this._formatAttributeValuePart(innerValue, indentation + "\t"))
-						.join(`,\n${indentation}\t\t`) +
-					`\n${indentation}\t]`;
+						.map(innerValue => this._formatAttributeValuePart(innerValue, indentation + this._indentation))
+						.join(`,\n${indentation}${this._indentation.repeat(2)}`) +
+					`\n${indentation}${this._indentation}]`;
 			} else {
 				formattedAttribute = arrayString;
 			}
 		} else if (typeof value === "object") {
-			formattedAttribute += `${this._formatAttributeObject(value, indentation + "\t")}`;
+			formattedAttribute += `${this._formatAttributeObject(value, indentation + this._indentation)}`;
 		} else if (typeof value === "string") {
 			formattedAttribute += `'${value.replace(/\\/g, "\\\\")}'`;
 		} else if (typeof value === "function") {
@@ -306,7 +320,7 @@ export class XMLFormatter {
 	}
 
 	private _getIndentation(indentationLevel: number) {
-		const indentationChar = "\t";
+		const indentationChar = this._indentation;
 		let indentation = "";
 
 		for (let i = 0; i < indentationLevel; i++) {

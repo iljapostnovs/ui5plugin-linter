@@ -42,10 +42,17 @@ const { minimatch } = require("minimatch");
 					return new Promise(resolve => resolve());
 				}
 
-				const bShouldXmlFormatterTagEndByNewline = process.argv.includes("--tagEndNewline");
-				const bShouldXmlFormatterTagSpaceBeforeSelfClose = process.argv.includes("--tagSpaceBeforeSelfClose");
+				const shouldXmlFormatterTagEndByNewline = process.argv.includes("--tagEndNewline");
+				const shouldXmlFormatterTagSpaceBeforeSelfClose = process.argv.includes("--tagSpaceBeforeSelfClose");
+				const indentationArg= process.argv.find(value => value.startsWith("--indentation="));
+				const indentationValue = indentationArg?.substring("--indentation=".length, indentationArg.length);
+				const indentation = indentationValue === "space" ? " ".repeat(4) : "\t";
 				const document = new TextDocument(XMLFile.content, XMLFile.fsPath);
-				const formatter = new XMLFormatter(parserData.parser, bShouldXmlFormatterTagEndByNewline, bShouldXmlFormatterTagSpaceBeforeSelfClose);
+				const formatter = new XMLFormatter(parserData.parser, {
+					shouldXmlFormatterTagEndByNewline,
+					shouldXmlFormatterTagSpaceBeforeSelfClose,
+					indentation
+				});
 
 				const newContent = formatter.formatDocument(document);
 				if (newContent && newContent !== XMLFile.content) {

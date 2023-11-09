@@ -24,7 +24,10 @@ export class WrongFilePathLinter<
 				const manifest = ParserPool.getManifestForClass(UIClass.className);
 				if (manifest) {
 					const rClassNamesRegex = new RegExp(
-						`${manifest.componentName.replace(/\./, "\\.")}\\..*?(?="|'|}|\\[|\\]|>|\\|)`,
+						`${manifest.componentName.replace(
+							/\./g,
+							"\\."
+						)}\\.([a-zA-Z]|\\.)*?(?=("|'|\`|}|\\[|\\]|>|\\|))`,
 						"g"
 					);
 					if (rClassNamesRegex) {
