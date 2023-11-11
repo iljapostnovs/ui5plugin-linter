@@ -27,7 +27,7 @@ export class WrongFilePathLinter<
 						`${manifest.componentName.replace(
 							/\./g,
 							"\\."
-						)}\\.([a-zA-Z]|\\.)*?(?=("|'|\`|}|\\[|\\]|>|\\|))`,
+						)}\\.([a-zA-Z0-9_]|\\.)*?(?=("|'|\`|}|\\[|\\]|>|\\|))`,
 						"g"
 					);
 					if (rClassNamesRegex) {
