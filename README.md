@@ -802,7 +802,7 @@ ui5linter --format --tagSpaceBeforeSelfClose
 It is possible to pass a parameter which will determine indentation
 
 ```bash
-ui5linter --format --indentation=space
+ui5linter --format --indentation=space --spaces=4
 ui5linter --format --indentation=tab
 ```
 
