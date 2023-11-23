@@ -1,11 +1,20 @@
+## 1.14.1 (23-11-2023)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.2
+-   Fix for XHTML tags
+
+## 1.14.0 (11-11-2023)
+
+-   Feature: Now it is possible to specify `space` quantity [Readme](README.md#indentation)
+
 ## 1.13.0 (09-11-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.0
--   Variable declarations are now being searched above class declaration as well
+-   Feature: Variable declarations are now being searched above class declaration as well
 
 ## 1.12.0 (09-11-2023)
 
--   Implement indentation feature [#138](https://github.com/iljapostnovs/ui5plugin-linter/issues/138)
+-   Feature: Implement indentation feature [#138](https://github.com/iljapostnovs/ui5plugin-linter/issues/138)
 -   Fix [#136](https://github.com/iljapostnovs/ui5plugin-linter/issues/136)
 
 ## 1.11.1 (16-10-2023)
@@ -14,21 +23,21 @@
 
 ## 1.11.0 (10-10-2023)
 
--   Make XML Formatter preserve newlines
+-   Feature: Make XML Formatter preserve newlines
 
 ## 1.10.0 (08-10-2023)
 
--   `--tagSpaceBeforeSelfClose` option added to XML Formatter
+-   Feature: `--tagSpaceBeforeSelfClose` option added to XML Formatter
 
 ## 1.9.1 (07-10-2023)
 
--   'AMeaningAssumptionGenerator' bugfix
+-   Fix: 'AMeaningAssumptionGenerator' bugfix
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.3
 
 ## 1.9.0 (07-10-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.6.2
--   XML Formatter moved to this repo. [Readme](README.md#xml-formatter)
+-   Feature: XML Formatter moved to this repo. [Readme](README.md#xml-formatter)
 
 ## 1.8.3 (13-08-2023)
 
@@ -44,18 +53,18 @@
 
 ## 1.8.0 (01-07-2023)
 
--   `TagAttributeDefaultValueLinter` configuration entry added, closes [#122](https://github.com/iljapostnovs/ui5plugin-linter/issues/122). [Readme](README.md#tagattributedefaultvaluelinter)
--   `EventTypeLinter` added. [Readme](README.md#eventtypelinter-ts-only-11151)
+-   Feature: `TagAttributeDefaultValueLinter` configuration entry added, closes [#122](https://github.com/iljapostnovs/ui5plugin-linter/issues/122). [Readme](README.md#tagattributedefaultvaluelinter)
+-   Feature: `EventTypeLinter` added. [Readme](README.md#eventtypelinter-ts-only-11151)
 
 ## 1.7.6 (27-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.6
--   Add `configPath` to `IParserConfigHandler`
+-   Fix: Add `configPath` to `IParserConfigHandler`
 
 ## 1.7.5 (23-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.5
--   Fix config finding going into recursive
+-   Fix: Fix config finding going into recursive
 
 ## 1.7.4 (19-06-2023)
 
@@ -64,44 +73,44 @@
 ## 1.7.3 (14-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.3
--   Migrate to fixed version of `rc-config-loader`
+-   Fix: Migrate to fixed version of `rc-config-loader`
 
 ## 1.7.2 (13-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.2
--   Migrate to `cosmiconfig`
+-   Fix: Migrate to `cosmiconfig`
 
 ## 1.7.1 (12-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.1
--   Bugfix for `package.json` config
+-   Fix: Bugfix for `package.json` config
 
 ## 1.7.0 (12-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.5.0
--   Support for [rc](https://github.com/azu/rc-config-loader) files introduced
+-   Feature: Support for [rc](https://github.com/azu/rc-config-loader) files introduced
 
 ## 1.6.4 (06-06-2023)
 
--   Bugfix for empty id pattern
+-   Fix: Bugfix for empty id pattern
 
 ## 1.6.3 (03-06-2023)
 
--   Change priority of linting id and event handler style, now they are first priority
--   Add `@ui5ignore-patterns` support for XML
+-   Fix: Change priority of linting id and event handler style, now they are first priority
+-   Feature: Add `@ui5ignore-patterns` support for XML
 
 ## 1.6.2 (03-06-2023)
 
--   Rename `BindingPath` variable to `MeaningAssumption`
+-   Fix: Rename `BindingPath` variable to `MeaningAssumption`
 
 ## 1.6.1 (02-06-2023)
 
--   Bugfix for `AggregationName` distinguishing
+-   Fix: Bugfix for `AggregationName` distinguishing
 
 ## 1.6.0 (01-06-2023)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.4.5
--   XML attribute linter enhanced with `id` and `event handler` naming style check
+-   Feature: XML attribute linter enhanced with `id` and `event handler` naming style check
 -   `ui5ignore` in XML files now supports attribute ignoring
 
 ## 1.5.2 (16-05-2023)
