@@ -29,6 +29,10 @@ export class TagLinter extends XMLLinter {
 		const errors: IXMLError[] = [];
 		const tagClass = this._parser.xmlParser.getFullClassNameFromTag(tag, XMLFile);
 		const documentClassName = this._parser.fileReader.getClassNameFromPath(XMLFile.fsPath) || "";
+
+		if (tagClass.startsWith("http://www.w3.org/1999/xhtml.")) {
+			return errors;
+		}
 		if (!tagClass) {
 			const range = RangeAdapter.offsetsRange(documentText, tag.positionBegin, tag.positionEnd + 1);
 

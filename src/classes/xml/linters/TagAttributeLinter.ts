@@ -381,8 +381,9 @@ export class TagAttributeLinter extends XMLLinter {
 		const event = UIClass.events.find(event => event.name === attributeName);
 		const aggregation = UIClass.aggregations.find(aggregation => aggregation.name === attributeName);
 		const association = UIClass.associations.find(association => association.name === attributeName);
+		const isXHTML = className.startsWith("http://www.w3.org/1999/xhtml.");
 
-		const somethingInClassWasFound = !!(property || event || aggregation || association);
+		const somethingInClassWasFound = !!(property || event || aggregation || association || isXHTML);
 
 		return somethingInClassWasFound;
 	}

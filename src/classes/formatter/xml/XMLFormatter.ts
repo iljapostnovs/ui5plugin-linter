@@ -356,7 +356,7 @@ export class XMLFormatter {
 	private _getAllTags(document: IXMLFile) {
 		let i = 0;
 		const tags: ITag[] = [];
-		const allStringsAreClosed = this._getIfAllStringsAreClosed(document.content);
+		const allStringsAreClosed = this._getIfAllStringsAreClosed(document);
 
 		if (allStringsAreClosed) {
 			while (i < document.content.length) {
@@ -415,23 +415,8 @@ export class XMLFormatter {
 		};
 	}
 
-	private _getIfAllStringsAreClosed(document: string) {
-		let quotionMarkCount = 0;
-		let secondTypeQuotionMarkCount = 0;
-
-		let i = 0;
-		while (i < document.length) {
-			// eslint-disable-next-line @typescript-eslint/quotes
-			if (document[i] === '"') {
-				quotionMarkCount++;
-			}
-			if (document[i] === "'") {
-				secondTypeQuotionMarkCount++;
-			}
-			i++;
-		}
-
-		return quotionMarkCount % 2 === 0 && secondTypeQuotionMarkCount % 2 === 0;
+	private _getIfAllStringsAreClosed(document: IXMLFile) {
+		return this._parser.xmlParser.getStringPositionMapping(document).areAllStringsClosed;
 	}
 
 	private _getTagBeginingIndex(document: IXMLFile, position: number) {
