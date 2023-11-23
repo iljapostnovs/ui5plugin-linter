@@ -1,6 +1,6 @@
 ## 1.14.1 (23-11-2023)
 
--   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.1
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.2
 -   Fix for XHTML tags
 
 ## 1.14.0 (11-11-2023)
