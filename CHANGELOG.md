@@ -1,3 +1,7 @@
+## 1.14.5 (25-01-2024)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.7
+
 ## 1.14.4 (25-01-2024)
 
 -   Fix `@ui5ignore` for tag attribute names
