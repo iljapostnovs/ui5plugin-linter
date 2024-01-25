@@ -148,7 +148,7 @@ export class TagAttributeLinter extends XMLLinter {
 			attributeName.startsWith("xmlns") || this._isAttributeNameAlwaysValid(className, attributeName);
 		const isAttributeNameDuplicated = this._getIfAttributeNameIsDuplicated(attribute, attributes);
 		const attributeNameValid =
-			!isAttributeNameDuplicated && (isExclusion || this._validateAttributeName(className, attribute));
+			!isAttributeNameDuplicated && (isExclusion || this._validateAttributeName(className, attribute, previousTag));
 		const attributeValueValidData = this._validateAttributeValue(
 			className,
 			attribute,
@@ -372,11 +372,16 @@ export class TagAttributeLinter extends XMLLinter {
 		return { isValueValid, message };
 	}
 
-	private _validateAttributeName(className: string, attribute: string) {
+	private _validateAttributeName(className: string, attribute: string, previousTag: ITag | undefined) {
 		const indexOfEqualSign = attribute.indexOf("=");
 		const attributeName = attribute.substring(0, indexOfEqualSign).trim();
+		if (this._isAttributeIgnored(previousTag, attributeName)) {
+			const isNameValid = true;
+			const severity = Severity.Information;
+			const message = "";
+			return { isValueValid: isNameValid, severity, message };
+		}
 		const UIClass = this._parser.classFactory.getUIClass(className);
-
 		const property = UIClass.properties.find(property => property.name === attributeName);
 		const event = UIClass.events.find(event => event.name === attributeName);
 		const aggregation = UIClass.aggregations.find(aggregation => aggregation.name === attributeName);
