@@ -1,6 +1,8 @@
 ## 1.14.4 (25-01-2024)
 
 -   Fix `@ui5ignore` for tag attribute names
+-   Fix properties linters to work with all properties files
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.6
 
 ## 1.14.3 (23-11-2023)
 

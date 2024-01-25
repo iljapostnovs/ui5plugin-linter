@@ -1,5 +1,5 @@
 import { ParserPool, TextDocument } from "ui5plugin-parser";
-import { IInternalizationText } from "ui5plugin-parser/dist/classes/parsing/util/i18n/ResourceModelData";
+import { IInternalizationText, ResourceModelData } from "ui5plugin-parser/dist/classes/parsing/util/i18n/ResourceModelData";
 import { RangeAdapter } from "../../..";
 import { DiagnosticTag, IError, PropertiesLinters } from "../../Linter";
 import { PropertiesLinter } from "./abstraction/PropertiesLinter";
@@ -10,11 +10,13 @@ export class UnusedTranslationsLinter extends PropertiesLinter {
 		const errors: IError[] = [];
 		const className = this._parser.fileReader.getClassNameFromPath(document.fileName);
 		if (className) {
-			this._parser.resourceModelData.updateCache(document);
 			const manifest = ParserPool.getManifestForClass(className);
 			const componentName = manifest?.componentName;
-			if (componentName && this._parser.resourceModelData.resourceModels[componentName]) {
-				const translations = this._parser.resourceModelData.resourceModels[componentName];
+			if (componentName) {
+				const translations = ResourceModelData.parseFile({
+					content: document.getText(),
+					componentName: componentName
+				});
 				translations.forEach(translation => {
 					errors.push(...this._getTranslationErrors(translation, document));
 				});
