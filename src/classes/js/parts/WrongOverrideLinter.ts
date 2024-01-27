@@ -40,10 +40,24 @@ export class WrongOverrideLinter extends JSLinter<UI5JSParser, CustomJSClass> {
 	) {
 		let error: IError | undefined;
 		const parentMember = this._getMemberFromParent(UIClass, UIMember);
-		if (parentMember && parentMember.visibility === "private" && UIMember.loc) {
+		if (parentMember?.visibility === "private" && UIMember.loc) {
 			const range = RangeAdapter.acornLocationToRange(UIMember.loc);
 			error = {
 				message: `You can't override "${UIMember.name}" because it is a private member of class "${parentMember.owner}"`,
+				code: "UI5Plugin",
+				source: this.className,
+				range: range,
+				className: UIClass.className,
+				acornNode: UIMember.node,
+				methodName: UIMember.name,
+				sourceClassName: UIClass.className,
+				severity: this._configHandler.getSeverity(this.className),
+				fsPath: UIClass.fsPath || ""
+			};
+		} else if (parentMember?.deprecated && UIMember.loc) {
+			const range = RangeAdapter.acornLocationToRange(UIMember.loc);
+			error = {
+				message: `Member "${UIMember.name}" is deprecated`,
 				code: "UI5Plugin",
 				source: this.className,
 				range: range,
