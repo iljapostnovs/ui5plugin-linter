@@ -154,7 +154,7 @@ Checks if imported module exists and is not deprecated
 
 ### WrongOverrideLinter
 
-Checks if overriden member is not private
+Checks if overriden member is not private and if parent member is not deprecated
 
 ![Alt text](images/WrongOverrideLinter1.png)
 
