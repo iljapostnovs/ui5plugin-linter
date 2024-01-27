@@ -1,6 +1,7 @@
 ## 1.15.0 (27-01-2024)
 
 -   `WrongOverrideLinter` now checks if member is deprecated
+-   Fix: `UnusedClassLinter` doesn't show error if any member is used outside the class
 
 ## 1.14.5 (25-01-2024)
 

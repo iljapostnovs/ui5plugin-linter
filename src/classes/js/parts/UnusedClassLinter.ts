@@ -1,5 +1,17 @@
-import { AbstractUI5Parser, ParserPool, TextDocument } from "ui5plugin-parser";
-import { AbstractCustomClass } from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
+import {
+	AbstractUI5Parser,
+	ParserPool,
+	ReferenceFinder,
+	TSReferenceFinder,
+	TextDocument,
+	UI5JSParser,
+	UI5TSParser
+} from "ui5plugin-parser";
+import {
+	AbstractCustomClass,
+	ICustomClassField,
+	ICustomClassMethod
+} from "ui5plugin-parser/dist/classes/parsing/ui5class/AbstractCustomClass";
 import { IXMLFile } from "ui5plugin-parser/dist/classes/parsing/util/filereader/IFileReader";
 import { RangeAdapter } from "ui5plugin-parser/dist/classes/parsing/util/range/adapters/RangeAdapter";
 import { IError, JSLinters } from "../../Linter";
@@ -48,10 +60,32 @@ export class UnusedClassLinter<
 					this._checkIfClassIsUsedAsInterface(CustomJSClass, UIClass)
 				);
 			}) ||
+			this._checkIfClassMembersHasAnyReferencesOutside(UIClass) ||
 			this._checkIfClassMentionedInManifest(UIClass) ||
 			this._checkIfClassIsViewsController(UIClass) ||
 			this._checkIfClassIsUsedInView(UIClass)
 		);
+	}
+
+	private _checkIfClassMembersHasAnyReferencesOutside(UIClass: AbstractCustomClass): boolean {
+		const members: (ICustomClassMethod | ICustomClassField)[] = [...UIClass.methods, ...UIClass.fields];
+		return members.some(
+			member =>
+				this._getReferenceLocations(member).filter(location => location.filePath !== UIClass.fsPath).length > 0
+		);
+	}
+
+	private _getReferenceLocations(member: ICustomClassMethod | ICustomClassField) {
+		if (this._parser instanceof UI5JSParser) {
+			const referenceFinder = new ReferenceFinder(this._parser);
+			return referenceFinder.getReferenceLocations(member);
+		}
+		if (this._parser instanceof UI5TSParser) {
+			const referenceFinder = new TSReferenceFinder(this._parser);
+			return referenceFinder.getReferenceLocations(member);
+		} else {
+			return [];
+		}
 	}
 
 	private _checkClassForLintingExceptions(UIClass: AbstractCustomClass) {
