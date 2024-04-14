@@ -1,3 +1,7 @@
+## 1.15.1 (14-04-2024)
+
+-   `XMLFormatter` now escapes single quote character in attribute value, if it is an object
+
 ## 1.15.0 (27-01-2024)
 
 -   `WrongOverrideLinter` now checks if member is deprecated

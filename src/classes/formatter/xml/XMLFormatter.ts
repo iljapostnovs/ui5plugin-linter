@@ -295,7 +295,7 @@ export class XMLFormatter {
 		} else if (typeof value === "object") {
 			formattedAttribute += `${this._formatAttributeObject(value, indentation + this._indentation)}`;
 		} else if (typeof value === "string") {
-			formattedAttribute += `'${value.replace(/\\/g, "\\\\")}'`;
+			formattedAttribute += `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
 		} else if (typeof value === "function") {
 			throw new Error("Parsing error");
 		} else {
