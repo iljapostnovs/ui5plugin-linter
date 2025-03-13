@@ -1,3 +1,7 @@
+## 1.15.2 (13-03-2025)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.8
+
 ## 1.15.1 (14-04-2024)
 
 -   `XMLFormatter` now escapes single quote character in attribute value, if it is an object
