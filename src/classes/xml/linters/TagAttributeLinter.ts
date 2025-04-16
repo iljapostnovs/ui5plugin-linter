@@ -148,7 +148,8 @@ export class TagAttributeLinter extends XMLLinter {
 			attributeName.startsWith("xmlns") || this._isAttributeNameAlwaysValid(className, attributeName);
 		const isAttributeNameDuplicated = this._getIfAttributeNameIsDuplicated(attribute, attributes);
 		const attributeNameValid =
-			!isAttributeNameDuplicated && (isExclusion || this._validateAttributeName(className, attribute, previousTag));
+			!isAttributeNameDuplicated &&
+			(isExclusion || this._validateAttributeName(className, attribute, previousTag));
 		const attributeValueValidData = this._validateAttributeValue(
 			className,
 			attribute,
@@ -279,37 +280,45 @@ export class TagAttributeLinter extends XMLLinter {
 		} else if (property?.type === "int") {
 			isValueValid = isNumeric(attributeValue);
 		} else if (event && responsibleControlName) {
-			const eventName = this._parser.xmlParser.getEventHandlerNameFromAttributeValue(attributeValue);
+			const eventHandlerName = this._parser.xmlParser.getEventHandlerNameFromAttributeValue(attributeValue);
+			const eventHandlerNoDot = eventHandlerName.startsWith(".") ? eventHandlerName.replace(".", "") : eventHandlerName;
 			const pattern = this._configHandler.getEventNamingPattern();
 			const patternValidator =
 				pattern && new EventPatternValidator(pattern, document, this._parser, this._configHandler);
 
 			try {
 				if (patternValidator && !this._isAttributePatternIgnored(previousTag, attributeName)) {
-					patternValidator.validateValue(eventName, [event, tag]);
+					patternValidator.validateValue(eventHandlerName, [event, tag]);
 				}
 				isValueValid = !!this._parser.xmlParser
 					.getMethodsOfTheControl(responsibleControlName)
-					.find(method => method.name === eventName);
+					.find(method => method.name === eventHandlerNoDot);
 				if (!isValueValid) {
-					const manifest = ParserPool.getManifestForClass(eventName);
+					const manifest = ParserPool.getManifestForClass(eventHandlerName);
 					if (manifest) {
-						const parts = eventName.split(".");
+						const parts = eventHandlerName.split(".");
 						const formattedEventName = parts.pop();
 						const className = parts.join(".");
 						isValueValid = !!this._parser.xmlParser
 							.getMethodsOfTheControl(className)
 							.find(method => method.name === formattedEventName);
-					} else if (eventName.split(".").length === 2) {
-						({ isValueValid, message } = this._validateAttributeValueInCaseOfInTagRequire(
-							eventName,
-							tags,
-							isValueValid,
-							message
+					} else if (eventHandlerNoDot.split(".").length === 2) {
+						({ isValueValid, message } = this._validateAttributeValueInCaseOfMethodCallFromMember(
+							eventHandlerNoDot,
+							responsibleControlName
 						));
+
+						if (!isValueValid) {
+							({ isValueValid, message } = this._validateAttributeValueInCaseOfInTagRequire(
+								eventHandlerName,
+								tags,
+								isValueValid,
+								message
+							));
+						}
 					}
 				}
-				message = message || `Event handler "${eventName}" not found in "${responsibleControlName}".`;
+				message = message || `Event handler "${eventHandlerName}" not found in "${responsibleControlName}".`;
 			} catch (error: any) {
 				isValueValid = false;
 				if (error instanceof Error) {
@@ -330,6 +339,29 @@ export class TagAttributeLinter extends XMLLinter {
 		}
 
 		return { isValueValid, message, severity };
+	}
+
+	private _validateAttributeValueInCaseOfMethodCallFromMember(eventName: string, responsibleControlName: string) {
+		const eventNameParts = eventName.split(".");
+		const fieldName = eventNameParts.shift();
+		const methodName = eventNameParts.shift();
+		let isValueValid = false;
+		let message = "";
+
+		if (fieldName && methodName) {
+			const field = this._parser.classFactory
+				.getClassFields(responsibleControlName)
+				.find(field => field.name === fieldName);
+
+			isValueValid =
+				!!field?.type &&
+				!!this._parser.classFactory.getClassMethods(field.type).find(method => method.name === methodName);
+
+			if (!isValueValid) {
+				message = `Method "${methodName}" not found in "${fieldName}"`;
+			}
+		}
+		return { isValueValid, message };
 	}
 
 	private _checkIfCommandIsMentionedInManifest(attributeValue: string, document: TextDocument): boolean {

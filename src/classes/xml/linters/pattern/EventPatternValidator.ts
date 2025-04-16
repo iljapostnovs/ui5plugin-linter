@@ -3,11 +3,15 @@ import { ITag } from "ui5plugin-parser/dist/classes/parsing/util/xml/XMLParser";
 import APatternValidator from "./APatternValidator";
 
 export default class EventPatternValidator extends APatternValidator<[IUIEvent, ITag]> {
-	validateValue(actualEventName: string, data: [IUIEvent, ITag]): void {
+	validateValue(eventHandler: string, data: [IUIEvent, ITag]): void {
 		const expectedEventRegExp = this._assembleExpectedValueRegExp(data);
 
-		if (!expectedEventRegExp.test(actualEventName)) {
-			const message = `"${actualEventName}" should match pattern: "${expectedEventRegExp}"`;
+		if (eventHandler.includes(".")) {
+			eventHandler = eventHandler.split(".").at(-1) ?? eventHandler;
+		}
+
+		if (!expectedEventRegExp.test(eventHandler)) {
+			const message = `"${eventHandler}" should match pattern: "${expectedEventRegExp}"`;
 			throw new Error(message);
 		}
 	}
