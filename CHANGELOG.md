@@ -1,3 +1,8 @@
+## 1.16.0 (16-04-2025)
+
+-   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.8.0
+-   minor fixes for XML attribute linter
+
 ## 1.15.2 (13-03-2025)
 
 -   [UI5 Parser](https://github.com/iljapostnovs/ui5plugin-parser) updated to v1.7.8

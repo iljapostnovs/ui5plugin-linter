@@ -32,5 +32,14 @@
 		"rmcache"
 	],
 	"typescript.implementationsCodeLens.enabled": true,
-	"typescript.referencesCodeLens.enabled": true
+	"typescript.referencesCodeLens.enabled": true,
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }
